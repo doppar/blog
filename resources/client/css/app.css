@@ -1,0 +1,104 @@
+@import "tailwindcss";
+@source "../js";
+@source "../../views";
+
+:root {
+    color-scheme: light;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Poppins, "Segoe UI", sans-serif;
+    background: #f3f4f2;
+    color: #111827;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+::selection {
+    background: rgba(17, 122, 74, 0.18);
+}
+
+.admin-soft-grid {
+    background-image:
+        linear-gradient(rgba(15, 23, 42, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.025) 1px, transparent 1px);
+    background-size: 22px 22px;
+}
+
+.admin-ring-chart {
+    background:
+        conic-gradient(#1b7a4a 0 41%, #67c691 41% 74%, #d8dee0 74% 100%);
+}
+
+.admin-track-wave {
+    background:
+        radial-gradient(circle at 20% 40%, rgba(85, 196, 132, 0.22), transparent 22%),
+        radial-gradient(circle at 80% 25%, rgba(22, 101, 52, 0.28), transparent 18%),
+        radial-gradient(circle at 70% 80%, rgba(74, 222, 128, 0.18), transparent 22%),
+        linear-gradient(135deg, #052e1d, #0f5a37 58%, #031b12);
+}
+
+.admin-mobile-card {
+    background:
+        radial-gradient(circle at top right, rgba(34, 197, 94, 0.18), transparent 35%),
+        linear-gradient(160deg, #031a11, #0a3a24 60%, #072417);
+}
+
+.admin-stripe-bar {
+    background-image: repeating-linear-gradient(
+        135deg,
+        rgba(16, 24, 40, 0.32) 0,
+        rgba(16, 24, 40, 0.32) 3px,
+        transparent 3px,
+        transparent 8px
+    );
+}
+
+.admin-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.14);
+    border-radius: 999px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.admin-dashboard-shell {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top left, rgba(22, 163, 74, 0.10), transparent 26%),
+        radial-gradient(circle at right top, rgba(15, 118, 110, 0.08), transparent 24%),
+        #f3f4f2;
+}
+
+@media (max-width: 767px) {
+    .admin-dashboard-shell {
+        background:
+            radial-gradient(circle at top left, rgba(22, 163, 74, 0.08), transparent 28%),
+            #f3f4f2;
+    }
+}

@@ -1,0 +1,1 @@
+const e=document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");window.__DOPPAR_FRONTEND__={...window.__DOPPAR_FRONTEND__??{},csrfToken:e??null,headers:e?{"X-CSRF-TOKEN":e}:{}};document.documentElement.dataset.clientReady="true";console.info("Doppar client booted successfully.");
