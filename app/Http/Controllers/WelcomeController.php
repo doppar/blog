@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Phaseolies\Utilities\Attributes\Route;
 use Phaseolies\Http\Response;
-use App\Http\Controllers\Controller;
 
 class WelcomeController extends Controller
 {
@@ -16,6 +15,6 @@ class WelcomeController extends Controller
     #[Route(uri: '/', name: 'home')]
     public function welcome(): Response
     {
-        return view('welcome');
+        return redirect()->route('categories.index');
     }
 }
