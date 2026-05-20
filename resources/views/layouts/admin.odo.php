@@ -76,8 +76,14 @@
 
                     <div class="admin-dropdown" data-dropdown>
                         <button class="admin-profile" type="button" data-dropdown-trigger aria-expanded="false">
-                            <span class="admin-profile__avatar">ED</span>
-                            <span class="admin-profile__name">Editorial Admin</span>
+                            <span class="admin-profile__avatar">
+                                #if ((auth()->user()->image ?? '') !== '')
+                                    <img src="[[ auth()->user()->image ]]" alt="[[ auth()->user()->name ]]">
+                                #else
+                                    [[ strtoupper(substr((string) auth()->user()->name, 0, 2)) ]]
+                                #endif
+                            </span>
+                            <span class="admin-profile__name">[[ auth()->user()->name ]]</span>
                             <svg class="admin-profile__chevron" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5 7.5 10 12.5l5-5"></path>
                             </svg>
@@ -85,30 +91,18 @@
 
                         <div class="admin-dropdown__menu admin-dropdown__menu--profile" data-dropdown-menu>
                             <div class="admin-dropdown__head">
-                                <strong>Editorial Admin</strong>
-                                <span>Backend workspace</span>
+                                <strong>[[ auth()->user()->name ]]</strong>
+                                <span>[[ auth()->user()->email ]]</span>
                             </div>
 
-                            <a class="admin-dropdown__item" href="[[ route('admin.dashboard') ]]">
-                                <strong>Dashboard</strong>
-                                <span>Overview, stats, and recent activity.</span>
+                            <a class="admin-dropdown__item" href="[[ route('admin.profile.index') ]]">
+                                <strong>Profile</strong>
+                                <span>Manage your account, password, and two-factor authentication.</span>
                             </a>
-                            <a class="admin-dropdown__item" href="[[ route('admin.posts.index') ]]">
-                                <strong>Manage posts</strong>
-                                <span>Search and maintain the publishing pipeline.</span>
-                            </a>
-                            <a class="admin-dropdown__item" href="[[ route('admin.media.index') ]]">
-                                <strong>Media library</strong>
-                                <span>Upload, browse, and reuse visual assets.</span>
-                            </a>
-                            <a class="admin-dropdown__item" href="[[ route('admin.users.index') ]]">
-                                <strong>Manage users</strong>
-                                <span>Control account access, roles, and profile details.</span>
-                            </a>
-                            <a class="admin-dropdown__item" href="[[ route('admin.tags.index') ]]">
-                                <strong>Manage taxonomy</strong>
-                                <span>Review tags and supporting content labels.</span>
-                            </a>
+                            <button class="admin-dropdown__button" type="submit" form="admin-logout-form">
+                                <strong>Logout</strong>
+                                <span>Close this admin session securely.</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -225,6 +219,10 @@
                 </main>
             </div>
         </div>
+
+        <form id="admin-logout-form" method="POST" action="[[ route('logout') ]]" class="admin-u-sr-only">
+            #csrf
+        </form>
 
         #yield('scripts')
     </body>

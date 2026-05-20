@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Support\AdminDashboardCache;
 use Phaseolies\Http\Response;
 use Phaseolies\Utilities\Attributes\Mapper;
+use Phaseolies\Utilities\Attributes\Middleware;
 use Phaseolies\Utilities\Attributes\Route;
 
 #[Mapper(prefix: 'admin')]
+#[Middleware(['auth'])]
 class DashboardController extends Controller
 {
     #[Route(uri: '/', name: 'admin.dashboard')]

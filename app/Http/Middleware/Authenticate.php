@@ -32,7 +32,7 @@ class Authenticate implements Middleware
 
         $this->setIntendedUrl($request);
 
-        return redirect('/login');
+        return redirect()->route('login');
     }
 
     /**

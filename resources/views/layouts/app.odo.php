@@ -18,23 +18,39 @@
         #vite('resources/client/js/app.js')
     </head>
     <body class="#yield('body_class')">
-        #errors
+        #if (session('success') || session('error') || session()->has('errors'))
             <div class="app-feedback-stack">
-                <div class="admin-alert admin-alert--danger admin-alert--stacked" data-dismissible>
-                    <div class="admin-alert__body">
-                        <p class="admin-alert__title">Please fix the following errors.</p>
-                        <ul class="admin-alert__list">
-                            #foreach (session()->pull('errors') as $messages)
-                                #foreach ($messages as $message)
-                                    <li>[[ $message ]]</li>
-                                #endforeach
-                            #endforeach
-                        </ul>
+                #if (session('success'))
+                    <div class="admin-alert admin-alert--success" data-dismissible>
+                        <p>[[ session()->pull('success') ]]</p>
+                        <button type="button" class="admin-alert__close" data-dismiss-alert aria-label="Dismiss message">×</button>
                     </div>
-                    <button type="button" class="admin-alert__close" data-dismiss-alert aria-label="Dismiss message">×</button>
-                </div>
+                #endif
+
+                #if (session('error'))
+                    <div class="admin-alert admin-alert--danger" data-dismissible>
+                        <p>[[ session()->pull('error') ]]</p>
+                        <button type="button" class="admin-alert__close" data-dismiss-alert aria-label="Dismiss message">×</button>
+                    </div>
+                #endif
+
+                #errors
+                    <div class="admin-alert admin-alert--danger admin-alert--stacked" data-dismissible>
+                        <div class="admin-alert__body">
+                            <p class="admin-alert__title">Please fix the following errors.</p>
+                            <ul class="admin-alert__list">
+                                #foreach (session()->pull('errors') as $messages)
+                                    #foreach ($messages as $message)
+                                        <li>[[ $message ]]</li>
+                                    #endforeach
+                                #endforeach
+                            </ul>
+                        </div>
+                        <button type="button" class="admin-alert__close" data-dismiss-alert aria-label="Dismiss message">×</button>
+                    </div>
+                #enderrors
             </div>
-        #enderrors
+        #endif
 
         #yield('content')
         #yield('scripts')

@@ -12,10 +12,12 @@ use Phaseolies\Http\Response;
 use Phaseolies\Support\Facades\Storage;
 use Phaseolies\Support\File;
 use Phaseolies\Utilities\Attributes\Mapper;
+use Phaseolies\Utilities\Attributes\Middleware;
 use Phaseolies\Utilities\Attributes\Model as RouteModel;
 use Phaseolies\Utilities\Attributes\Route;
 
 #[Mapper(prefix: 'admin/users')]
+#[Middleware(['auth'])]
 class UserController extends Controller
 {
     #[Route(uri: '/', name: 'admin.users.index')]
