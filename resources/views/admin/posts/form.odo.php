@@ -60,7 +60,195 @@
 
                         <div class="admin-field admin-field--full">
                             <label for="body">Body</label>
-                            <textarea id="body" name="body" rows="16">[[ $formInput['body'] ?? $post?->body ?? '' ]]</textarea>
+                            <div class="admin-rich-editor" data-rich-editor>
+                                <div class="admin-rich-editor__toolbar" data-rich-editor-toolbar>
+                                    <div class="admin-rich-editor__toolbar-group">
+                                        <span class="admin-u-sr-only">Format</span>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon admin-rich-editor__tool--glyph" type="button" data-editor-action="paragraph" aria-label="Paragraph" title="Paragraph">
+                                            ¶
+                                        </button>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon admin-rich-editor__tool--badge" type="button" data-editor-action="heading" data-editor-level="2" aria-label="Heading 2" title="Heading 2">
+                                            H2
+                                        </button>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon admin-rich-editor__tool--badge" type="button" data-editor-action="heading" data-editor-level="3" aria-label="Heading 3" title="Heading 3">
+                                            H3
+                                        </button>
+                                    </div>
+
+                                    <div class="admin-rich-editor__toolbar-group">
+                                        <span class="admin-u-sr-only">Style</span>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon admin-rich-editor__tool--glyph" type="button" data-editor-action="bold" aria-label="Bold" title="Bold">
+                                            B
+                                        </button>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon admin-rich-editor__tool--glyph admin-rich-editor__tool--italic" type="button" data-editor-action="italic" aria-label="Italic" title="Italic">
+                                            I
+                                        </button>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon admin-rich-editor__tool--glyph admin-rich-editor__tool--underline" type="button" data-editor-action="underline" aria-label="Underline" title="Underline">
+                                            U
+                                        </button>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon admin-rich-editor__tool--glyph admin-rich-editor__tool--strike" type="button" data-editor-action="strike" aria-label="Strike" title="Strike">
+                                            S
+                                        </button>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon" type="button" data-editor-action="link" aria-label="Link" title="Link">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M10.5 13.5 13.5 10.5"></path>
+                                                <path d="M8.25 15.75 6.5 17.5a3 3 0 0 1-4.25-4.25L6 9.5a3 3 0 0 1 4.25 0"></path>
+                                                <path d="m15.75 8.25 1.75-1.75a3 3 0 1 1 4.25 4.25L18 14.5a3 3 0 0 1-4.25 0"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div class="admin-rich-editor__toolbar-group">
+                                        <span class="admin-u-sr-only">Blocks</span>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon" type="button" data-editor-action="bulletList" aria-label="Bulleted list" title="Bulleted list">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <circle cx="5" cy="7" r="1.4"></circle>
+                                                <circle cx="5" cy="12" r="1.4"></circle>
+                                                <circle cx="5" cy="17" r="1.4"></circle>
+                                                <path d="M9 7h10"></path>
+                                                <path d="M9 12h10"></path>
+                                                <path d="M9 17h10"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon" type="button" data-editor-action="orderedList" aria-label="Numbered list" title="Numbered list">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M4 7h2"></path>
+                                                <path d="M4 12h2"></path>
+                                                <path d="M4 17h2"></path>
+                                                <path d="M9 7h10"></path>
+                                                <path d="M9 12h10"></path>
+                                                <path d="M9 17h10"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon" type="button" data-editor-action="blockquote" aria-label="Quote" title="Quote">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M8 9H5.5A1.5 1.5 0 0 0 4 10.5V13a3 3 0 0 0 3 3h1"></path>
+                                                <path d="M18 9h-2.5A1.5 1.5 0 0 0 14 10.5V13a3 3 0 0 0 3 3h1"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon" type="button" data-editor-action="horizontalRule" aria-label="Divider" title="Divider">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M4 12h16"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div class="admin-rich-editor__toolbar-group">
+                                        <span class="admin-u-sr-only">Media</span>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon" type="button" data-editor-action="image" aria-label="Image" title="Image">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <rect x="4" y="5" width="16" height="14" rx="2"></rect>
+                                                <circle cx="9" cy="10" r="1.5"></circle>
+                                                <path d="m20 16-4.5-4.5L8 19"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div class="admin-rich-editor__toolbar-group">
+                                        <span class="admin-u-sr-only">Code</span>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon admin-rich-editor__tool--code" type="button" data-editor-action="codeBlock" aria-label="Code block" title="Code block">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="m8 8-4 4 4 4"></path>
+                                                <path d="m16 8 4 4-4 4"></path>
+                                                <path d="m13 6-2 12"></path>
+                                            </svg>
+                                        </button>
+                                        <div class="admin-rich-editor__language-wrap" data-editor-code-language-wrap>
+                                            <select class="admin-rich-editor__select" data-editor-code-language>
+                                                <option value="">Plain text</option>
+                                                <option value="javascript">JavaScript</option>
+                                                <option value="typescript">TypeScript</option>
+                                                <option value="php">PHP</option>
+                                                <option value="html">HTML</option>
+                                                <option value="css">CSS</option>
+                                                <option value="json">JSON</option>
+                                                <option value="bash">Bash</option>
+                                                <option value="markdown">Markdown</option>
+                                                <option value="sql">SQL</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="admin-rich-editor__toolbar-group admin-rich-editor__toolbar-group--end">
+                                        <span class="admin-u-sr-only">History</span>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon" type="button" data-editor-action="undo" aria-label="Undo" title="Undo">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M9 7 5 11l4 4"></path>
+                                                <path d="M5 11h8a6 6 0 1 1 0 12"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="admin-rich-editor__tool admin-rich-editor__tool--icon" type="button" data-editor-action="redo" aria-label="Redo" title="Redo">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="m15 7 4 4-4 4"></path>
+                                                <path d="M19 11h-8a6 6 0 1 0 0 12"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div class="admin-rich-editor__toolbar-meta">
+                                        <span><strong>/</strong> quick insert</span>
+                                    </div>
+                                </div>
+
+                                <div class="admin-rich-editor__popover admin-rich-editor__popover--link is-hidden" data-editor-link-popover>
+                                    <div class="admin-rich-editor__popover-head">
+                                        <div class="admin-rich-editor__popover-title">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M10.5 13.5 13.5 10.5"></path>
+                                                <path d="M8.25 15.75 6.5 17.5a3 3 0 0 1-4.25-4.25L6 9.5a3 3 0 0 1 4.25 0"></path>
+                                                <path d="m15.75 8.25 1.75-1.75a3 3 0 1 1 4.25 4.25L18 14.5a3 3 0 0 1-4.25 0"></path>
+                                            </svg>
+                                            <strong>Insert link</strong>
+                                        </div>
+                                        <button class="admin-rich-editor__popover-close" type="button" data-editor-link-close aria-label="Close link options">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                                        </button>
+                                    </div>
+                                    <label class="admin-rich-editor__popover-label" for="editor-link-url">URL</label>
+                                    <input id="editor-link-url" class="admin-rich-editor__popover-input" type="url" placeholder="https://example.com" data-editor-link-input>
+                                    <div class="admin-rich-editor__popover-actions">
+                                        <button class="admin-button admin-button--compact" type="button" data-editor-link-apply>Apply link</button>
+                                        <button class="admin-button admin-button--ghost admin-button--compact" type="button" data-editor-link-remove>Remove link</button>
+                                    </div>
+                                </div>
+
+                                <div class="admin-rich-editor__popover admin-rich-editor__popover--image is-hidden" data-editor-image-popover>
+                                    <div class="admin-rich-editor__popover-head">
+                                        <div class="admin-rich-editor__popover-title">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <rect x="4" y="5" width="16" height="14" rx="2"></rect>
+                                                <circle cx="9" cy="10" r="1.5"></circle>
+                                                <path d="m20 16-4.5-4.5L8 19"></path>
+                                            </svg>
+                                            <strong>Image settings</strong>
+                                        </div>
+                                    </div>
+                                    <label class="admin-rich-editor__popover-label" for="editor-image-caption">Caption</label>
+                                    <input id="editor-image-caption" class="admin-rich-editor__popover-input" type="text" placeholder="Add a short caption" data-editor-image-caption>
+                                    <div class="admin-rich-editor__image-align" data-editor-image-align>
+                                        <button class="admin-rich-editor__tool" type="button" data-editor-image-align-value="left">Left</button>
+                                        <button class="admin-rich-editor__tool" type="button" data-editor-image-align-value="center">Center</button>
+                                        <button class="admin-rich-editor__tool" type="button" data-editor-image-align-value="wide">Wide</button>
+                                    </div>
+                                    <div class="admin-rich-editor__popover-actions">
+                                        <button class="admin-button admin-button--compact" type="button" data-editor-image-replace>Replace image</button>
+                                        <button class="admin-button admin-button--ghost admin-button--compact" type="button" data-editor-image-remove>Remove image</button>
+                                    </div>
+                                </div>
+
+                                <div class="admin-rich-editor__canvas" data-rich-editor-canvas></div>
+
+                                <div class="admin-rich-editor__slash-menu is-hidden" data-editor-slash-menu></div>
+
+                                <textarea
+                                    id="body"
+                                    name="body"
+                                    rows="16"
+                                    hidden
+                                    data-rich-editor-source
+                                >[[ $formInput['body'] ?? $post?->body ?? '' ]]</textarea>
+                            </div>
+                            <p class="admin-field__hint">Write long-form content with structured blocks, pull quotes, and code snippets.</p>
                             #error('body')
                                 <p class="admin-field__error">[[ $message ]]</p>
                             #enderror
@@ -84,7 +272,7 @@
 
                         <div class="admin-field">
                             <label for="seo_description">SEO description</label>
-                            <textarea id="seo_description" name="seo_description" rows="4">[[ $formInput['seo_description'] ?? $post?->seo_description ?? '' ]]</textarea>
+                            <textarea id="seo_description" class="admin-field__textarea--compact" name="seo_description" rows="1">[[ $formInput['seo_description'] ?? $post?->seo_description ?? '' ]]</textarea>
                         </div>
                     </div>
                 </div>
@@ -226,13 +414,13 @@
         <div class="admin-cover-modal__backdrop" data-cover-media-close></div>
 
         <div class="admin-cover-modal__dialog">
-            <div class="admin-cover-modal__head">
-                <div class="admin-cover-modal__identity">
-                    <div>
-                        <strong>Upload cover media</strong>
-                        <span>Fast image publishing for this post</span>
+                <div class="admin-cover-modal__head">
+                    <div class="admin-cover-modal__identity">
+                        <div>
+                            <strong data-cover-media-title>Upload cover media</strong>
+                            <span data-cover-media-subtitle>Fast image publishing for this post</span>
+                        </div>
                     </div>
-                </div>
 
                 <button class="admin-cover-modal__close" type="button" data-cover-media-close aria-label="Close cover media modal">×</button>
             </div>

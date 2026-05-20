@@ -1,6 +1,122 @@
+import { Editor, Node, mergeAttributes } from '@tiptap/core';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import Link from '@tiptap/extension-link';
+import StarterKit from '@tiptap/starter-kit';
+import Placeholder from '@tiptap/extension-placeholder';
+import Underline from '@tiptap/extension-underline';
+import { common, createLowlight } from 'lowlight';
+
 const SIDEBAR_STORAGE_KEY = 'editorial-desk-sidebar-groups';
 const MEDIA_VIEW_STORAGE_KEY = 'editorial-desk-media-view';
+const lowlight = createLowlight(common);
 let activeAjaxRequests = 0;
+
+const EditorImage = Node.create({
+    name: 'editorImage',
+    group: 'block',
+    atom: true,
+    draggable: true,
+    selectable: true,
+
+    addAttributes() {
+        return {
+            src: {
+                default: null,
+            },
+            alt: {
+                default: '',
+            },
+            title: {
+                default: '',
+            },
+            caption: {
+                default: '',
+            },
+            align: {
+                default: 'center',
+            },
+        };
+    },
+
+    parseHTML() {
+        return [
+            {
+                tag: 'figure[data-editor-image]',
+                getAttrs: (element) => {
+                    const image = element.querySelector('img');
+                    const caption = element.querySelector('figcaption');
+
+                    return {
+                        src: image?.getAttribute('src') || '',
+                        alt: image?.getAttribute('alt') || '',
+                        title: image?.getAttribute('title') || '',
+                        caption: element.getAttribute('data-caption') || caption?.textContent || '',
+                        align: element.getAttribute('data-align') || 'center',
+                    };
+                },
+            },
+            {
+                tag: 'img[src]',
+                getAttrs: (element) => ({
+                    src: element.getAttribute('src') || '',
+                    alt: element.getAttribute('alt') || '',
+                    title: element.getAttribute('title') || '',
+                    caption: '',
+                    align: 'center',
+                }),
+            },
+        ];
+    },
+
+    renderHTML({ HTMLAttributes }) {
+        const {
+            caption = '',
+            align = 'center',
+            src = '',
+            alt = '',
+            title = '',
+        } = HTMLAttributes;
+
+        const figureAttributes = mergeAttributes(
+            {
+                'data-editor-image': 'true',
+                'data-align': align,
+                'data-caption': caption,
+                class: `editor-image-block align-${align}`,
+            },
+        );
+
+        const imageAttributes = mergeAttributes({
+            src,
+            alt,
+            title,
+            loading: 'lazy',
+            decoding: 'async',
+        });
+
+        const children = [['img', imageAttributes]];
+
+        if (caption) {
+            children.push(['figcaption', {}, caption]);
+        }
+
+        return ['figure', figureAttributes, ...children];
+    },
+
+    addCommands() {
+        return {
+            setEditorImage: (attributes) => ({ commands }) => commands.insertContent({
+                type: this.name,
+                attrs: {
+                    caption: '',
+                    align: 'center',
+                    ...attributes,
+                },
+            }),
+            updateEditorImage: (attributes) => ({ commands }) => commands.updateAttributes(this.name, attributes),
+        };
+    },
+});
 
 function slugify(value) {
     return (value || '')
@@ -9,6 +125,32 @@ function slugify(value) {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '') || 'entry';
+}
+
+function escapeEditorHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function normalizeEditorContent(value) {
+    const raw = String(value ?? '').trim();
+
+    if (!raw) {
+        return '<p></p>';
+    }
+
+    if (/<[a-z][\s\S]*>/i.test(raw)) {
+        return raw;
+    }
+
+    return raw
+        .split(/\n{2,}/)
+        .map((block) => `<p>${escapeEditorHtml(block).replace(/\n/g, '<br>')}</p>`)
+        .join('');
 }
 
 function bootDismissibleAlerts() {
@@ -798,6 +940,8 @@ function bootCoverMediaModal() {
     const uploadedImage = modal.querySelector('[data-cover-media-uploaded-image]');
     const uploadedUrl = modal.querySelector('[data-cover-media-uploaded-url]');
     const uploadedTitle = modal.querySelector('[data-cover-media-uploaded-title]');
+    const modalTitle = modal.querySelector('[data-cover-media-title]');
+    const modalSubtitle = modal.querySelector('[data-cover-media-subtitle]');
     const openButtons = document.querySelectorAll('[data-cover-media-open]');
     const closeButtons = modal.querySelectorAll('[data-cover-media-close]');
     const browseButton = modal.querySelector('[data-cover-media-browse]');
@@ -811,7 +955,38 @@ function bootCoverMediaModal() {
 
     const state = {
         uploadedItem: null,
+        context: {
+            mode: 'cover',
+            editor: null,
+            selection: null,
+            replaceImage: false,
+        },
     };
+
+    function syncModalContext() {
+        const isEditor = state.context.mode === 'editor';
+        const useLabel = isEditor ? 'Insert image' : 'Use image';
+
+        if (modalTitle) {
+            modalTitle.textContent = isEditor ? 'Insert article image' : 'Upload cover media';
+        }
+
+        if (modalSubtitle) {
+            modalSubtitle.textContent = isEditor
+                ? 'Upload or reuse media directly inside your story body'
+                : 'Fast image publishing for this post';
+        }
+
+        if (useUploadedButton instanceof HTMLButtonElement) {
+            useUploadedButton.textContent = isEditor ? 'Insert into article' : 'Use this image';
+        }
+
+        modal.querySelectorAll('[data-cover-media-use-existing]').forEach((button) => {
+            if (button instanceof HTMLButtonElement) {
+                button.textContent = useLabel;
+            }
+        });
+    }
 
     function syncCoverPreview(url) {
         const value = String(url || '').trim();
@@ -836,7 +1011,14 @@ function bootCoverMediaModal() {
         }
     }
 
-    function openModal() {
+    function openModal(context = {}) {
+        state.context = {
+            mode: context.mode === 'editor' ? 'editor' : 'cover',
+            editor: context.editor || null,
+            selection: context.selection || null,
+            replaceImage: Boolean(context.replaceImage),
+        };
+        syncModalContext();
         modal.classList.add('is-open');
         modal.setAttribute('aria-hidden', 'false');
         document.body.classList.add('admin-modal-open');
@@ -848,8 +1030,61 @@ function bootCoverMediaModal() {
         document.body.classList.remove('admin-modal-open');
     }
 
+    function insertImageIntoEditor(item) {
+        const editor = state.context.editor;
+
+        if (!editor) {
+            return false;
+        }
+
+        const selection = state.context.selection;
+        const image = {
+            src: item.url,
+            alt: item.alt_text || item.title || 'Post image',
+            title: item.title || '',
+            caption: item.title || '',
+        };
+
+        try {
+            let chain = editor.chain().focus();
+
+            if (selection && Number.isInteger(selection.from) && Number.isInteger(selection.to)) {
+                chain = chain.setTextSelection(selection);
+            }
+
+            if (state.context.replaceImage && editor.isActive('editorImage')) {
+                return chain.updateEditorImage(image).run();
+            }
+
+            return chain.setEditorImage(image).run();
+        } catch {
+            if (state.context.replaceImage && editor.isActive('editorImage')) {
+                return editor.chain().focus().updateEditorImage(image).run();
+            }
+
+            return editor.chain().focus().setEditorImage(image).run();
+        }
+    }
+
     function useItem(item) {
-        if (!item || !coverInput) {
+        if (!item) {
+            return;
+        }
+
+        if (state.context.mode === 'editor') {
+            const inserted = insertImageIntoEditor(item);
+
+            if (inserted) {
+                pushAdminAlert('success', 'Image inserted into the article body successfully.');
+                closeModal();
+            } else {
+                pushAdminAlert('danger', 'The selected image could not be inserted into the editor.');
+            }
+
+            return;
+        }
+
+        if (!coverInput) {
             return;
         }
 
@@ -908,12 +1143,30 @@ function bootCoverMediaModal() {
 
         showUploadedItem(item);
         library?.insertAdjacentHTML('afterbegin', coverMediaCardMarkup(item));
-        syncCoverPreview(item.url);
+        syncModalContext();
+        if (state.context.mode === 'cover') {
+            syncCoverPreview(item.url);
+        }
         pushAdminAlert('success', payload?.message || 'Cover image uploaded successfully.');
     }
 
     openButtons.forEach((button) => {
-        button.addEventListener('click', openModal);
+        button.addEventListener('click', () => {
+            const editorRoot = button.closest('[data-rich-editor]');
+            const editor = editorRoot?.__adminEditor || null;
+            const selection = editor
+                ? {
+                    from: editor.state.selection.from,
+                    to: editor.state.selection.to,
+                }
+                : null;
+
+            openModal({
+                mode: button.getAttribute('data-cover-media-target') === 'editor' ? 'editor' : 'cover',
+                editor,
+                selection,
+            });
+        });
     });
 
     closeButtons.forEach((button) => {
@@ -992,6 +1245,713 @@ function bootCoverMediaModal() {
         if (event.key === 'Escape' && modal.classList.contains('is-open')) {
             closeModal();
         }
+    });
+
+    window.__adminOpenMediaPicker = (context = {}) => {
+        openModal(context);
+    };
+}
+
+function bootRichEditors() {
+    document.querySelectorAll('[data-rich-editor]').forEach((root) => {
+        const canvas = root.querySelector('[data-rich-editor-canvas]');
+        const source = root.querySelector('[data-rich-editor-source]');
+        const toolbar = root.querySelector('[data-rich-editor-toolbar]');
+        const codeLanguage = root.querySelector('[data-editor-code-language]');
+        const codeLanguageWrap = root.querySelector('[data-editor-code-language-wrap]');
+        const linkPopover = root.querySelector('[data-editor-link-popover]');
+        const linkInput = root.querySelector('[data-editor-link-input]');
+        const linkApply = root.querySelector('[data-editor-link-apply]');
+        const linkRemove = root.querySelector('[data-editor-link-remove]');
+        const linkClose = root.querySelector('[data-editor-link-close]');
+        const imagePopover = root.querySelector('[data-editor-image-popover]');
+        const imageCaption = root.querySelector('[data-editor-image-caption]');
+        const imageReplace = root.querySelector('[data-editor-image-replace]');
+        const imageRemove = root.querySelector('[data-editor-image-remove]');
+        const imageAlignButtons = Array.from(root.querySelectorAll('[data-editor-image-align-value]'));
+        const slashMenu = root.querySelector('[data-editor-slash-menu]');
+
+        if (!(canvas instanceof HTMLElement) || !(source instanceof HTMLTextAreaElement) || !(toolbar instanceof HTMLElement)) {
+            return;
+        }
+
+        const buttons = Array.from(toolbar.querySelectorAll('[data-editor-action]'));
+        const slashCommands = [
+            {
+                key: 'text',
+                label: 'Text',
+                description: 'Start a regular paragraph',
+                keywords: ['paragraph', 'text'],
+                run: (instance) => instance.chain().focus().setParagraph().run(),
+            },
+            {
+                key: 'heading-2',
+                label: 'Heading 2',
+                description: 'Add a strong section heading',
+                keywords: ['heading', 'title', 'h2'],
+                run: (instance) => instance.chain().focus().toggleHeading({ level: 2 }).run(),
+            },
+            {
+                key: 'heading-3',
+                label: 'Heading 3',
+                description: 'Add a smaller subsection heading',
+                keywords: ['heading', 'subtitle', 'h3'],
+                run: (instance) => instance.chain().focus().toggleHeading({ level: 3 }).run(),
+            },
+            {
+                key: 'bullets',
+                label: 'Bulleted list',
+                description: 'Create a simple bullet list',
+                keywords: ['list', 'bullets'],
+                run: (instance) => instance.chain().focus().toggleBulletList().run(),
+            },
+            {
+                key: 'numbers',
+                label: 'Numbered list',
+                description: 'Create an ordered list',
+                keywords: ['list', 'numbered', 'ordered'],
+                run: (instance) => instance.chain().focus().toggleOrderedList().run(),
+            },
+            {
+                key: 'quote',
+                label: 'Quote',
+                description: 'Highlight a pull quote',
+                keywords: ['quote', 'blockquote'],
+                run: (instance) => instance.chain().focus().toggleBlockquote().run(),
+            },
+            {
+                key: 'image',
+                label: 'Image',
+                description: 'Upload or insert media',
+                keywords: ['image', 'media', 'photo'],
+                run: (instance) => window.__adminOpenMediaPicker?.({
+                    mode: 'editor',
+                    editor: instance,
+                    selection: {
+                        from: instance.state.selection.from,
+                        to: instance.state.selection.to,
+                    },
+                    replaceImage: false,
+                }),
+            },
+            {
+                key: 'code',
+                label: 'Code block',
+                description: 'Insert formatted code',
+                keywords: ['code', 'snippet'],
+                run: (instance) => instance.chain().focus().toggleCodeBlock().run(),
+            },
+            {
+                key: 'divider',
+                label: 'Divider',
+                description: 'Break the story into sections',
+                keywords: ['divider', 'rule'],
+                run: (instance) => instance.chain().focus().setHorizontalRule().run(),
+            },
+        ];
+        const slashState = {
+            items: [],
+            activeIndex: 0,
+            range: null,
+        };
+        let isApplyingImageCaption = false;
+
+        const editor = new Editor({
+            element: canvas,
+            extensions: [
+                StarterKit.configure({
+                    heading: {
+                        levels: [2, 3],
+                    },
+                    codeBlock: false,
+                }),
+                Placeholder.configure({
+                    placeholder: ({ node }) => {
+                        if (node.type.name === 'heading') {
+                            return 'Give this section a strong heading';
+                        }
+
+                        if (node.type.name === 'codeBlock') {
+                            return 'Write or paste code here...';
+                        }
+
+                        return 'Write your story like a polished editorial piece...';
+                    },
+                }),
+                Underline,
+                Link.configure({
+                    openOnClick: false,
+                    autolink: true,
+                    defaultProtocol: 'https',
+                    HTMLAttributes: {
+                        target: '_blank',
+                        rel: 'noopener noreferrer',
+                    },
+                }),
+                CodeBlockLowlight.configure({
+                    lowlight,
+                    defaultLanguage: 'plaintext',
+                    HTMLAttributes: {
+                        class: 'admin-code-block',
+                    },
+                }),
+                EditorImage,
+            ],
+            content: normalizeEditorContent(source.value),
+            editorProps: {
+                attributes: {
+                    class: 'admin-prose',
+                },
+                handleKeyDown: (_view, event) => {
+                    if (event.key === 'Escape') {
+                        closeLinkPopover();
+                        closeSlashMenu();
+                        return false;
+                    }
+
+                    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+                        event.preventDefault();
+                        openLinkPopover();
+                        return true;
+                    }
+
+                    if (!(slashMenu instanceof HTMLElement) || slashMenu.classList.contains('is-hidden')) {
+                        return false;
+                    }
+
+                    if (event.key === 'ArrowDown') {
+                        event.preventDefault();
+                        moveSlashSelection(1);
+                        return true;
+                    }
+
+                    if (event.key === 'ArrowUp') {
+                        event.preventDefault();
+                        moveSlashSelection(-1);
+                        return true;
+                    }
+
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        runSlashCommand(slashState.activeIndex);
+                        return true;
+                    }
+
+                    return false;
+                },
+            },
+            onCreate: ({ editor: instance }) => {
+                source.value = instance.getHTML();
+                refreshEditorUi();
+            },
+            onUpdate: ({ editor: instance }) => {
+                source.value = instance.getHTML();
+                refreshEditorUi();
+            },
+            onSelectionUpdate: refreshEditorUi,
+            onFocus: refreshEditorUi,
+            onBlur: () => {
+                window.setTimeout(() => {
+                    if (!root.contains(document.activeElement)) {
+                        closeLinkPopover();
+                        closeSlashMenu();
+                    }
+
+                    refreshEditorUi();
+                }, 0);
+            },
+        });
+
+        root.__adminEditor = editor;
+
+        function setVisibility(element, visible) {
+            if (!(element instanceof HTMLElement)) {
+                return;
+            }
+
+            element.classList.toggle('is-hidden', !visible);
+        }
+
+        function getCurrentImageAttributes() {
+            return editor.isActive('editorImage') ? editor.getAttributes('editorImage') : null;
+        }
+
+        function closeLinkPopover() {
+            setVisibility(linkPopover, false);
+        }
+
+        function openLinkPopover() {
+            if (!(linkPopover instanceof HTMLElement) || !(linkInput instanceof HTMLInputElement)) {
+                return;
+            }
+
+            linkInput.value = String(editor.getAttributes('link').href || '');
+            setVisibility(linkPopover, true);
+            window.setTimeout(() => {
+                linkInput.focus();
+                linkInput.select();
+            }, 20);
+        }
+
+        function applyLink() {
+            if (!(linkInput instanceof HTMLInputElement)) {
+                return;
+            }
+
+            const href = linkInput.value.trim();
+
+            if (!href) {
+                editor.chain().focus().extendMarkRange('link').unsetLink().run();
+                closeLinkPopover();
+                refreshEditorUi();
+                return;
+            }
+
+            if (editor.state.selection.empty && !editor.isActive('link')) {
+                editor.chain().focus().insertContent(`<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(href)}</a>`).run();
+            } else {
+                editor.chain().focus().extendMarkRange('link').setLink({
+                    href,
+                    target: '_blank',
+                    rel: 'noopener noreferrer',
+                }).run();
+            }
+
+            closeLinkPopover();
+            refreshEditorUi();
+        }
+
+        function closeSlashMenu() {
+            slashState.items = [];
+            slashState.activeIndex = 0;
+            slashState.range = null;
+            setVisibility(slashMenu, false);
+        }
+
+        function getSlashQueryInfo() {
+            const selection = editor.state.selection;
+
+            if (!selection.empty) {
+                return null;
+            }
+
+            const { $from, from } = selection;
+
+            if (!$from.parent.isTextblock) {
+                return null;
+            }
+
+            const textBefore = $from.parent.textContent.slice(0, $from.parentOffset);
+            const match = textBefore.match(/^\/([a-z0-9-]*)$/i);
+
+            if (!match) {
+                return null;
+            }
+
+            return {
+                query: (match[1] || '').toLowerCase(),
+                range: {
+                    from: from - match[0].length,
+                    to: from,
+                },
+                coords: editor.view.coordsAtPos(from),
+            };
+        }
+
+        function renderSlashMenu() {
+            if (!(slashMenu instanceof HTMLElement)) {
+                return;
+            }
+
+            const queryInfo = getSlashQueryInfo();
+
+            if (!queryInfo) {
+                closeSlashMenu();
+                return;
+            }
+
+            const items = slashCommands.filter((command) => {
+                if (!queryInfo.query) {
+                    return true;
+                }
+
+                const haystack = [command.label, command.description, ...(command.keywords || [])]
+                    .join(' ')
+                    .toLowerCase();
+
+                return haystack.includes(queryInfo.query);
+            });
+
+            if (!items.length) {
+                closeSlashMenu();
+                return;
+            }
+
+            slashState.items = items;
+            slashState.activeIndex = Math.min(slashState.activeIndex, items.length - 1);
+            slashState.range = queryInfo.range;
+
+            const rootRect = root.getBoundingClientRect();
+            const menuWidth = 280;
+            const left = Math.max(16, Math.min(queryInfo.coords.left - rootRect.left, rootRect.width - menuWidth - 16));
+            const top = Math.max(74, queryInfo.coords.bottom - rootRect.top + 10);
+
+            slashMenu.style.left = `${left}px`;
+            slashMenu.style.top = `${top}px`;
+            slashMenu.innerHTML = items.map((command, index) => `
+                <button
+                    class="admin-rich-editor__slash-item ${index === slashState.activeIndex ? 'is-active' : ''}"
+                    type="button"
+                    data-editor-slash-command="${command.key}"
+                >
+                    <strong>${escapeHtml(command.label)}</strong>
+                    <span>${escapeHtml(command.description)}</span>
+                </button>
+            `).join('');
+
+            setVisibility(slashMenu, true);
+        }
+
+        function moveSlashSelection(direction) {
+            if (!slashState.items.length) {
+                return;
+            }
+
+            const count = slashState.items.length;
+            slashState.activeIndex = (slashState.activeIndex + direction + count) % count;
+            renderSlashMenu();
+        }
+
+        function runSlashCommand(index) {
+            const command = slashState.items[index];
+
+            if (!command || !slashState.range) {
+                closeSlashMenu();
+                return;
+            }
+
+            editor.chain().focus().deleteRange(slashState.range).run();
+            closeSlashMenu();
+            command.run(editor);
+            refreshEditorUi();
+        }
+
+        function syncCodeLanguage() {
+            if (!(codeLanguage instanceof HTMLSelectElement)) {
+                return;
+            }
+
+            const active = editor.isActive('codeBlock');
+            codeLanguage.disabled = !active;
+            codeLanguage.value = active ? String(editor.getAttributes('codeBlock').language || '') : '';
+
+            if (codeLanguageWrap instanceof HTMLElement) {
+                codeLanguageWrap.classList.toggle('is-visible', active);
+            }
+        }
+
+        function syncImagePopover() {
+            const attrs = getCurrentImageAttributes();
+
+            if (!attrs) {
+                setVisibility(imagePopover, false);
+                return;
+            }
+
+            setVisibility(imagePopover, true);
+
+            if (imageCaption instanceof HTMLInputElement && !isApplyingImageCaption && document.activeElement !== imageCaption) {
+                imageCaption.value = String(attrs.caption || '');
+            }
+
+            imageAlignButtons.forEach((button) => {
+                if (!(button instanceof HTMLButtonElement)) {
+                    return;
+                }
+
+                button.classList.toggle('is-active', button.getAttribute('data-editor-image-align-value') === String(attrs.align || 'center'));
+            });
+        }
+
+        function refreshEditorUi() {
+            updateToolbar();
+            syncCodeLanguage();
+            syncImagePopover();
+            renderSlashMenu();
+        }
+
+        function updateToolbar() {
+            buttons.forEach((button) => {
+                if (!(button instanceof HTMLButtonElement)) {
+                    return;
+                }
+
+                const action = button.getAttribute('data-editor-action') || '';
+                const level = Number(button.getAttribute('data-editor-level') || 0);
+                let isActive = false;
+                let canRun = true;
+
+                switch (action) {
+                    case 'paragraph':
+                        isActive = editor.isActive('paragraph');
+                        canRun = editor.can().chain().focus().setParagraph().run();
+                        break;
+                    case 'heading':
+                        isActive = level > 0 ? editor.isActive('heading', { level }) : false;
+                        canRun = level > 0 ? editor.can().chain().focus().toggleHeading({ level }).run() : false;
+                        break;
+                    case 'bold':
+                        isActive = editor.isActive('bold');
+                        canRun = editor.can().chain().focus().toggleBold().run();
+                        break;
+                    case 'italic':
+                        isActive = editor.isActive('italic');
+                        canRun = editor.can().chain().focus().toggleItalic().run();
+                        break;
+                    case 'underline':
+                        isActive = editor.isActive('underline');
+                        canRun = editor.can().chain().focus().toggleUnderline().run();
+                        break;
+                    case 'strike':
+                        isActive = editor.isActive('strike');
+                        canRun = editor.can().chain().focus().toggleStrike().run();
+                        break;
+                    case 'link':
+                        isActive = editor.isActive('link');
+                        canRun = true;
+                        break;
+                    case 'bulletList':
+                        isActive = editor.isActive('bulletList');
+                        canRun = editor.can().chain().focus().toggleBulletList().run();
+                        break;
+                    case 'orderedList':
+                        isActive = editor.isActive('orderedList');
+                        canRun = editor.can().chain().focus().toggleOrderedList().run();
+                        break;
+                    case 'blockquote':
+                        isActive = editor.isActive('blockquote');
+                        canRun = editor.can().chain().focus().toggleBlockquote().run();
+                        break;
+                    case 'codeBlock':
+                        isActive = editor.isActive('codeBlock');
+                        canRun = editor.can().chain().focus().toggleCodeBlock().run();
+                        break;
+                    case 'image':
+                        isActive = editor.isActive('editorImage');
+                        canRun = true;
+                        break;
+                    case 'horizontalRule':
+                        canRun = editor.can().chain().focus().setHorizontalRule().run();
+                        break;
+                    case 'undo':
+                        canRun = editor.can().chain().focus().undo().run();
+                        break;
+                    case 'redo':
+                        canRun = editor.can().chain().focus().redo().run();
+                        break;
+                    default:
+                        canRun = true;
+                }
+
+                button.classList.toggle('is-active', isActive);
+                button.disabled = !canRun;
+            });
+        }
+
+        toolbar.addEventListener('click', (event) => {
+            const button = event.target instanceof Element
+                ? event.target.closest('[data-editor-action]')
+                : null;
+
+            if (!(button instanceof HTMLButtonElement)) {
+                return;
+            }
+
+            const action = button.getAttribute('data-editor-action') || '';
+            const level = Number(button.getAttribute('data-editor-level') || 0);
+            const chain = editor.chain().focus();
+
+            switch (action) {
+                case 'paragraph':
+                    chain.setParagraph().run();
+                    break;
+                case 'heading':
+                    if (level > 0) {
+                        chain.toggleHeading({ level }).run();
+                    }
+                    break;
+                case 'bold':
+                    chain.toggleBold().run();
+                    break;
+                case 'italic':
+                    chain.toggleItalic().run();
+                    break;
+                case 'underline':
+                    chain.toggleUnderline().run();
+                    break;
+                case 'strike':
+                    chain.toggleStrike().run();
+                    break;
+                case 'link':
+                    openLinkPopover();
+                    break;
+                case 'bulletList':
+                    chain.toggleBulletList().run();
+                    break;
+                case 'orderedList':
+                    chain.toggleOrderedList().run();
+                    break;
+                case 'blockquote':
+                    chain.toggleBlockquote().run();
+                    break;
+                case 'codeBlock':
+                    chain.toggleCodeBlock().run();
+                    break;
+                case 'image':
+                    window.__adminOpenMediaPicker?.({
+                        mode: 'editor',
+                        editor,
+                        selection: {
+                            from: editor.state.selection.from,
+                            to: editor.state.selection.to,
+                        },
+                        replaceImage: false,
+                    });
+                    break;
+                case 'horizontalRule':
+                    chain.setHorizontalRule().run();
+                    break;
+                case 'undo':
+                    chain.undo().run();
+                    break;
+                case 'redo':
+                    chain.redo().run();
+                    break;
+                default:
+                    break;
+            }
+
+            refreshEditorUi();
+        });
+
+        codeLanguage?.addEventListener('change', () => {
+            if (!(codeLanguage instanceof HTMLSelectElement) || !editor.isActive('codeBlock')) {
+                return;
+            }
+
+            editor.chain().focus().updateAttributes('codeBlock', {
+                language: codeLanguage.value || null,
+            }).run();
+            refreshEditorUi();
+        });
+
+        linkApply?.addEventListener('click', applyLink);
+
+        linkRemove?.addEventListener('click', () => {
+            editor.chain().focus().extendMarkRange('link').unsetLink().run();
+            closeLinkPopover();
+            refreshEditorUi();
+        });
+
+        linkClose?.addEventListener('click', closeLinkPopover);
+
+        linkInput?.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                applyLink();
+            }
+
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                closeLinkPopover();
+            }
+        });
+
+        imageCaption?.addEventListener('input', () => {
+            if (!(imageCaption instanceof HTMLInputElement) || !editor.isActive('editorImage')) {
+                return;
+            }
+
+            isApplyingImageCaption = true;
+            editor.chain().focus().updateEditorImage({
+                caption: imageCaption.value,
+            }).run();
+            isApplyingImageCaption = false;
+            refreshEditorUi();
+        });
+
+        imageAlignButtons.forEach((button) => {
+            if (!(button instanceof HTMLButtonElement)) {
+                return;
+            }
+
+            button.addEventListener('click', () => {
+                if (!editor.isActive('editorImage')) {
+                    return;
+                }
+
+                editor.chain().focus().updateEditorImage({
+                    align: button.getAttribute('data-editor-image-align-value') || 'center',
+                }).run();
+                refreshEditorUi();
+            });
+        });
+
+        imageReplace?.addEventListener('click', () => {
+            if (!editor.isActive('editorImage')) {
+                return;
+            }
+
+            window.__adminOpenMediaPicker?.({
+                mode: 'editor',
+                editor,
+                selection: {
+                    from: editor.state.selection.from,
+                    to: editor.state.selection.to,
+                },
+                replaceImage: true,
+            });
+        });
+
+        imageRemove?.addEventListener('click', () => {
+            if (!editor.isActive('editorImage')) {
+                return;
+            }
+
+            editor.chain().focus().deleteSelection().run();
+            refreshEditorUi();
+        });
+
+        slashMenu?.addEventListener('click', (event) => {
+            const button = event.target instanceof Element
+                ? event.target.closest('[data-editor-slash-command]')
+                : null;
+
+            if (!(button instanceof HTMLButtonElement)) {
+                return;
+            }
+
+            const key = button.getAttribute('data-editor-slash-command') || '';
+            const index = slashState.items.findIndex((item) => item.key === key);
+            runSlashCommand(index);
+        });
+
+        document.addEventListener('click', (event) => {
+            const target = event.target;
+
+            if (!(target instanceof window.Node)) {
+                return;
+            }
+
+            if (!root.contains(target)) {
+                closeLinkPopover();
+                closeSlashMenu();
+            }
+        });
+
+        root.closest('form')?.addEventListener('submit', () => {
+            source.value = editor.getHTML();
+        });
     });
 }
 
@@ -1187,6 +2147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bootDismissibleAlerts();
     bootSlugForms();
     bootTagify();
+    bootRichEditors();
     bootMediaLibrary();
     bootCoverMediaModal();
     bootSidebarToggle();
