@@ -15,6 +15,6 @@ class WelcomeController extends Controller
     #[Route(uri: '/', name: 'home')]
     public function welcome(): Response
     {
-        return redirect()->route('categories.index');
+        return redirect()->route('admin.dashboard');
     }
 }

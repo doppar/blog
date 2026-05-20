@@ -1,16 +1,18 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin;
 
 use Phaseolies\Http\Validation\FormRequest;
 
-class UpdateCategoryRequest extends FormRequest
+class StoreCategoryRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
             'name' => 'required|string|max:255',
-            'excerpt' => 'string|max:1000',
+            'slug' => 'string|max:255',
+            'description' => 'string|max:1000',
+            'accent_color' => 'string|max:20',
             'status' => 'required|boolean',
         ];
     }
