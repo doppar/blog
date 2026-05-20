@@ -97,6 +97,10 @@
                                 <strong>Manage posts</strong>
                                 <span>Search and maintain the publishing pipeline.</span>
                             </a>
+                            <a class="admin-dropdown__item" href="[[ route('admin.media.index') ]]">
+                                <strong>Media library</strong>
+                                <span>Upload, browse, and reuse visual assets.</span>
+                            </a>
                             <a class="admin-dropdown__item" href="[[ route('admin.tags.index') ]]">
                                 <strong>Manage taxonomy</strong>
                                 <span>Review tags and supporting content labels.</span>
@@ -122,6 +126,27 @@
                             </span>
                             <span>Dashboard</span>
                         </a>
+                    </section>
+
+                    <section class="admin-sidebar__section [[ str_contains((string) Route::currentRouteName(), 'admin.media.') ? 'is-open' : '' ]]" data-sidebar-group="media">
+                        <button class="admin-sidebar__group" type="button" data-sidebar-group-trigger aria-expanded="[[ str_contains((string) Route::currentRouteName(), 'admin.media.') ? 'true' : 'false' ]]">
+                            <span class="admin-sidebar__group-icon">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <rect x="3.5" y="5" width="17" height="14" rx="2.5"></rect>
+                                    <circle cx="9" cy="10" r="1.5"></circle>
+                                    <path d="m20.5 15-4.2-4.2a1.4 1.4 0 0 0-2 0L8 17"></path>
+                                </svg>
+                            </span>
+                            <span>Media</span>
+                            <svg class="admin-sidebar__chevron" viewBox="0 0 20 20" aria-hidden="true">
+                                <path d="M5 7.5 10 12.5l5-5"></path>
+                            </svg>
+                        </button>
+
+                        <nav class="admin-sidebar__links" data-sidebar-group-panel>
+                            <a class="admin-sidebar__link [[ request()->route('admin.media.index') && request('focus', '') !== 'upload' ? 'is-active' : '' ]]" href="[[ route('admin.media.index') ]]">Library</a>
+                            <a class="admin-sidebar__link [[ str_contains((string) request('focus', ''), 'upload') ? 'is-active' : '' ]]" href="[[ route('admin.media.index') ]]?focus=upload#media-upload-panel">Upload New</a>
+                        </nav>
                     </section>
 
                     <section class="admin-sidebar__section is-open" data-sidebar-group="resources">
