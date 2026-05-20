@@ -8,6 +8,7 @@
     },
     "dependencies": {
         "@tiptap/core": "^3.23.5",
+        "@tiptap/extension-image": "^3.23.5",
         "@tiptap/pm": "^3.23.5",
         "@tiptap/starter-kit": "^3.23.5"
     },

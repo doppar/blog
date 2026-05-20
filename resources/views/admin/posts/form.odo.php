@@ -70,6 +70,7 @@
                                     <button class="admin-rich-editor__tool" type="button" data-editor-action="bulletList">Bullets</button>
                                     <button class="admin-rich-editor__tool" type="button" data-editor-action="orderedList">Numbers</button>
                                     <button class="admin-rich-editor__tool" type="button" data-editor-action="blockquote">Quote</button>
+                                    <button class="admin-rich-editor__tool" type="button" data-editor-action="image">Image</button>
                                     <button class="admin-rich-editor__tool" type="button" data-editor-action="codeBlock">Code</button>
                                     <button class="admin-rich-editor__tool" type="button" data-editor-action="horizontalRule">Divider</button>
                                     <button class="admin-rich-editor__tool" type="button" data-editor-action="undo">Undo</button>
@@ -252,13 +253,13 @@
         <div class="admin-cover-modal__backdrop" data-cover-media-close></div>
 
         <div class="admin-cover-modal__dialog">
-            <div class="admin-cover-modal__head">
-                <div class="admin-cover-modal__identity">
-                    <div>
-                        <strong>Upload cover media</strong>
-                        <span>Fast image publishing for this post</span>
+                <div class="admin-cover-modal__head">
+                    <div class="admin-cover-modal__identity">
+                        <div>
+                            <strong data-cover-media-title>Upload cover media</strong>
+                            <span data-cover-media-subtitle>Fast image publishing for this post</span>
+                        </div>
                     </div>
-                </div>
 
                 <button class="admin-cover-modal__close" type="button" data-cover-media-close aria-label="Close cover media modal">×</button>
             </div>

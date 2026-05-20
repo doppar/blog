@@ -1,4 +1,5 @@
 import { Editor } from '@tiptap/core';
+import Image from '@tiptap/extension-image';
 import StarterKit from '@tiptap/starter-kit';
 
 const SIDEBAR_STORAGE_KEY = 'editorial-desk-sidebar-groups';
@@ -827,6 +828,8 @@ function bootCoverMediaModal() {
     const uploadedImage = modal.querySelector('[data-cover-media-uploaded-image]');
     const uploadedUrl = modal.querySelector('[data-cover-media-uploaded-url]');
     const uploadedTitle = modal.querySelector('[data-cover-media-uploaded-title]');
+    const modalTitle = modal.querySelector('[data-cover-media-title]');
+    const modalSubtitle = modal.querySelector('[data-cover-media-subtitle]');
     const openButtons = document.querySelectorAll('[data-cover-media-open]');
     const closeButtons = modal.querySelectorAll('[data-cover-media-close]');
     const browseButton = modal.querySelector('[data-cover-media-browse]');
@@ -840,7 +843,37 @@ function bootCoverMediaModal() {
 
     const state = {
         uploadedItem: null,
+        context: {
+            mode: 'cover',
+            editor: null,
+            selection: null,
+        },
     };
+
+    function syncModalContext() {
+        const isEditor = state.context.mode === 'editor';
+        const useLabel = isEditor ? 'Insert image' : 'Use image';
+
+        if (modalTitle) {
+            modalTitle.textContent = isEditor ? 'Insert article image' : 'Upload cover media';
+        }
+
+        if (modalSubtitle) {
+            modalSubtitle.textContent = isEditor
+                ? 'Upload or reuse media directly inside your story body'
+                : 'Fast image publishing for this post';
+        }
+
+        if (useUploadedButton instanceof HTMLButtonElement) {
+            useUploadedButton.textContent = isEditor ? 'Insert into article' : 'Use this image';
+        }
+
+        modal.querySelectorAll('[data-cover-media-use-existing]').forEach((button) => {
+            if (button instanceof HTMLButtonElement) {
+                button.textContent = useLabel;
+            }
+        });
+    }
 
     function syncCoverPreview(url) {
         const value = String(url || '').trim();
@@ -865,7 +898,13 @@ function bootCoverMediaModal() {
         }
     }
 
-    function openModal() {
+    function openModal(context = {}) {
+        state.context = {
+            mode: context.mode === 'editor' ? 'editor' : 'cover',
+            editor: context.editor || null,
+            selection: context.selection || null,
+        };
+        syncModalContext();
         modal.classList.add('is-open');
         modal.setAttribute('aria-hidden', 'false');
         document.body.classList.add('admin-modal-open');
@@ -877,8 +916,52 @@ function bootCoverMediaModal() {
         document.body.classList.remove('admin-modal-open');
     }
 
+    function insertImageIntoEditor(item) {
+        const editor = state.context.editor;
+
+        if (!editor) {
+            return false;
+        }
+
+        const selection = state.context.selection;
+        const image = {
+            src: item.url,
+            alt: item.alt_text || item.title || 'Post image',
+            title: item.title || '',
+        };
+
+        try {
+            let chain = editor.chain().focus();
+
+            if (selection && Number.isInteger(selection.from) && Number.isInteger(selection.to)) {
+                chain = chain.setTextSelection(selection);
+            }
+
+            return chain.setImage(image).run();
+        } catch {
+            return editor.chain().focus().setImage(image).run();
+        }
+    }
+
     function useItem(item) {
-        if (!item || !coverInput) {
+        if (!item) {
+            return;
+        }
+
+        if (state.context.mode === 'editor') {
+            const inserted = insertImageIntoEditor(item);
+
+            if (inserted) {
+                pushAdminAlert('success', 'Image inserted into the article body successfully.');
+                closeModal();
+            } else {
+                pushAdminAlert('danger', 'The selected image could not be inserted into the editor.');
+            }
+
+            return;
+        }
+
+        if (!coverInput) {
             return;
         }
 
@@ -937,12 +1020,30 @@ function bootCoverMediaModal() {
 
         showUploadedItem(item);
         library?.insertAdjacentHTML('afterbegin', coverMediaCardMarkup(item));
-        syncCoverPreview(item.url);
+        syncModalContext();
+        if (state.context.mode === 'cover') {
+            syncCoverPreview(item.url);
+        }
         pushAdminAlert('success', payload?.message || 'Cover image uploaded successfully.');
     }
 
     openButtons.forEach((button) => {
-        button.addEventListener('click', openModal);
+        button.addEventListener('click', () => {
+            const editorRoot = button.closest('[data-rich-editor]');
+            const editor = editorRoot?.__adminEditor || null;
+            const selection = editor
+                ? {
+                    from: editor.state.selection.from,
+                    to: editor.state.selection.to,
+                }
+                : null;
+
+            openModal({
+                mode: button.getAttribute('data-cover-media-target') === 'editor' ? 'editor' : 'cover',
+                editor,
+                selection,
+            });
+        });
     });
 
     closeButtons.forEach((button) => {
@@ -1022,6 +1123,10 @@ function bootCoverMediaModal() {
             closeModal();
         }
     });
+
+    window.__adminOpenMediaPicker = (context = {}) => {
+        openModal(context);
+    };
 }
 
 function bootRichEditors() {
@@ -1044,6 +1149,14 @@ function bootRichEditors() {
                         levels: [2, 3],
                     },
                 }),
+                Image.configure({
+                    inline: false,
+                    allowBase64: false,
+                    HTMLAttributes: {
+                        loading: 'lazy',
+                        decoding: 'async',
+                    },
+                }),
             ],
             content: normalizeEditorContent(source.value),
             editorProps: {
@@ -1063,6 +1176,8 @@ function bootRichEditors() {
             onFocus: updateToolbar,
             onBlur: updateToolbar,
         });
+
+        root.__adminEditor = editor;
 
         function updateToolbar() {
             buttons.forEach((button) => {
@@ -1107,6 +1222,9 @@ function bootRichEditors() {
                     case 'codeBlock':
                         isActive = editor.isActive('codeBlock');
                         canRun = editor.can().chain().focus().toggleCodeBlock().run();
+                        break;
+                    case 'image':
+                        canRun = true;
                         break;
                     case 'horizontalRule':
                         canRun = editor.can().chain().focus().setHorizontalRule().run();
@@ -1165,6 +1283,16 @@ function bootRichEditors() {
                     break;
                 case 'codeBlock':
                     chain.toggleCodeBlock().run();
+                    break;
+                case 'image':
+                    window.__adminOpenMediaPicker?.({
+                        mode: 'editor',
+                        editor,
+                        selection: {
+                            from: editor.state.selection.from,
+                            to: editor.state.selection.to,
+                        },
+                    });
                     break;
                 case 'horizontalRule':
                     chain.setHorizontalRule().run();
