@@ -10,6 +10,7 @@ class StorePostRequest extends FormRequest
     {
         return [
             'category_id' => 'required|exists_in:categories,id',
+            'tag_names' => 'string|max:1000',
             'title' => 'required|string|max:255',
             'slug' => 'string|max:255',
             'excerpt' => 'string|max:320',
