@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Support\AdminDashboardCache;
+use Phaseolies\Database\Entity\Attributes\Hook;
 use Phaseolies\Database\Entity\Builder;
 use Phaseolies\Database\Entity\Model;
 
@@ -25,6 +27,13 @@ class Category extends Model
     public function __active(Builder $query): Builder
     {
         return $query->where('status', true);
+    }
+
+    #[Hook('after_created')]
+    #[Hook('after_deleted')]
+    protected function clearDashboardCountCache(): void
+    {
+        AdminDashboardCache::forgetCounts();
     }
 
     #[\Override]

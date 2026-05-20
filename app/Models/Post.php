@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Support\AdminDashboardCache;
+use Phaseolies\Database\Entity\Attributes\Hook;
 use Phaseolies\Database\Entity\Builder;
 use Phaseolies\Database\Entity\Model;
 
@@ -48,6 +50,13 @@ class Post extends Model
     public function __featured(Builder $query): Builder
     {
         return $query->where('is_featured', true);
+    }
+
+    #[Hook('after_created')]
+    #[Hook('after_deleted')]
+    protected function clearDashboardCountCache(): void
+    {
+        AdminDashboardCache::forgetCounts();
     }
 
     #[\Override]

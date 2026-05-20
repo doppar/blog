@@ -563,6 +563,10 @@ svg {
     gap: 26px;
 }
 
+.admin-stat-grid--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .admin-stat-card,
 .admin-panel {
     border: 1px solid var(--admin-border);
@@ -1141,6 +1145,7 @@ svg {
     }
 
     .admin-stat-grid,
+    .admin-stat-grid--three,
     .admin-grid--two,
     .admin-form-grid,
     .admin-form-grid--post {
