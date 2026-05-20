@@ -814,6 +814,19 @@ svg {
     flex-wrap: wrap;
 }
 
+.admin-users-toolbar__search-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-users-toolbar__search-group .admin-users-toolbar__search {
+    flex: 0 0 auto;
+    width: 300px;
+    min-width: 0;
+    max-width: 100%;
+}
+
 .admin-users-toolbar__search {
     min-width: min(100%, 330px);
     max-width: 360px;
@@ -882,7 +895,6 @@ svg {
     box-shadow: 0 0 0 3px rgba(22, 169, 235, 0.12);
 }
 
-.admin-users-toolbar__filters svg,
 .admin-button--with-icon svg {
     width: 17px;
     height: 17px;
@@ -914,9 +926,6 @@ svg {
     flex-shrink: 0;
 }
 
-.admin-media-toolbar {
-    padding: 0 0 4px;
-}
 
 .admin-button--with-icon {
     gap: 8px;
@@ -1989,6 +1998,12 @@ svg {
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-width: 1.8;
+}
+
+.admin-icon-button.is-copied {
+    border-color: rgba(34, 180, 90, 0.3);
+    background: rgba(34, 180, 90, 0.08);
+    color: #22b45a;
 }
 
 .admin-segmented {

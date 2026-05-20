@@ -513,24 +513,9 @@ function copyText(value, successMessage = 'Copied to clipboard.') {
         return;
     }
 
-    const fallbackCopy = () => {
-        const input = document.createElement('input');
-        input.value = text;
-        document.body.appendChild(input);
-        input.select();
-        document.execCommand('copy');
-        input.remove();
-        pushAdminAlert('success', successMessage);
-    };
-
-    if (!navigator.clipboard?.writeText) {
-        fallbackCopy();
-        return;
-    }
-
     navigator.clipboard.writeText(text)
         .then(() => pushAdminAlert('success', successMessage))
-        .catch(fallbackCopy);
+        .catch(() => pushAdminAlert('danger', 'Could not copy to clipboard.'));
 }
 
 function mediaItemMarkup(item) {
@@ -856,7 +841,7 @@ function bootMediaLibrary() {
     });
 
     root.addEventListener('click', async (event) => {
-        const target = event.target instanceof HTMLElement ? event.target : null;
+        const target = event.target instanceof Element ? event.target : null;
 
         if (!target) {
             return;
@@ -874,9 +859,19 @@ function bootMediaLibrary() {
 
         if (target.closest('[data-media-copy-url]')) {
             const item = parseMediaPayload(target);
+            const btn = target.closest('[data-media-copy-url]');
 
-            if (item) {
+            if (item && btn) {
+                const originalSvg = btn.innerHTML;
+                btn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-9"/></svg>`;
+                btn.classList.add('is-copied');
+
                 copyText(item.url, 'Media URL copied successfully.');
+
+                window.setTimeout(() => {
+                    btn.innerHTML = originalSvg;
+                    btn.classList.remove('is-copied');
+                }, 2000);
             }
 
             return;
@@ -1242,7 +1237,7 @@ function bootCoverMediaModal() {
     });
 
     library?.addEventListener('click', (event) => {
-        const target = event.target instanceof HTMLElement ? event.target : null;
+        const target = event.target instanceof Element ? event.target : null;
         const item = parseMediaPayload(target);
 
         if (!target || !item) {

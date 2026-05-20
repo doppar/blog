@@ -23,9 +23,6 @@
 
         <div class="admin-users-toolbar__actions">
             <div class="admin-users-toolbar__filters">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M4 6h16l-6 7v4l-4 2v-6Z"></path>
-                </svg>
                 <select id="status" name="status" aria-label="Filter by status">
                     <option value="">All statuses</option>
                     <option value="1" [[ $filters['status'] === '1' ? 'selected' : '' ]]>Active</option>
