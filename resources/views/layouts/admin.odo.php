@@ -101,6 +101,10 @@
                                 <strong>Media library</strong>
                                 <span>Upload, browse, and reuse visual assets.</span>
                             </a>
+                            <a class="admin-dropdown__item" href="[[ route('admin.users.index') ]]">
+                                <strong>Manage users</strong>
+                                <span>Control account access, roles, and profile details.</span>
+                            </a>
                             <a class="admin-dropdown__item" href="[[ route('admin.tags.index') ]]">
                                 <strong>Manage taxonomy</strong>
                                 <span>Review tags and supporting content labels.</span>
@@ -168,6 +172,7 @@
                             <a class="admin-sidebar__link [[ str_contains((string) Route::currentRouteName(), 'admin.categories.') ? 'is-active' : '' ]]" href="[[ route('admin.categories.index') ]]">Categories</a>
                             <a class="admin-sidebar__link [[ str_contains((string) Route::currentRouteName(), 'admin.posts.') ? 'is-active' : '' ]]" href="[[ route('admin.posts.index') ]]">Posts</a>
                             <a class="admin-sidebar__link [[ str_contains((string) Route::currentRouteName(), 'admin.tags.') ? 'is-active' : '' ]]" href="[[ route('admin.tags.index') ]]">Tags</a>
+                            <a class="admin-sidebar__link [[ str_contains((string) Route::currentRouteName(), 'admin.users.') ? 'is-active' : '' ]]" href="[[ route('admin.users.index') ]]">Users</a>
                         </nav>
                     </section>
                 </aside>
@@ -186,6 +191,22 @@
                             <button type="button" class="admin-alert__close" data-dismiss-alert aria-label="Dismiss message">×</button>
                         </div>
                     #endif
+
+                    #errors
+                        <div class="admin-alert admin-alert--danger admin-alert--stacked" data-dismissible>
+                            <div class="admin-alert__body">
+                                <p class="admin-alert__title">Please fix the following errors.</p>
+                                <ul class="admin-alert__list">
+                                    #foreach (session()->pull('errors') as $messages)
+                                        #foreach ($messages as $message)
+                                            <li>[[ $message ]]</li>
+                                        #endforeach
+                                    #endforeach
+                                </ul>
+                            </div>
+                            <button type="button" class="admin-alert__close" data-dismiss-alert aria-label="Dismiss message">×</button>
+                        </div>
+                    #enderrors
 
                     <section class="admin-page-head">
                         <div class="admin-page-head__content">

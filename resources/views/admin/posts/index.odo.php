@@ -53,39 +53,42 @@
         </article>
     </section>
 
-    <section class="admin-panel">
-        <form class="admin-filter-bar" method="GET" action="[[ route('admin.posts.index') ]]">
-            <div class="admin-field">
-                <label for="search">Search</label>
-                <input id="search" name="search" type="search" value="[[ $filters['search'] ]]" placeholder="Search">
-            </div>
+    <form class="admin-users-toolbar" method="GET" action="[[ route('admin.posts.index') ]]">
+        <div class="admin-users-toolbar__search">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="6.5"></circle>
+                <path d="M16 16l4.5 4.5"></path>
+            </svg>
+            <input id="search" name="search" type="search" value="[[ $filters['search'] ]]" placeholder="Search posts by title or author" aria-label="Search posts">
+        </div>
 
-            <div class="admin-field">
-                <label for="status">Status</label>
-                <select id="status" name="status">
-                    <option value="">All status</option>
+        <div class="admin-users-toolbar__actions">
+            <div class="admin-users-toolbar__filters">
+                <select id="status" name="status" aria-label="Filter by status">
+                    <option value="">All statuses</option>
                     <option value="draft" [[ $filters['status'] === 'draft' ? 'selected' : '' ]]>Draft</option>
                     <option value="published" [[ $filters['status'] === 'published' ? 'selected' : '' ]]>Published</option>
                     <option value="archived" [[ $filters['status'] === 'archived' ? 'selected' : '' ]]>Archived</option>
                 </select>
-            </div>
-
-            <div class="admin-field">
-                <label for="category_id">Category</label>
-                <select id="category_id" name="category_id">
+                <span class="admin-users-toolbar__sep"></span>
+                <select id="category_id" name="category_id" aria-label="Filter by category">
                     <option value="">All categories</option>
                     #foreach ($categories as $category)
                         <option value="[[ $category->id ]]" [[ $filters['category_id'] === (string) $category->id ? 'selected' : '' ]]>[[ $category->name ]]</option>
                     #endforeach
                 </select>
             </div>
+            <button class="admin-button admin-button--ghost admin-button--with-icon" type="submit">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 6h16l-6 7v4l-4 2v-6Z"></path>
+                </svg>
+                <span>Filter</span>
+            </button>
+            <a class="admin-text-link" href="[[ route('admin.posts.index') ]]">Reset</a>
+        </div>
+    </form>
 
-            <div class="admin-filter-bar__actions">
-                <button class="admin-button admin-button--ghost" type="submit">Filter</button>
-                <a class="admin-text-link" href="[[ route('admin.posts.index') ]]">Reset</a>
-            </div>
-        </form>
-
+    <section class="admin-panel">
         <div class="admin-table-wrap">
             <table class="admin-table">
                 <thead>
@@ -112,7 +115,22 @@
                             <td>
                                 <span class="admin-badge admin-badge--[[ $post->status ]]">[[ ucfirst($post->status) ]]</span>
                             </td>
-                            <td>[[ $post->is_featured ? 'Yes' : 'No' ]]</td>
+                            <td>
+                                <span class="admin-status-indicator [[ $post->is_featured ? 'is-active' : 'is-inactive' ]]">
+                                    #if ($post->is_featured)
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <circle cx="12" cy="12" r="8.5"></circle>
+                                            <path d="m8.8 12.2 2.2 2.2 4.4-4.6"></path>
+                                        </svg>
+                                    #else
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <circle cx="12" cy="12" r="8.5"></circle>
+                                            <path d="m9.2 9.2 5.6 5.6"></path>
+                                            <path d="m14.8 9.2-5.6 5.6"></path>
+                                        </svg>
+                                    #endif
+                                </span>
+                            </td>
                             <td>[[ $post->view_count ]]</td>
                             <td>[[ date('M d, Y', strtotime($post->updated_at ?? 'now')) ]]</td>
                             <td class="admin-table__actions">

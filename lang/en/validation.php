@@ -31,7 +31,7 @@ return [
             'max_width' => 'The :attribute must have a maximum width of :max_width pixels.',
             'max_height' => 'The :attribute must have a maximum height of :max_height pixels.',
         ],
-        'max' => 'The :attribute may not be greater than :max kilobytes.',
+        'max' => 'The :attribute may not be greater than :max.',
     ],
     'alpha'       => 'The :attribute may only contain letters.',
     'alpha_num'   => 'The :attribute may only contain letters and numbers.',
