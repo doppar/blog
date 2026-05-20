@@ -1,3 +1,6 @@
+import { Editor } from '@tiptap/core';
+import StarterKit from '@tiptap/starter-kit';
+
 const SIDEBAR_STORAGE_KEY = 'editorial-desk-sidebar-groups';
 const MEDIA_VIEW_STORAGE_KEY = 'editorial-desk-media-view';
 let activeAjaxRequests = 0;
@@ -9,6 +12,32 @@ function slugify(value) {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '') || 'entry';
+}
+
+function escapeEditorHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function normalizeEditorContent(value) {
+    const raw = String(value ?? '').trim();
+
+    if (!raw) {
+        return '<p></p>';
+    }
+
+    if (/<[a-z][\s\S]*>/i.test(raw)) {
+        return raw;
+    }
+
+    return raw
+        .split(/\n{2,}/)
+        .map((block) => `<p>${escapeEditorHtml(block).replace(/\n/g, '<br>')}</p>`)
+        .join('');
 }
 
 function bootDismissibleAlerts() {
@@ -995,6 +1024,170 @@ function bootCoverMediaModal() {
     });
 }
 
+function bootRichEditors() {
+    document.querySelectorAll('[data-rich-editor]').forEach((root) => {
+        const canvas = root.querySelector('[data-rich-editor-canvas]');
+        const source = root.querySelector('[data-rich-editor-source]');
+        const toolbar = root.querySelector('[data-rich-editor-toolbar]');
+
+        if (!(canvas instanceof HTMLElement) || !(source instanceof HTMLTextAreaElement) || !(toolbar instanceof HTMLElement)) {
+            return;
+        }
+
+        const buttons = Array.from(toolbar.querySelectorAll('[data-editor-action]'));
+
+        const editor = new Editor({
+            element: canvas,
+            extensions: [
+                StarterKit.configure({
+                    heading: {
+                        levels: [2, 3],
+                    },
+                }),
+            ],
+            content: normalizeEditorContent(source.value),
+            editorProps: {
+                attributes: {
+                    class: 'admin-prose',
+                },
+            },
+            onCreate: ({ editor: instance }) => {
+                source.value = instance.getHTML();
+                updateToolbar();
+            },
+            onUpdate: ({ editor: instance }) => {
+                source.value = instance.getHTML();
+                updateToolbar();
+            },
+            onSelectionUpdate: updateToolbar,
+            onFocus: updateToolbar,
+            onBlur: updateToolbar,
+        });
+
+        function updateToolbar() {
+            buttons.forEach((button) => {
+                if (!(button instanceof HTMLButtonElement)) {
+                    return;
+                }
+
+                const action = button.getAttribute('data-editor-action') || '';
+                const level = Number(button.getAttribute('data-editor-level') || 0);
+                let isActive = false;
+                let canRun = true;
+
+                switch (action) {
+                    case 'paragraph':
+                        isActive = editor.isActive('paragraph');
+                        canRun = editor.can().chain().focus().setParagraph().run();
+                        break;
+                    case 'heading':
+                        isActive = level > 0 ? editor.isActive('heading', { level }) : false;
+                        canRun = level > 0 ? editor.can().chain().focus().toggleHeading({ level }).run() : false;
+                        break;
+                    case 'bold':
+                        isActive = editor.isActive('bold');
+                        canRun = editor.can().chain().focus().toggleBold().run();
+                        break;
+                    case 'italic':
+                        isActive = editor.isActive('italic');
+                        canRun = editor.can().chain().focus().toggleItalic().run();
+                        break;
+                    case 'bulletList':
+                        isActive = editor.isActive('bulletList');
+                        canRun = editor.can().chain().focus().toggleBulletList().run();
+                        break;
+                    case 'orderedList':
+                        isActive = editor.isActive('orderedList');
+                        canRun = editor.can().chain().focus().toggleOrderedList().run();
+                        break;
+                    case 'blockquote':
+                        isActive = editor.isActive('blockquote');
+                        canRun = editor.can().chain().focus().toggleBlockquote().run();
+                        break;
+                    case 'codeBlock':
+                        isActive = editor.isActive('codeBlock');
+                        canRun = editor.can().chain().focus().toggleCodeBlock().run();
+                        break;
+                    case 'horizontalRule':
+                        canRun = editor.can().chain().focus().setHorizontalRule().run();
+                        break;
+                    case 'undo':
+                        canRun = editor.can().chain().focus().undo().run();
+                        break;
+                    case 'redo':
+                        canRun = editor.can().chain().focus().redo().run();
+                        break;
+                    default:
+                        canRun = true;
+                }
+
+                button.classList.toggle('is-active', isActive);
+                button.disabled = !canRun;
+            });
+        }
+
+        toolbar.addEventListener('click', (event) => {
+            const button = event.target instanceof HTMLElement
+                ? event.target.closest('[data-editor-action]')
+                : null;
+
+            if (!(button instanceof HTMLButtonElement)) {
+                return;
+            }
+
+            const action = button.getAttribute('data-editor-action') || '';
+            const level = Number(button.getAttribute('data-editor-level') || 0);
+            const chain = editor.chain().focus();
+
+            switch (action) {
+                case 'paragraph':
+                    chain.setParagraph().run();
+                    break;
+                case 'heading':
+                    if (level > 0) {
+                        chain.toggleHeading({ level }).run();
+                    }
+                    break;
+                case 'bold':
+                    chain.toggleBold().run();
+                    break;
+                case 'italic':
+                    chain.toggleItalic().run();
+                    break;
+                case 'bulletList':
+                    chain.toggleBulletList().run();
+                    break;
+                case 'orderedList':
+                    chain.toggleOrderedList().run();
+                    break;
+                case 'blockquote':
+                    chain.toggleBlockquote().run();
+                    break;
+                case 'codeBlock':
+                    chain.toggleCodeBlock().run();
+                    break;
+                case 'horizontalRule':
+                    chain.setHorizontalRule().run();
+                    break;
+                case 'undo':
+                    chain.undo().run();
+                    break;
+                case 'redo':
+                    chain.redo().run();
+                    break;
+                default:
+                    break;
+            }
+
+            updateToolbar();
+        });
+
+        root.closest('form')?.addEventListener('submit', () => {
+            source.value = editor.getHTML();
+        });
+    });
+}
+
 function bootTagify() {
     document.querySelectorAll('[data-tagify]').forEach((root) => {
         const input = root.querySelector('[data-tagify-input]');
@@ -1187,6 +1380,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bootDismissibleAlerts();
     bootSlugForms();
     bootTagify();
+    bootRichEditors();
     bootMediaLibrary();
     bootCoverMediaModal();
     bootSidebarToggle();

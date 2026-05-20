@@ -60,7 +60,33 @@
 
                         <div class="admin-field admin-field--full">
                             <label for="body">Body</label>
-                            <textarea id="body" name="body" rows="16">[[ $formInput['body'] ?? $post?->body ?? '' ]]</textarea>
+                            <div class="admin-rich-editor" data-rich-editor>
+                                <div class="admin-rich-editor__toolbar" data-rich-editor-toolbar>
+                                    <button class="admin-rich-editor__tool" type="button" data-editor-action="paragraph">Text</button>
+                                    <button class="admin-rich-editor__tool" type="button" data-editor-action="heading" data-editor-level="2">H2</button>
+                                    <button class="admin-rich-editor__tool" type="button" data-editor-action="heading" data-editor-level="3">H3</button>
+                                    <button class="admin-rich-editor__tool" type="button" data-editor-action="bold">Bold</button>
+                                    <button class="admin-rich-editor__tool" type="button" data-editor-action="italic">Italic</button>
+                                    <button class="admin-rich-editor__tool" type="button" data-editor-action="bulletList">Bullets</button>
+                                    <button class="admin-rich-editor__tool" type="button" data-editor-action="orderedList">Numbers</button>
+                                    <button class="admin-rich-editor__tool" type="button" data-editor-action="blockquote">Quote</button>
+                                    <button class="admin-rich-editor__tool" type="button" data-editor-action="codeBlock">Code</button>
+                                    <button class="admin-rich-editor__tool" type="button" data-editor-action="horizontalRule">Divider</button>
+                                    <button class="admin-rich-editor__tool" type="button" data-editor-action="undo">Undo</button>
+                                    <button class="admin-rich-editor__tool" type="button" data-editor-action="redo">Redo</button>
+                                </div>
+
+                                <div class="admin-rich-editor__canvas" data-rich-editor-canvas></div>
+
+                                <textarea
+                                    id="body"
+                                    name="body"
+                                    rows="16"
+                                    hidden
+                                    data-rich-editor-source
+                                >[[ $formInput['body'] ?? $post?->body ?? '' ]]</textarea>
+                            </div>
+                            <p class="admin-field__hint">Write long-form content with structured blocks, pull quotes, and code snippets.</p>
                             #error('body')
                                 <p class="admin-field__error">[[ $message ]]</p>
                             #enderror
@@ -84,7 +110,7 @@
 
                         <div class="admin-field">
                             <label for="seo_description">SEO description</label>
-                            <textarea id="seo_description" name="seo_description" rows="4">[[ $formInput['seo_description'] ?? $post?->seo_description ?? '' ]]</textarea>
+                            <textarea id="seo_description" class="admin-field__textarea--compact" name="seo_description" rows="1">[[ $formInput['seo_description'] ?? $post?->seo_description ?? '' ]]</textarea>
                         </div>
                     </div>
                 </div>
