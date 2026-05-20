@@ -188,9 +188,208 @@ function bootSearchShortcut() {
     });
 }
 
+function parseTagList(value) {
+    if (!value) {
+        return [];
+    }
+
+    return value
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean);
+}
+
+function bootTagify() {
+    document.querySelectorAll('[data-tagify]').forEach((root) => {
+        const input = root.querySelector('[data-tagify-input]');
+        const hidden = root.querySelector('[data-tagify-hidden]');
+        const chips = root.querySelector('[data-tagify-chips]');
+        const menu = root.querySelector('[data-tagify-menu]');
+        const sourceId = root.getAttribute('data-tagify-source');
+        const source = sourceId ? document.getElementById(sourceId) : null;
+
+        if (!input || !hidden || !chips || !menu) {
+            return;
+        }
+
+        let whitelist = [];
+
+        if (source?.textContent) {
+            try {
+                whitelist = JSON.parse(source.textContent);
+            } catch {
+                whitelist = [];
+            }
+        }
+
+        const normalizedMap = new Map();
+
+        const state = {
+            tags: [],
+        };
+
+        function syncWhitelist() {
+            normalizedMap.clear();
+
+            whitelist.forEach((tag) => {
+                const label = String(tag || '').trim();
+
+                if (!label) {
+                    return;
+                }
+
+                normalizedMap.set(slugify(label), label);
+            });
+        }
+
+        function syncHidden() {
+            hidden.value = state.tags.join(', ');
+        }
+
+        function selectedSlugs() {
+            return new Set(state.tags.map((tag) => slugify(tag)));
+        }
+
+        function renderChips() {
+            chips.innerHTML = '';
+
+            state.tags.forEach((tag) => {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'admin-tagify__chip';
+                chip.innerHTML = `<span>${tag}</span><strong>&times;</strong>`;
+                chip.addEventListener('click', () => {
+                    state.tags = state.tags.filter((value) => slugify(value) !== slugify(tag));
+                    syncHidden();
+                    renderChips();
+                    renderMenu();
+                });
+                chips.appendChild(chip);
+            });
+        }
+
+        function renderMenu() {
+            const query = input.value.trim().toLowerCase();
+            const used = selectedSlugs();
+
+            const results = whitelist
+                .filter((tag) => !used.has(slugify(tag)))
+                .filter((tag) => !query || tag.toLowerCase().includes(query))
+                .slice(0, 8);
+
+            menu.innerHTML = '';
+
+            if (!results.length || !query) {
+                menu.classList.remove('is-open');
+                return;
+            }
+
+            results.forEach((tag) => {
+                const option = document.createElement('button');
+                option.type = 'button';
+                option.className = 'admin-tagify__option';
+                option.textContent = tag;
+                option.addEventListener('click', () => {
+                    addTag(tag);
+                });
+                menu.appendChild(option);
+            });
+
+            menu.classList.add('is-open');
+        }
+
+        function addTag(rawValue) {
+            const value = String(rawValue || '').trim().replace(/\s+/g, ' ');
+
+            if (!value) {
+                return;
+            }
+
+            const slug = slugify(value);
+
+            if (!slug || state.tags.some((tag) => slugify(tag) === slug)) {
+                input.value = '';
+                renderMenu();
+                return;
+            }
+
+            const label = normalizedMap.get(slug) || value;
+
+            state.tags.push(label);
+
+            if (!normalizedMap.has(slug)) {
+                whitelist.push(label);
+                syncWhitelist();
+            }
+
+            input.value = '';
+            syncHidden();
+            renderChips();
+            renderMenu();
+        }
+
+        function addInputValue() {
+            const raw = input.value.trim();
+
+            if (!raw) {
+                return;
+            }
+
+            raw.split(',').forEach(addTag);
+        }
+
+        syncWhitelist();
+        state.tags = parseTagList(hidden.value)
+            .map((tag) => normalizedMap.get(slugify(tag)) || tag)
+            .filter((tag, index, values) => values.findIndex((entry) => slugify(entry) === slugify(tag)) === index);
+
+        syncHidden();
+        renderChips();
+
+        input.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ',' || event.key === 'Tab') {
+                if (input.value.trim()) {
+                    event.preventDefault();
+                    addInputValue();
+                }
+            }
+
+            if (event.key === 'Backspace' && !input.value && state.tags.length) {
+                state.tags.pop();
+                syncHidden();
+                renderChips();
+                renderMenu();
+            }
+        });
+
+        input.addEventListener('input', () => {
+            if (input.value.includes(',')) {
+                addInputValue();
+                return;
+            }
+
+            renderMenu();
+        });
+
+        input.addEventListener('blur', () => {
+            window.setTimeout(() => {
+                addInputValue();
+                renderMenu();
+            }, 120);
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!root.contains(event.target)) {
+                menu.classList.remove('is-open');
+            }
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     bootDismissibleAlerts();
     bootSlugForms();
+    bootTagify();
     bootSidebarToggle();
     bootSidebarGroups();
     bootDropdowns();

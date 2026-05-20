@@ -856,6 +856,12 @@ svg {
     font-weight: 700;
 }
 
+.admin-field__hint {
+    margin: 6px 0 0;
+    color: #93a3ba;
+    font-size: 0.82rem;
+}
+
 .admin-field input,
 .admin-field textarea,
 .admin-field select {
@@ -888,6 +894,99 @@ svg {
     margin: 0;
     color: var(--admin-danger);
     font-size: 0.82rem;
+}
+
+.admin-tagify {
+    position: relative;
+}
+
+.admin-tagify__shell {
+    min-height: 48px;
+    padding: 8px 10px;
+    border: 1px solid var(--admin-border);
+    border-radius: 10px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.admin-tagify__shell:focus-within {
+    border-color: rgba(22, 169, 235, 0.44);
+    box-shadow: 0 0 0 3px rgba(22, 169, 235, 0.12);
+}
+
+.admin-tagify__chips {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.admin-tagify__input {
+    min-width: 180px;
+    flex: 1 1 180px;
+    padding: 6px 2px;
+    border: 0 !important;
+    outline: 0;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.admin-tagify__chip {
+    min-height: 30px;
+    padding: 0 10px 0 12px;
+    border: 1px solid #d7e9fb;
+    border-radius: 999px;
+    background: #f3f9ff;
+    color: var(--admin-text-strong);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.84rem;
+    font-weight: 600;
+}
+
+.admin-tagify__chip strong {
+    color: #8ba0be;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.admin-tagify__menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+    padding: 8px;
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 14px 30px rgba(90, 113, 148, 0.12);
+    display: none;
+}
+
+.admin-tagify__menu.is-open {
+    display: grid;
+    gap: 4px;
+}
+
+.admin-tagify__option {
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--admin-text-strong);
+    text-align: left;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.admin-tagify__option:hover {
+    background: #f5f9ff;
 }
 
 .admin-form-shell {

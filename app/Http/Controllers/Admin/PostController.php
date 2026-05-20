@@ -80,8 +80,9 @@ class PostController extends Controller
             'post' => null,
             'formMode' => 'create',
             'categories' => Category::query()->active()->orderBy('name')->get(),
-            'tags' => Tag::query()->orderBy('name')->get(),
+            'tagOptions' => $this->tagOptions(),
             'selectedTagIds' => [],
+            'selectedTagNames' => [],
         ]);
     }
 
@@ -107,8 +108,6 @@ class PostController extends Controller
                 'seo_description' => fn($value) => is_string($value) ? trim($value) : $value,
             ])
             ->nullifyBlanks();
-
-        $request->validate();
 
         $payload = $this->buildPayload($request->passed());
 
@@ -139,8 +138,9 @@ class PostController extends Controller
             'post' => $post,
             'formMode' => 'edit',
             'categories' => Category::query()->active()->orderBy('name')->get(),
-            'tags' => Tag::query()->orderBy('name')->get(),
+            'tagOptions' => $this->tagOptions(),
             'selectedTagIds' => $selectedTagIds,
+            'selectedTagNames' => $this->extractTagNames($post),
         ]);
     }
 
@@ -169,8 +169,6 @@ class PostController extends Controller
             ])
             ->nullifyBlanks();
 
-        $request->validate();
-
         $payload = $this->buildPayload($request->passed(), (int) $post->id);
 
         if ($this->hasDuplicateTitle($payload['title'], (int) $post->id)) {
@@ -180,6 +178,7 @@ class PostController extends Controller
         }
 
         $post->update($payload);
+        $post->tags()->unlink();
         $post->tags()->relate($this->sanitizeTagIds($request));
 
         return redirect()
@@ -233,18 +232,77 @@ class PostController extends Controller
 
     protected function sanitizeTagIds(Request $request): array
     {
-        $tagIds = array_values(array_unique(array_filter(
-            array_map('intval', $request->asArray('tag_ids')),
-            fn($id) => $id > 0
-        )));
+        $tagIds = [];
 
-        $validTagIds = [];
+        foreach ($this->normalizeTagNames($request->asArray('tag_names')) as $name) {
+            $slug = CmsSlugger::slugify($name);
+            $tag = Tag::firstOrCreate(
+                ['slug' => $slug],
+                [
+                    'name' => $name,
+                    'description' => '',
+                    'color' => $this->pickTagColor($slug),
+                ]
+            );
 
-        foreach (Tag::query()->whereIn('id', $tagIds)->get() as $tag) {
-            $validTagIds[] = (int) $tag->id;
+            $tagIds[] = (int) $tag->id;
         }
 
-        return $validTagIds;
+        return array_values(array_unique($tagIds));
+    }
+
+    protected function normalizeTagNames(array $tagNames): array
+    {
+        $normalized = [];
+
+        foreach ($tagNames as $tagName) {
+            $name = trim((string) $tagName);
+
+            if ($name === '') {
+                continue;
+            }
+
+            $normalized[CmsSlugger::slugify($name)] = ucwords($name);
+        }
+
+        return array_values($normalized);
+    }
+
+    protected function extractTagNames(Post $post): array
+    {
+        $names = [];
+
+        foreach ($post->tags as $tag) {
+            $names[] = (string) $tag->name;
+        }
+
+        return $names;
+    }
+
+    protected function tagOptions(): array
+    {
+        $options = [];
+
+        foreach (Tag::query()->orderBy('name')->get() as $tag) {
+            $options[] = (string) $tag->name;
+        }
+
+        return $options;
+    }
+
+    protected function pickTagColor(string $seed): string
+    {
+        $palette = [
+            '#16a9eb',
+            '#7c5cff',
+            '#ff6f91',
+            '#ff9f43',
+            '#22c55e',
+            '#14b8a6',
+            '#6366f1',
+        ];
+
+        return $palette[abs(crc32($seed)) % count($palette)];
     }
 
     protected function hasDuplicateTitle(string $title, ?int $ignoreId = null): bool

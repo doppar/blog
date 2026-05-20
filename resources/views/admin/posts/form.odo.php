@@ -147,12 +147,31 @@
                         </div>
 
                         <div class="admin-field">
-                            <label for="tag_ids">Tags</label>
-                            <select id="tag_ids" name="tag_ids[]" multiple size="8">
-                                #foreach ($tags as $tag)
-                                    <option value="[[ $tag->id ]]" [[ in_array((int) $tag->id, array_map('intval', $formInput['tag_ids'] ?? $selectedTagIds), true) ? 'selected' : '' ]]>[[ $tag->name ]]</option>
-                                #endforeach
-                            </select>
+                            <label for="tag_names_input">Tags</label>
+                            #php
+                                $tagValue = $formInput['tag_names'] ?? implode(', ', $selectedTagNames ?? []);
+                            #endphp
+                            <div
+                                class="admin-tagify"
+                                data-tagify
+                                data-tagify-source="post-tag-options"
+                            >
+                                <div class="admin-tagify__shell" data-tagify-shell>
+                                    <div class="admin-tagify__chips" data-tagify-chips></div>
+                                    <input
+                                        id="tag_names_input"
+                                        class="admin-tagify__input"
+                                        type="text"
+                                        placeholder="Type a tag and press Enter"
+                                        autocomplete="off"
+                                        data-tagify-input
+                                    >
+                                </div>
+                                <input type="hidden" name="tag_names" value="[[ $tagValue ]]" data-tagify-hidden>
+                                <div class="admin-tagify__menu" data-tagify-menu></div>
+                            </div>
+                            <script id="post-tag-options" type="application/json">[[! json_encode($tagOptions) !]]</script>
+                            <p class="admin-field__hint">Choose existing tags or type a new one to create it automatically.</p>
                         </div>
                     </div>
                 </div>
