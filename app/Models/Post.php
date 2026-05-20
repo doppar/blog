@@ -52,6 +52,12 @@ class Post extends Model
         return $query->where('is_featured', true);
     }
 
+    #[Hook('before_created')]
+    protected function createSlugFromTitle(): void
+    {
+        $this->title = str()->slug($this->title);
+    }
+
     #[Hook('after_created')]
     #[Hook('after_deleted')]
     protected function clearDashboardCountCache(): void

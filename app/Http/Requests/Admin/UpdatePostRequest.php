@@ -20,7 +20,6 @@ class UpdatePostRequest extends FormRequest
             'status' => 'required|in:draft,published,archived',
             'is_featured' => 'required|boolean',
             'published_at' => 'string|max:30',
-            'view_count' => 'numeric',
             'seo_title' => 'string|max:255',
             'seo_description' => 'string|max:255',
         ];

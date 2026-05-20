@@ -100,8 +100,6 @@ class TagController extends Controller
             ])
             ->nullifyBlanks();
 
-        $request->validate();
-
         $payload = $this->buildPayload($request->passed(), (int) $tag->id);
 
         if ($this->hasDuplicateName($payload['name'], (int) $tag->id)) {

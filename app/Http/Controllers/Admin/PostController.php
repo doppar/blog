@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Media;
 use App\Http\Requests\Admin\StorePostRequest;
 use App\Http\Requests\Admin\UpdatePostRequest;
 use App\Models\Category;
@@ -80,10 +81,12 @@ class PostController extends Controller
             'post' => null,
             'formMode' => 'create',
             'categories' => Category::query()->active()->orderBy('name')->get(),
+            'authorOptions' => $this->authorOptions(),
             'tagOptions' => $this->tagOptions(),
             'selectedTagIds' => [],
             'selectedTagNames' => [],
             'tagFieldValue' => '',
+            'coverMediaItems' => $this->coverMediaItems(),
             'formInput' => session('input') ?? [],
         ]);
     }
@@ -96,7 +99,6 @@ class PostController extends Controller
             ->mergeIfMissing([
                 'author_name' => 'Editorial Team',
                 'is_featured' => '0',
-                'view_count' => '0',
             ])
             ->pipeInputs([
                 'title' => fn($value) => is_string($value) ? trim($value) : $value,
@@ -150,10 +152,12 @@ class PostController extends Controller
             'post' => $post,
             'formMode' => 'edit',
             'categories' => Category::query()->active()->orderBy('name')->get(),
+            'authorOptions' => $this->authorOptions((string) ($post->author_name ?? '')),
             'tagOptions' => $this->tagOptions(),
             'selectedTagIds' => $selectedTagIds,
             'selectedTagNames' => $selectedTagNames,
             'tagFieldValue' => implode(', ', $selectedTagNames),
+            'coverMediaItems' => $this->coverMediaItems(),
             'formInput' => session('input') ?? [],
         ]);
     }
@@ -168,7 +172,6 @@ class PostController extends Controller
             ->mergeIfMissing([
                 'author_name' => 'Editorial Team',
                 'is_featured' => '0',
-                'view_count' => '0',
             ])
             ->pipeInputs([
                 'title' => fn($value) => is_string($value) ? trim($value) : $value,
@@ -182,7 +185,7 @@ class PostController extends Controller
             ])
             ->nullifyBlanks();
 
-        $payload = $this->buildPayload($request->passed(), (int) $post->id);
+        $payload = $this->buildPayload($request->passed(), (int) $post->id, (int) ($post->view_count ?? 0));
 
         if ($this->hasDuplicateTitle($payload['title'], (int) $post->id)) {
             return back()->withErrors([
@@ -211,7 +214,7 @@ class PostController extends Controller
             ->withSuccess('Post deleted successfully.');
     }
 
-    protected function buildPayload(array $payload, ?int $ignoreId = null): array
+    protected function buildPayload(array $payload, ?int $ignoreId = null, int $currentViewCount = 0): array
     {
         $title = trim((string) ($payload['title'] ?? ''));
         $slugInput = trim((string) ($payload['slug'] ?? ''));
@@ -237,10 +240,30 @@ class PostController extends Controller
             'status' => $status,
             'is_featured' => (string) ($payload['is_featured'] ?? '0') === '1',
             'published_at' => $publishedAt !== '' ? $publishedAt : null,
-            'view_count' => max((int) ($payload['view_count'] ?? 0), 0),
+            'view_count' => array_key_exists('view_count', $payload)
+                ? max((int) ($payload['view_count'] ?? 0), 0)
+                : max($currentViewCount, 0),
             'seo_title' => trim((string) ($payload['seo_title'] ?? '')),
             'seo_description' => trim((string) ($payload['seo_description'] ?? '')),
         ];
+    }
+
+    protected function authorOptions(?string $currentValue = null): array
+    {
+        $options = [
+            'Editorial Team',
+            'Staff Writer',
+            'Managing Editor',
+            'Guest Contributor',
+        ];
+
+        $currentValue = trim((string) $currentValue);
+
+        if ($currentValue !== '' && !in_array($currentValue, $options, true)) {
+            array_unshift($options, $currentValue);
+        }
+
+        return $options;
     }
 
     protected function sanitizeTagIds($request): array
@@ -262,6 +285,48 @@ class PostController extends Controller
         }
 
         return array_values(array_unique($tagIds));
+    }
+
+    protected function coverMediaItems(): array
+    {
+        $items = [];
+
+        foreach (Media::query()->orderBy('created_at', 'DESC')->limit(8)->get() as $media) {
+            $items[] = [
+                'id' => (int) $media->id,
+                'title' => (string) $media->title,
+                'url' => Media::publicUrl((string) $media->path),
+                'thumbnail_url' => Media::publicUrl((string) $media->path),
+                'original_name' => (string) $media->original_name,
+                'size_label' => $this->formatMediaBytes((int) $media->size_bytes),
+                'dimensions_label' => $media->width && $media->height
+                    ? $media->width . ' × ' . $media->height
+                    : 'Flexible',
+                'alt_text' => (string) ($media->alt_text ?? $media->title ?? ''),
+            ];
+        }
+
+        return $items;
+    }
+
+    protected function formatMediaBytes(int $bytes): string
+    {
+        if ($bytes < 1024) {
+            return $bytes . ' B';
+        }
+
+        $units = ['KB', 'MB', 'GB', 'TB'];
+        $value = $bytes / 1024;
+
+        foreach ($units as $unit) {
+            if ($value < 1024 || $unit === 'TB') {
+                return round($value, $value >= 100 ? 0 : 1) . ' ' . $unit;
+            }
+
+            $value /= 1024;
+        }
+
+        return round($value, 1) . ' TB';
     }
 
     protected function normalizeTagNames(array $tagNames): array
