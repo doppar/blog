@@ -153,18 +153,20 @@
                                                 <path d="m13 6-2 12"></path>
                                             </svg>
                                         </button>
-                                        <select class="admin-rich-editor__select" data-editor-code-language>
-                                            <option value="">Plain text</option>
-                                            <option value="javascript">JavaScript</option>
-                                            <option value="typescript">TypeScript</option>
-                                            <option value="php">PHP</option>
-                                            <option value="html">HTML</option>
-                                            <option value="css">CSS</option>
-                                            <option value="json">JSON</option>
-                                            <option value="bash">Bash</option>
-                                            <option value="markdown">Markdown</option>
-                                            <option value="sql">SQL</option>
-                                        </select>
+                                        <div class="admin-rich-editor__language-wrap" data-editor-code-language-wrap>
+                                            <select class="admin-rich-editor__select" data-editor-code-language>
+                                                <option value="">Plain text</option>
+                                                <option value="javascript">JavaScript</option>
+                                                <option value="typescript">TypeScript</option>
+                                                <option value="php">PHP</option>
+                                                <option value="html">HTML</option>
+                                                <option value="css">CSS</option>
+                                                <option value="json">JSON</option>
+                                                <option value="bash">Bash</option>
+                                                <option value="markdown">Markdown</option>
+                                                <option value="sql">SQL</option>
+                                            </select>
+                                        </div>
                                     </div>
 
                                     <div class="admin-rich-editor__toolbar-group admin-rich-editor__toolbar-group--end">
@@ -190,8 +192,17 @@
 
                                 <div class="admin-rich-editor__popover admin-rich-editor__popover--link is-hidden" data-editor-link-popover>
                                     <div class="admin-rich-editor__popover-head">
-                                        <strong>Link</strong>
-                                        <button class="admin-rich-editor__popover-close" type="button" data-editor-link-close aria-label="Close link options">×</button>
+                                        <div class="admin-rich-editor__popover-title">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M10.5 13.5 13.5 10.5"></path>
+                                                <path d="M8.25 15.75 6.5 17.5a3 3 0 0 1-4.25-4.25L6 9.5a3 3 0 0 1 4.25 0"></path>
+                                                <path d="m15.75 8.25 1.75-1.75a3 3 0 1 1 4.25 4.25L18 14.5a3 3 0 0 1-4.25 0"></path>
+                                            </svg>
+                                            <strong>Insert link</strong>
+                                        </div>
+                                        <button class="admin-rich-editor__popover-close" type="button" data-editor-link-close aria-label="Close link options">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                                        </button>
                                     </div>
                                     <label class="admin-rich-editor__popover-label" for="editor-link-url">URL</label>
                                     <input id="editor-link-url" class="admin-rich-editor__popover-input" type="url" placeholder="https://example.com" data-editor-link-input>
@@ -203,7 +214,14 @@
 
                                 <div class="admin-rich-editor__popover admin-rich-editor__popover--image is-hidden" data-editor-image-popover>
                                     <div class="admin-rich-editor__popover-head">
-                                        <strong>Image settings</strong>
+                                        <div class="admin-rich-editor__popover-title">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                <rect x="4" y="5" width="16" height="14" rx="2"></rect>
+                                                <circle cx="9" cy="10" r="1.5"></circle>
+                                                <path d="m20 16-4.5-4.5L8 19"></path>
+                                            </svg>
+                                            <strong>Image settings</strong>
+                                        </div>
                                     </div>
                                     <label class="admin-rich-editor__popover-label" for="editor-image-caption">Caption</label>
                                     <input id="editor-image-caption" class="admin-rich-editor__popover-input" type="text" placeholder="Add a short caption" data-editor-image-caption>

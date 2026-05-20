@@ -992,6 +992,23 @@ svg {
     color: var(--admin-accent-strong);
 }
 
+.admin-rich-editor__language-wrap {
+    display: grid;
+    grid-template-columns: 0fr;
+    opacity: 0;
+    overflow: hidden;
+    transition: grid-template-columns 0.2s ease, opacity 0.2s ease;
+}
+
+.admin-rich-editor__language-wrap.is-visible {
+    grid-template-columns: 1fr;
+    opacity: 1;
+}
+
+.admin-rich-editor__language-wrap > select {
+    min-width: 0;
+}
+
 .admin-rich-editor__select {
     min-height: 34px;
     min-width: 128px;
@@ -1092,22 +1109,37 @@ svg {
 
 .admin-rich-editor__popover {
     position: absolute;
-    top: 86px;
-    right: 22px;
-    width: min(320px, calc(100% - 44px));
-    padding: 16px;
-    border: 1px solid rgba(201, 216, 236, 0.95);
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.98);
-    box-shadow: 0 18px 36px rgba(51, 81, 121, 0.14);
+    top: 68px;
+    left: 50%;
+    width: min(360px, calc(100% - 40px));
+    padding: 20px;
+    border: 1px solid rgba(201, 216, 236, 0.9);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.99);
+    box-shadow: 0 4px 6px rgba(51, 81, 121, 0.04), 0 24px 48px rgba(51, 81, 121, 0.16);
     z-index: 14;
     display: grid;
-    gap: 12px;
-    backdrop-filter: blur(16px);
+    gap: 14px;
+    backdrop-filter: blur(20px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(-8px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+
+.admin-rich-editor__popover:not(.is-hidden) {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
 }
 
 .admin-rich-editor__popover.is-hidden {
-    display: none;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(-8px);
 }
 
 .admin-rich-editor__popover-head {
@@ -1117,26 +1149,64 @@ svg {
     gap: 12px;
 }
 
-.admin-rich-editor__popover-head strong {
+.admin-rich-editor__popover-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     color: var(--admin-text-dark);
-    font-size: 0.92rem;
+}
+
+.admin-rich-editor__popover-title svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--admin-accent-strong);
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+}
+
+.admin-rich-editor__popover-title strong {
+    font-size: 0.9rem;
+    color: var(--admin-text-dark);
 }
 
 .admin-rich-editor__popover-close {
-    width: 32px;
-    height: 32px;
-    border: 0;
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(209, 220, 236, 0.7);
     border-radius: 999px;
-    background: #f2f6fb;
-    color: #90a1bb;
-    font-size: 1.2rem;
-    line-height: 1;
+    background: #f4f7fb;
+    color: #8da0bb;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.admin-rich-editor__popover-close:hover {
+    background: #eaf0f8;
+    border-color: #c4d2e4;
+    color: #5f7494;
+}
+
+.admin-rich-editor__popover-close svg {
+    width: 13px;
+    height: 13px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
 }
 
 .admin-rich-editor__popover-label {
     color: var(--admin-text-strong);
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
 }
 
 .admin-rich-editor__popover-input {
@@ -1145,8 +1215,16 @@ svg {
     padding: 0 14px;
     border: 1px solid var(--admin-border);
     border-radius: 12px;
-    background: #ffffff;
+    background: #f9fbfd;
     color: var(--admin-text-dark);
+    transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-rich-editor__popover-input:focus {
+    outline: none;
+    border-color: rgba(22, 169, 235, 0.45);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(22, 169, 235, 0.1);
 }
 
 .admin-rich-editor__popover-actions {

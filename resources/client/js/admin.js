@@ -1258,6 +1258,7 @@ function bootRichEditors() {
         const source = root.querySelector('[data-rich-editor-source]');
         const toolbar = root.querySelector('[data-rich-editor-toolbar]');
         const codeLanguage = root.querySelector('[data-editor-code-language]');
+        const codeLanguageWrap = root.querySelector('[data-editor-code-language-wrap]');
         const linkPopover = root.querySelector('[data-editor-link-popover]');
         const linkInput = root.querySelector('[data-editor-link-input]');
         const linkApply = root.querySelector('[data-editor-link-apply]');
@@ -1643,6 +1644,10 @@ function bootRichEditors() {
             const active = editor.isActive('codeBlock');
             codeLanguage.disabled = !active;
             codeLanguage.value = active ? String(editor.getAttributes('codeBlock').language || '') : '';
+
+            if (codeLanguageWrap instanceof HTMLElement) {
+                codeLanguageWrap.classList.toggle('is-visible', active);
+            }
         }
 
         function syncImagePopover() {
