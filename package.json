@@ -8,9 +8,14 @@
     },
     "dependencies": {
         "@tiptap/core": "^3.23.5",
+        "@tiptap/extension-code-block-lowlight": "^3.23.5",
         "@tiptap/extension-image": "^3.23.5",
+        "@tiptap/extension-link": "^3.23.5",
+        "@tiptap/extension-placeholder": "^3.23.5",
+        "@tiptap/extension-underline": "^3.23.5",
         "@tiptap/pm": "^3.23.5",
-        "@tiptap/starter-kit": "^3.23.5"
+        "@tiptap/starter-kit": "^3.23.5",
+        "lowlight": "^3.3.0"
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4.0.0",

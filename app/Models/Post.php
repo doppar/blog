@@ -55,7 +55,7 @@ class Post extends Model
     #[Hook('before_created')]
     protected function createSlugFromTitle(): void
     {
-        $this->title = str()->slug($this->title);
+        $this->slug = str()->slug($this->title);
     }
 
     #[Hook('after_created')]
