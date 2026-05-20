@@ -161,6 +161,24 @@ function bootDismissibleAlerts() {
     });
 }
 
+function bootDeleteConfirmations() {
+    document.querySelectorAll('form').forEach((form) => {
+        const methodInput = form.querySelector('input[name="_method"]');
+
+        if (!methodInput || String(methodInput.value).toUpperCase() !== 'DELETE') {
+            return;
+        }
+
+        form.addEventListener('submit', (event) => {
+            const message = form.getAttribute('data-confirm-message') || 'Are you sure you want to delete this item?';
+
+            if (!window.confirm(message)) {
+                event.preventDefault();
+            }
+        });
+    });
+}
+
 function pushAdminAlert(type, message) {
     const workspace = document.querySelector('.admin-workspace');
 
@@ -1252,6 +1270,47 @@ function bootCoverMediaModal() {
     };
 }
 
+function bootUserImagePreview() {
+    const input = document.querySelector('[data-user-image-input]');
+    const preview = document.querySelector('[data-user-image-preview]');
+    const previewImage = document.querySelector('[data-user-image-preview-image]');
+
+    if (!(input instanceof HTMLInputElement) || !(preview instanceof HTMLElement) || !(previewImage instanceof HTMLImageElement)) {
+        return;
+    }
+
+    const initialSrc = previewImage.getAttribute('src') || '';
+    let objectUrl = null;
+
+    const syncPreview = () => {
+        const file = input.files?.[0] ?? null;
+
+        if (objectUrl) {
+            URL.revokeObjectURL(objectUrl);
+            objectUrl = null;
+        }
+
+        if (file instanceof File) {
+            objectUrl = URL.createObjectURL(file);
+            previewImage.src = objectUrl;
+            preview.classList.remove('is-hidden');
+            return;
+        }
+
+        if (initialSrc.trim() !== '') {
+            previewImage.src = initialSrc;
+            preview.classList.remove('is-hidden');
+            return;
+        }
+
+        previewImage.removeAttribute('src');
+        preview.classList.add('is-hidden');
+    };
+
+    input.addEventListener('change', syncPreview);
+    syncPreview();
+}
+
 function bootRichEditors() {
     document.querySelectorAll('[data-rich-editor]').forEach((root) => {
         const canvas = root.querySelector('[data-rich-editor-canvas]');
@@ -2145,11 +2204,13 @@ function bootTagify() {
 document.addEventListener('DOMContentLoaded', () => {
     bootAjaxLoader();
     bootDismissibleAlerts();
+    bootDeleteConfirmations();
     bootSlugForms();
     bootTagify();
     bootRichEditors();
     bootMediaLibrary();
     bootCoverMediaModal();
+    bootUserImagePreview();
     bootSidebarToggle();
     bootSidebarGroups();
     bootDropdowns();

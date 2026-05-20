@@ -124,24 +124,33 @@
             <input type="file" name="files[]" accept="image/*" multiple hidden data-media-input>
         </div>
 
-        <form class="admin-filter-bar admin-media-toolbar" method="GET" action="[[ route('admin.media.index') ]]">
-            <div class="admin-field">
-                <label for="search">Search</label>
-                <input id="search" name="search" type="search" value="[[ $filters['search'] ]]" placeholder="Search media title or file name">
+        <form class="admin-users-toolbar admin-media-toolbar" method="GET" action="[[ route('admin.media.index') ]]">
+            <div class="admin-users-toolbar__search">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="11" cy="11" r="6.5"></circle>
+                    <path d="M16 16l4.5 4.5"></path>
+                </svg>
+                <input id="search" name="search" type="search" value="[[ $filters['search'] ]]" placeholder="Search media title or file name" aria-label="Search media">
             </div>
 
-            <div class="admin-field">
-                <label for="month">Month</label>
-                <select id="month" name="month">
-                    <option value="">All upload dates</option>
-                    #foreach ($monthOptions as $value => $label)
-                        <option value="[[ $value ]]" [[ $filters['month'] === $value ? 'selected' : '' ]]>[[ $label ]]</option>
-                    #endforeach
-                </select>
-            </div>
-
-            <div class="admin-filter-bar__actions">
-                <button class="admin-button admin-button--ghost" type="submit">Filter</button>
+            <div class="admin-users-toolbar__actions">
+                <div class="admin-users-toolbar__filters">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 6h16l-6 7v4l-4 2v-6Z"></path>
+                    </svg>
+                    <select id="month" name="month" aria-label="Filter by month">
+                        <option value="">All upload dates</option>
+                        #foreach ($monthOptions as $value => $label)
+                            <option value="[[ $value ]]" [[ $filters['month'] === $value ? 'selected' : '' ]]>[[ $label ]]</option>
+                        #endforeach
+                    </select>
+                </div>
+                <button class="admin-button admin-button--ghost admin-button--with-icon" type="submit">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 6h16l-6 7v4l-4 2v-6Z"></path>
+                    </svg>
+                    <span>Filter</span>
+                </button>
                 <a class="admin-text-link" href="[[ route('admin.media.index') ]]">Reset</a>
             </div>
         </form>

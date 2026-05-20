@@ -21,6 +21,9 @@ return new class extends Migration
             $table->text('two_factor_secret')->nullable();
             $table->text('two_factor_recovery_codes')->nullable();
             $table->string('remember_token', 100)->nullable();
+            $table->enum('role', ['admin', 'editor', 'author'])->default('editor');
+            $table->string('image')->nullable();
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

@@ -12,28 +12,37 @@
     <a class="admin-button" href="[[ route('admin.categories.create') ]]">Create Category</a>
 #endsection
 #section('content')
-    <section class="admin-panel">
-        <form class="admin-filter-bar" method="GET" action="[[ route('admin.categories.index') ]]">
-            <div class="admin-field">
-                <label for="search">Search</label>
-                <input id="search" name="search" type="search" value="[[ $filters['search'] ]]" placeholder="Search name or slug">
-            </div>
+    <form class="admin-users-toolbar" method="GET" action="[[ route('admin.categories.index') ]]">
+        <div class="admin-users-toolbar__search">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="6.5"></circle>
+                <path d="M16 16l4.5 4.5"></path>
+            </svg>
+            <input id="search" name="search" type="search" value="[[ $filters['search'] ]]" placeholder="Search name or slug" aria-label="Search categories">
+        </div>
 
-            <div class="admin-field">
-                <label for="status">Status</label>
-                <select id="status" name="status">
+        <div class="admin-users-toolbar__actions">
+            <div class="admin-users-toolbar__filters">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 6h16l-6 7v4l-4 2v-6Z"></path>
+                </svg>
+                <select id="status" name="status" aria-label="Filter by status">
                     <option value="">All statuses</option>
                     <option value="1" [[ $filters['status'] === '1' ? 'selected' : '' ]]>Active</option>
                     <option value="0" [[ $filters['status'] === '0' ? 'selected' : '' ]]>Inactive</option>
                 </select>
             </div>
+            <button class="admin-button admin-button--ghost admin-button--with-icon" type="submit">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 6h16l-6 7v4l-4 2v-6Z"></path>
+                </svg>
+                <span>Filter</span>
+            </button>
+            <a class="admin-text-link" href="[[ route('admin.categories.index') ]]">Reset</a>
+        </div>
+    </form>
 
-            <div class="admin-filter-bar__actions">
-                <button class="admin-button admin-button--ghost" type="submit">Filter</button>
-                <a class="admin-text-link" href="[[ route('admin.categories.index') ]]">Reset</a>
-            </div>
-        </form>
-
+    <section class="admin-panel">
         <div class="admin-table-wrap">
             <table class="admin-table">
                 <thead>
@@ -58,8 +67,20 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="admin-badge [[ $category->status ? 'admin-badge--published' : 'admin-badge--archived' ]]">
-                                    [[ $category->status ? 'Active' : 'Inactive' ]]
+                                <span class="admin-status-indicator [[ $category->status ? 'is-active' : 'is-inactive' ]]">
+                                    #if ($category->status)
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <circle cx="12" cy="12" r="8.5"></circle>
+                                            <path d="m8.8 12.2 2.2 2.2 4.4-4.6"></path>
+                                        </svg>
+                                    #else
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <circle cx="12" cy="12" r="8.5"></circle>
+                                            <path d="m9.2 9.2 5.6 5.6"></path>
+                                            <path d="m14.8 9.2-5.6 5.6"></path>
+                                        </svg>
+                                    #endif
+                                    <span>[[ $category->status ? 'Active' : 'Inactive' ]]</span>
                                 </span>
                             </td>
                             <td>[[ $category->posts_count ?? 0 ]]</td>

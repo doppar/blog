@@ -12,19 +12,28 @@
     <a class="admin-button" href="[[ route('admin.tags.create') ]]">Create Tag</a>
 #endsection
 #section('content')
+    <form class="admin-users-toolbar" method="GET" action="[[ route('admin.tags.index') ]]">
+        <div class="admin-users-toolbar__search">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="6.5"></circle>
+                <path d="M16 16l4.5 4.5"></path>
+            </svg>
+            <input id="search" name="search" type="search" value="[[ $search ]]" placeholder="Search name or slug" aria-label="Search tags">
+        </div>
+
+        <div class="admin-users-toolbar__actions">
+            <button class="admin-button admin-button--ghost admin-button--with-icon" type="submit">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="11" cy="11" r="6.5"></circle>
+                    <path d="M16 16l4.5 4.5"></path>
+                </svg>
+                <span>Search</span>
+            </button>
+            <a class="admin-text-link" href="[[ route('admin.tags.index') ]]">Reset</a>
+        </div>
+    </form>
+
     <section class="admin-panel">
-        <form class="admin-filter-bar" method="GET" action="[[ route('admin.tags.index') ]]">
-            <div class="admin-field">
-                <label for="search">Search</label>
-                <input id="search" name="search" type="search" value="[[ $search ]]" placeholder="Search name or slug">
-            </div>
-
-            <div class="admin-filter-bar__actions">
-                <button class="admin-button admin-button--ghost" type="submit">Filter</button>
-                <a class="admin-text-link" href="[[ route('admin.tags.index') ]]">Reset</a>
-            </div>
-        </form>
-
         <div class="admin-table-wrap">
             <table class="admin-table">
                 <thead>
