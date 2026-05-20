@@ -1709,22 +1709,8 @@ svg {
 .admin-cover-modal__identity {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 0;
     min-width: 0;
-}
-
-.admin-cover-modal__avatar {
-    flex: 0 0 48px;
-    width: 48px;
-    height: 48px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #19acec, #1098da);
-    color: #ffffff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-    font-weight: 800;
 }
 
 .admin-cover-modal__identity strong {

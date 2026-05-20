@@ -228,7 +228,6 @@
         <div class="admin-cover-modal__dialog">
             <div class="admin-cover-modal__head">
                 <div class="admin-cover-modal__identity">
-                    <span class="admin-cover-modal__avatar">ED</span>
                     <div>
                         <strong>Upload cover media</strong>
                         <span>Fast image publishing for this post</span>
