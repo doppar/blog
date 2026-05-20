@@ -1,6 +1,6 @@
 import '../css/app.css';
 import './bootstrap';
-import './categories';
+import './admin';
 
 document.documentElement.dataset.clientReady = 'true';
 console.info('Doppar client booted successfully.');
