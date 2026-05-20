@@ -26,7 +26,7 @@
 html,
 body {
     min-height: 100%;
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 body {
@@ -343,6 +343,22 @@ svg {
     cursor: default;
 }
 
+.admin-sidebar__nav-link {
+    padding: 4px 0;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: color 0.15s ease;
+}
+
+.admin-sidebar__nav-link:hover {
+    color: var(--admin-text-dark);
+}
+
+.admin-sidebar__nav-link.is-active {
+    color: #1595dd;
+    font-weight: 700;
+}
+
 .admin-sidebar__group-icon {
     width: 30px;
     height: 30px;
@@ -374,6 +390,11 @@ svg {
     gap: 2px;
     margin-top: 14px;
     padding-left: 44px;
+}
+
+.admin-sidebar__links--root {
+    margin-top: 0;
+    padding-left: 0;
 }
 
 .admin-sidebar__link {
@@ -925,8 +946,8 @@ svg {
 }
 
 .admin-tagify__input {
-    min-width: 180px;
-    flex: 1 1 180px;
+    min-width: 0;
+    flex: 1 1 120px;
     padding: 6px 2px;
     border: 0 !important;
     outline: 0;
@@ -990,7 +1011,8 @@ svg {
 }
 
 .admin-form-shell {
-    max-width: 1220px;
+    width: 100%;
+    max-width: none;
 }
 
 .admin-form-grid {
@@ -1015,6 +1037,14 @@ svg {
     gap: 18px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     padding: 20px 22px 22px;
+}
+
+.admin-form-grid__fields > * {
+    min-width: 0;
+}
+
+.admin-form-grid__fields--stacked {
+    grid-template-columns: 1fr;
 }
 
 .admin-panel--actions {

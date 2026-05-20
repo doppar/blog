@@ -83,6 +83,8 @@ class PostController extends Controller
             'tagOptions' => $this->tagOptions(),
             'selectedTagIds' => [],
             'selectedTagNames' => [],
+            'tagFieldValue' => '',
+            'formInput' => session('input') ?? [],
         ]);
     }
 
@@ -129,9 +131,19 @@ class PostController extends Controller
     public function edit(#[RouteModel(exception: true)] Post $post): Response
     {
         $selectedTagIds = [];
+        $selectedTagNames = [];
 
         foreach ($post->tags as $tag) {
-            $selectedTagIds[] = (int) $tag->id;
+            $tagId = $this->extractTagValue($tag, 'id');
+            $tagName = $this->extractTagValue($tag, 'name');
+
+            if ($tagId !== null) {
+                $selectedTagIds[] = (int) $tagId;
+            }
+
+            if ($tagName !== null && trim((string) $tagName) !== '') {
+                $selectedTagNames[] = (string) $tagName;
+            }
         }
 
         return view('admin.posts.form', [
@@ -140,7 +152,9 @@ class PostController extends Controller
             'categories' => Category::query()->active()->orderBy('name')->get(),
             'tagOptions' => $this->tagOptions(),
             'selectedTagIds' => $selectedTagIds,
-            'selectedTagNames' => $this->extractTagNames($post),
+            'selectedTagNames' => $selectedTagNames,
+            'tagFieldValue' => implode(', ', $selectedTagNames),
+            'formInput' => session('input') ?? [],
         ]);
     }
 
@@ -158,7 +172,6 @@ class PostController extends Controller
             ])
             ->pipeInputs([
                 'title' => fn($value) => is_string($value) ? trim($value) : $value,
-                'slug' => fn($value) => is_string($value) ? trim($value) : $value,
                 'excerpt' => fn($value) => is_string($value) ? trim($value) : $value,
                 'body' => fn($value) => is_string($value) ? trim($value) : $value,
                 'cover_image' => fn($value) => is_string($value) ? trim($value) : $value,
@@ -230,7 +243,7 @@ class PostController extends Controller
         ];
     }
 
-    protected function sanitizeTagIds(Request $request): array
+    protected function sanitizeTagIds($request): array
     {
         $tagIds = [];
 
@@ -273,10 +286,27 @@ class PostController extends Controller
         $names = [];
 
         foreach ($post->tags as $tag) {
-            $names[] = (string) $tag->name;
+            $name = $this->extractTagValue($tag, 'name');
+
+            if ($name !== null && trim((string) $name) !== '') {
+                $names[] = (string) $name;
+            }
         }
 
         return $names;
+    }
+
+    protected function extractTagValue(mixed $tag, string $key): mixed
+    {
+        if (is_array($tag)) {
+            return $tag[$key] ?? null;
+        }
+
+        if (is_object($tag)) {
+            return $tag->{$key} ?? null;
+        }
+
+        return null;
     }
 
     protected function tagOptions(): array

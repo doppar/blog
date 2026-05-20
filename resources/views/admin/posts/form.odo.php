@@ -12,7 +12,6 @@
     <a class="admin-button admin-button--ghost" href="[[ route('admin.posts.index') ]]">Back to posts</a>
 #endsection
 #section('content')
-    #php $formInput = session('input') ?? []; #endphp
     <section class="admin-form-shell">
         <form
             class="admin-form-grid admin-form-grid--post"
@@ -133,7 +132,7 @@
                         </div>
                     </div>
 
-                    <div class="admin-form-grid__fields">
+                    <div class="admin-form-grid__fields admin-form-grid__fields--stacked">
                         <div class="admin-field">
                             <label for="category_id">Category</label>
                             <select id="category_id" name="category_id">
@@ -148,9 +147,6 @@
 
                         <div class="admin-field">
                             <label for="tag_names_input">Tags</label>
-                            #php
-                                $tagValue = $formInput['tag_names'] ?? implode(', ', $selectedTagNames ?? []);
-                            #endphp
                             <div
                                 class="admin-tagify"
                                 data-tagify
@@ -167,7 +163,12 @@
                                         data-tagify-input
                                     >
                                 </div>
-                                <input type="hidden" name="tag_names" value="[[ $tagValue ]]" data-tagify-hidden>
+                                <input
+                                    type="hidden"
+                                    name="tag_names"
+                                    value="[[ array_key_exists('tag_names', $formInput) ? $formInput['tag_names'] : ($tagFieldValue ?? '') ]]"
+                                    data-tagify-hidden
+                                >
                                 <div class="admin-tagify__menu" data-tagify-menu></div>
                             </div>
                             <script id="post-tag-options" type="application/json">[[! json_encode($tagOptions) !]]</script>

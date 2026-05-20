@@ -29,7 +29,7 @@
                                 <path d="M27 19c0 3.5-2.6 6-6.5 6-2.2 0-4.4-.8-6.3-2.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="3"></path>
                             </svg>
                         </span>
-                        <span class="admin-brand__name">Editorial Desk</span>
+                        <span class="admin-brand__name">Doppar CMS</span>
                     </a>
                 </div>
 
@@ -110,22 +110,18 @@
 
             <div class="admin-body-shell">
                 <aside class="admin-sidebar" id="admin-sidebar">
-                    <section class="admin-sidebar__section admin-sidebar__section--static is-open">
-                        <div class="admin-sidebar__group admin-sidebar__group--static">
+                    <section class="admin-sidebar__section admin-sidebar__section--static">
+                        <a class="admin-sidebar__group admin-sidebar__nav-link [[ str_contains((string) Route::currentRouteName(), 'admin.dashboard') ? 'is-active' : '' ]]" href="[[ route('admin.dashboard') ]]">
                             <span class="admin-sidebar__group-icon">
                                 <svg viewBox="0 0 24 24" aria-hidden="true">
-                                    <rect x="4" y="4" width="6" height="6" rx="1.5"></rect>
-                                    <rect x="14" y="4" width="6" height="6" rx="1.5"></rect>
-                                    <rect x="4" y="14" width="6" height="6" rx="1.5"></rect>
-                                    <rect x="14" y="14" width="6" height="6" rx="1.5"></rect>
+                                    <rect x="3" y="3" width="8" height="8" rx="1.5"></rect>
+                                    <rect x="13" y="3" width="8" height="8" rx="1.5"></rect>
+                                    <rect x="3" y="13" width="8" height="8" rx="1.5"></rect>
+                                    <rect x="13" y="13" width="8" height="8" rx="1.5"></rect>
                                 </svg>
                             </span>
-                            <span>Dashboards</span>
-                        </div>
-                        <nav class="admin-sidebar__links" data-sidebar-group-panel>
-                            <a class="admin-sidebar__link [[ str_contains((string) Route::currentRouteName(), 'admin.dashboard') ? 'is-active' : '' ]]" href="[[ route('admin.dashboard') ]]">Main</a>
-                            <a class="admin-sidebar__link [[ str_contains((string) Route::currentRouteName(), 'admin.dashboard') ? 'is-active' : '' ]]" href="[[ route('admin.dashboard') ]]#insights">Content Insights</a>
-                        </nav>
+                            <span>Dashboard</span>
+                        </a>
                     </section>
 
                     <section class="admin-sidebar__section is-open" data-sidebar-group="resources">
@@ -154,14 +150,14 @@
                 <main class="admin-workspace">
                     #if (session('success'))
                         <div class="admin-alert admin-alert--success" data-dismissible>
-                            <p>[[ session('success') ]]</p>
+                            <p>[[ session()->pull('success') ]]</p>
                             <button type="button" class="admin-alert__close" data-dismiss-alert aria-label="Dismiss message">×</button>
                         </div>
                     #endif
 
                     #if (session('error'))
                         <div class="admin-alert admin-alert--danger" data-dismissible>
-                            <p>[[ session('error') ]]</p>
+                            <p>[[ session()->pull('error') ]]</p>
                             <button type="button" class="admin-alert__close" data-dismiss-alert aria-label="Dismiss message">×</button>
                         </div>
                     #endif
@@ -180,11 +176,6 @@
                     <section class="admin-page-body">
                         #yield('content')
                     </section>
-
-                    <footer class="admin-footer">
-                        <p>Powered by Editorial Desk CMS.</p>
-                        <p>Built with Doppar for blog management.</p>
-                    </footer>
                 </main>
             </div>
         </div>

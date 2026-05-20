@@ -57,6 +57,7 @@ class CategoryController extends Controller
         return view('admin.categories.form', [
             'category' => null,
             'formMode' => 'create',
+            'formInput' => session('input') ?? [],
         ]);
     }
 
@@ -95,6 +96,7 @@ class CategoryController extends Controller
         return view('admin.categories.form', [
             'category' => $category,
             'formMode' => 'edit',
+            'formInput' => session('input') ?? [],
         ]);
     }
 

@@ -12,7 +12,6 @@
     <a class="admin-button admin-button--ghost" href="[[ route('admin.tags.index') ]]">Back to tags</a>
 #endsection
 #section('content')
-    #php $formInput = session('input') ?? []; #endphp
     <section class="admin-form-shell">
         <form
             class="admin-form-grid"

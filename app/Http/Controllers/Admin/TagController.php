@@ -43,6 +43,7 @@ class TagController extends Controller
         return view('admin.tags.form', [
             'tag' => null,
             'formMode' => 'create',
+            'formInput' => session('input') ?? [],
         ]);
     }
 
@@ -81,6 +82,7 @@ class TagController extends Controller
         return view('admin.tags.form', [
             'tag' => $tag,
             'formMode' => 'edit',
+            'formInput' => session('input') ?? [],
         ]);
     }
 
