@@ -40,12 +40,13 @@
 
 <div class="min-h-screen bg-white" style="font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;">
     <header class="border-b border-gray-200 bg-white sticky top-0 z-20">
-        <div class="max-w-[1192px] mx-auto px-6 flex items-center justify-between h-14">
+        <div class="max-w-[880px] mx-auto px-6 flex items-center h-14">
             <a href="/" class="text-xl font-bold tracking-tight text-gray-900" style="font-family: Georgia, serif;">Blog</a>
         </div>
     </header>
 
-    <main class="max-w-[740px] mx-auto px-6 py-12">
+    <div class="max-w-[880px] mx-auto px-6">
+    <main class="max-w-[740px] min-w-0 py-12">
 
         #if ($post->category)
         <div class="mb-4">
@@ -105,7 +106,7 @@
         <div class="mt-12 pt-8 border-t border-gray-200">
             <div class="flex flex-wrap gap-2">
                 #foreach ($post->tags as $tag)
-                <span class="px-4 py-2 bg-gray-100 rounded-full text-[13px] text-gray-700 font-medium">[[ $tag ]]</span>
+                <span class="px-4 py-2 bg-gray-100 rounded-full text-[13px] text-gray-700 font-medium">[[ $tag->name ]]</span>
                 #endforeach
             </div>
         </div>
@@ -121,6 +122,7 @@
         </div>
 
     </main>
+    </div>
 
 </div>
 
