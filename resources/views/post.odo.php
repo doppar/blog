@@ -39,22 +39,14 @@
 #section('content')
 
 <div class="min-h-screen bg-white" style="font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;">
-
-    {{-- Header --}}
     <header class="border-b border-gray-200 bg-white sticky top-0 z-20">
         <div class="max-w-[1192px] mx-auto px-6 flex items-center justify-between h-14">
             <a href="/" class="text-xl font-bold tracking-tight text-gray-900" style="font-family: Georgia, serif;">Blog</a>
-            <nav class="flex items-center gap-4">
-                <a href="[[ route('login') ]]" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">Sign in</a>
-                <a href="[[ route('login') ]]" class="text-sm bg-gray-900 text-white px-4 py-2 rounded-full hover:bg-gray-700 transition-colors">Get started</a>
-            </nav>
         </div>
     </header>
 
-    {{-- Article --}}
     <main class="max-w-[740px] mx-auto px-6 py-12">
 
-        {{-- Category --}}
         #if ($post->category)
         <div class="mb-4">
             <a href="/" class="text-[13px] font-medium text-gray-500 hover:text-gray-800 transition-colors uppercase tracking-wide">
@@ -63,19 +55,16 @@
         </div>
         #endif
 
-        {{-- Title --}}
         <h1 class="text-[36px] sm:text-[42px] font-bold leading-tight text-gray-900 mb-4" style="font-family: Georgia, serif;">
             [[ $post->title ]]
         </h1>
 
-        {{-- Excerpt / Subtitle --}}
         #if ($post->excerpt)
         <p class="text-[20px] text-gray-500 leading-relaxed mb-6" style="font-family: Georgia, serif;">
             [[ $post->excerpt ]]
         </p>
         #endif
 
-        {{-- Author + Date bar --}}
         <div class="flex items-center gap-3 py-4 border-t border-b border-gray-200 mb-8">
             <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
                 [[ strtoupper(substr($post->author_name ?? 'A', 0, 1)) ]]
@@ -98,7 +87,6 @@
             </div>
         </div>
 
-        {{-- Cover Image --}}
         #if ($post->cover_image)
         <figure class="mb-10 -mx-6 sm:mx-0">
             <img
@@ -109,23 +97,20 @@
         </figure>
         #endif
 
-        {{-- Body --}}
         <div class="prose-article">
-            [[ $post->body ]]
+            [[! $post->body !]]
         </div>
 
-        {{-- Tags --}}
         #if ($post->tags && count($post->tags) > 0)
         <div class="mt-12 pt-8 border-t border-gray-200">
             <div class="flex flex-wrap gap-2">
                 #foreach ($post->tags as $tag)
-                <span class="px-4 py-2 bg-gray-100 rounded-full text-[13px] text-gray-700 font-medium">[[ $tag->name ]]</span>
+                <span class="px-4 py-2 bg-gray-100 rounded-full text-[13px] text-gray-700 font-medium">[[ $tag ]]</span>
                 #endforeach
             </div>
         </div>
         #endif
 
-        {{-- Back link --}}
         <div class="mt-12 pt-8 border-t border-gray-200">
             <a href="/" class="inline-flex items-center gap-2 text-[14px] text-gray-500 hover:text-gray-900 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
