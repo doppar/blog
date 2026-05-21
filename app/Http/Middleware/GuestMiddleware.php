@@ -21,7 +21,7 @@ class GuestMiddleware implements Middleware
     {
         foreach (config('auth.actors') as $actor => $_) {
             if (Auth::actor($actor)->check()) {
-                return redirect('/home');
+                return redirect()->route('admin.dashboard');
             }
         }
 

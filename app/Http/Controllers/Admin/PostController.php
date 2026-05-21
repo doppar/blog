@@ -13,11 +13,13 @@ use App\Support\CmsSlugger;
 use Phaseolies\Http\Request;
 use Phaseolies\Http\Response;
 use Phaseolies\Utilities\Attributes\Mapper;
+use Phaseolies\Utilities\Attributes\Middleware;
 use Phaseolies\Utilities\Attributes\Model as RouteModel;
 use Phaseolies\Utilities\Attributes\Route;
 use Phaseolies\Utilities\Attributes\Transaction;
 
 #[Mapper(prefix: 'admin/posts')]
+#[Middleware(['auth'])]
 class PostController extends Controller
 {
     #[Route(uri: '/', name: 'admin.posts.index')]

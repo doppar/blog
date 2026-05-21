@@ -1306,6 +1306,49 @@ function bootUserImagePreview() {
     syncPreview();
 }
 
+function bootTwoFactorProfileModal() {
+    const modal = document.querySelector('[data-two-factor-modal]');
+
+    if (!modal) {
+        return;
+    }
+
+    const openButtons = document.querySelectorAll('[data-two-factor-modal-open]');
+    const closeButtons = modal.querySelectorAll('[data-two-factor-modal-close]');
+    const codeInput = modal.querySelector('input[name="two_factor_code"]');
+
+    const openModal = () => {
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('admin-modal-open');
+        window.setTimeout(() => codeInput?.focus(), 30);
+    };
+
+    const closeModal = () => {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('admin-modal-open');
+    };
+
+    openButtons.forEach((button) => {
+        button.addEventListener('click', openModal);
+    });
+
+    closeButtons.forEach((button) => {
+        button.addEventListener('click', closeModal);
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+            closeModal();
+        }
+    });
+
+    if (modal.getAttribute('data-auto-open') === 'true') {
+        openModal();
+    }
+}
+
 function bootRichEditors() {
     document.querySelectorAll('[data-rich-editor]').forEach((root) => {
         const canvas = root.querySelector('[data-rich-editor-canvas]');
@@ -2205,6 +2248,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bootRichEditors();
     bootMediaLibrary();
     bootCoverMediaModal();
+    bootTwoFactorProfileModal();
     bootUserImagePreview();
     bootSidebarToggle();
     bootSidebarGroups();

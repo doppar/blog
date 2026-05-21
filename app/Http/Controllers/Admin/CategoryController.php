@@ -10,10 +10,12 @@ use App\Support\CmsSlugger;
 use Phaseolies\Http\Request;
 use Phaseolies\Http\Response;
 use Phaseolies\Utilities\Attributes\Mapper;
+use Phaseolies\Utilities\Attributes\Middleware;
 use Phaseolies\Utilities\Attributes\Model as RouteModel;
 use Phaseolies\Utilities\Attributes\Route;
 
 #[Mapper(prefix: 'admin/categories')]
+#[Middleware(['auth'])]
 class CategoryController extends Controller
 {
     #[Route(uri: '/', name: 'admin.categories.index')]
