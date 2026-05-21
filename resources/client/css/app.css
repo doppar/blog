@@ -41,6 +41,10 @@ body.admin-modal-open {
     overflow: hidden;
 }
 
+html:has(body.admin-modal-open) {
+    overflow: hidden;
+}
+
 a {
     color: inherit;
     text-decoration: none;
@@ -988,10 +992,11 @@ svg {
 .admin-two-factor-modal {
     position: fixed;
     inset: 0;
-    z-index: 80;
+    z-index: 200;
     display: grid;
     place-items: center;
     padding: 24px;
+    overflow-y: auto;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -1008,8 +1013,7 @@ svg {
     position: absolute;
     inset: 0;
     border: 0;
-    background: rgba(225, 234, 247, 0.7);
-    backdrop-filter: blur(18px);
+    background: rgba(0, 0, 0, 0.45);
     cursor: pointer;
 }
 

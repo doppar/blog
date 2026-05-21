@@ -50,16 +50,6 @@ class ProfileController extends Controller
         $payload = $request->passed();
         $email = strtolower(trim((string) ($payload['email'] ?? '')));
 
-        if (
-            $email !== ''
-            && $email !== (string) $user->email
-            && User::where('email', $email)->first() !== null
-        ) {
-            return back()->withErrors([
-                'email' => 'The email has already been taken.',
-            ])->withInput();
-        }
-
         $uploadedImage = $this->storeProfileImage($request->file('image_file'));
         $previousImage = (string) ($user->image ?? '');
 
