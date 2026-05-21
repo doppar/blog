@@ -11,7 +11,7 @@ use Phaseolies\Utilities\Attributes\Model as RouteModel;
 class WelcomeController extends Controller
 {
     #[Route(uri: '/', name: 'home')]
-    public function welcome(Request $request): Response
+    public function welcome(Request $request)
     {
         $perPage = 5;
         $cursorColumn = 'id';
