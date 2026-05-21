@@ -26,7 +26,7 @@
                     <div class="admin-form-grid__fields">
                         <div class="admin-field">
                             <label for="profile-name">Name</label>
-                            <input id="profile-name" name="name" type="text" value="[[ old('name', $user->name) ]]" autocomplete="name">
+                            <input id="profile-name" name="name" type="text" value="[[ Auth::user()->name ]]" autocomplete="name">
                             #error('name')
                                 <p class="admin-field__error">[[ $message ]]</p>
                             #enderror
@@ -34,7 +34,7 @@
 
                         <div class="admin-field">
                             <label for="profile-email">Email</label>
-                            <input id="profile-email" name="email" type="email" value="[[ old('email', $user->email) ]]" autocomplete="email">
+                            <input id="profile-email" name="email" type="email" value="[[ Auth::user()->email ]]" autocomplete="email">
                             #error('email')
                                 <p class="admin-field__error">[[ $message ]]</p>
                             #enderror
