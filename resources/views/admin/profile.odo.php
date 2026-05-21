@@ -189,7 +189,9 @@
                 </div>
 
                 <div class="admin-two-factor-modal__body">
-                    <div class="admin-two-factor-modal__qr">[[! $pendingTwoFactorSetup['qr_code_svg'] !]]</div>
+                    <div class="admin-two-factor-modal__qr">
+                        <img src="[[ $pendingTwoFactorSetup['qr_code_svg'] ]]" alt="Scan this QR code with your authenticator app" width="200" height="200">
+                    </div>
 
                     <form method="POST" action="[[ route('admin.profile.two-factor.confirm') ]]" class="admin-two-factor-modal__form">
                         #csrf

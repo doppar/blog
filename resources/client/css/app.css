@@ -12,6 +12,7 @@
     --admin-text: #5f7392;
     --admin-text-strong: #4e6486;
     --admin-text-dark: #3d4f6b;
+    --admin-text-muted: #8fa0ba;
     --admin-accent: #16a9eb;
     --admin-accent-strong: #1096d7;
     --admin-success: #28c65e;
@@ -885,7 +886,16 @@ svg {
 
 .admin-profile-form {
     display: grid;
-    gap: 24px;
+    gap: 0;
+}
+
+.admin-profile-form > .admin-form-grid__fields {
+    margin-bottom: 24px;
+}
+
+.admin-profile-form > .admin-button {
+    margin: 0 22px 22px;
+    justify-self: start;
 }
 
 .admin-profile-upload {
@@ -897,75 +907,82 @@ svg {
     width: 96px;
     height: 96px;
     border-radius: 28px;
+    margin-top: 0;
 }
 
 .admin-profile-upload .admin-cover-preview img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    display: block;
 }
 
 .admin-profile-security {
     display: grid;
-    gap: 20px;
+    gap: 0;
 }
 
 .admin-profile-security__status {
     display: flex;
     align-items: flex-start;
-    gap: 16px;
-    padding: 18px 20px;
-    border-radius: 24px;
-    border: 1px solid #d8e6fa;
-    background: linear-gradient(180deg, rgba(246, 250, 255, 0.92), rgba(255, 255, 255, 0.98));
+    gap: 14px;
+    padding: 20px 22px;
 }
 
 .admin-profile-security__dot {
-    width: 13px;
-    height: 13px;
-    margin-top: 6px;
+    width: 12px;
+    height: 12px;
+    margin-top: 4px;
     flex: 0 0 auto;
     border-radius: 999px;
     background: #f97316;
-    box-shadow: 0 0 0 6px rgba(249, 115, 22, 0.12);
+    box-shadow: 0 0 0 5px rgba(249, 115, 22, 0.12);
 }
 
 .admin-profile-security__status.is-enabled .admin-profile-security__dot {
     background: #22c55e;
-    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.12);
+    box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.12);
 }
 
 .admin-profile-security__status strong {
     display: block;
     color: var(--admin-text-strong);
-    font-size: 1rem;
+    font-size: 0.97rem;
 }
 
 .admin-profile-security__status p {
-    margin: 6px 0 0;
+    margin: 5px 0 0;
     color: var(--admin-text-muted);
-    line-height: 1.7;
+    font-size: 0.9rem;
+    line-height: 1.65;
 }
 
 .admin-profile-security__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 10px;
+    padding: 16px 22px 20px;
+    border-top: 1px solid var(--admin-border-soft);
 }
 
 .admin-profile-recovery {
     display: grid;
     gap: 16px;
+    padding: 20px 22px 22px;
+    border-top: 1px solid var(--admin-border-soft);
 }
 
 .admin-profile-recovery__head h3 {
-    margin: 0 0 6px;
+    margin: 0 0 5px;
     color: var(--admin-text-strong);
-    font-size: 1rem;
+    font-size: 0.97rem;
 }
 
 .admin-profile-recovery__head p {
     margin: 0;
     color: var(--admin-text-muted);
-    line-height: 1.7;
+    font-size: 0.88rem;
+    line-height: 1.65;
 }
 
 .admin-two-factor-modal {
@@ -1036,13 +1053,24 @@ svg {
 .admin-two-factor-modal__close {
     width: 42px;
     height: 42px;
-    border: 0;
+    border: 1px solid #dce8f5;
     border-radius: 999px;
     background: #f4f8ff;
     color: #7f98bf;
-    font-size: 1.9rem;
+    font-size: 1.35rem;
     line-height: 1;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.admin-two-factor-modal__close:hover {
+    background: #eaf2fc;
+    border-color: #c6dbf0;
+    color: #4e6d90;
 }
 
 .admin-two-factor-modal__body {
@@ -1056,17 +1084,19 @@ svg {
 .admin-two-factor-modal__qr {
     display: grid;
     place-items: center;
-    min-height: 250px;
-    padding: 18px;
+    padding: 22px;
     border-radius: 26px;
-    border: 1px dashed #c8daf4;
-    background: linear-gradient(180deg, rgba(247, 251, 255, 0.96), rgba(255, 255, 255, 0.98));
+    border: 1px solid #daeaf8;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(100, 140, 190, 0.08);
 }
 
-.admin-two-factor-modal__qr svg {
-    width: 100%;
-    max-width: 205px;
-    height: auto;
+.admin-two-factor-modal__qr img {
+    display: block;
+    width: 200px !important;
+    height: 200px !important;
+    object-fit: contain;
+    border-radius: 8px;
 }
 
 .admin-two-factor-modal__form {
@@ -1079,6 +1109,16 @@ svg {
     flex-wrap: wrap;
     gap: 12px;
     padding-top: 4px;
+}
+
+.admin-two-factor-modal__form input[readonly] {
+    background: #f5f9ff;
+    color: var(--admin-text-strong);
+    cursor: default;
+    font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
+    font-size: 0.88rem;
+    letter-spacing: 0.06em;
+    border-color: var(--admin-border-soft);
 }
 
 .admin-button {

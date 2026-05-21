@@ -11,7 +11,7 @@ use Phaseolies\Support\Facades\Auth;
 use Phaseolies\Utilities\Attributes\Mapper;
 use Phaseolies\Utilities\Attributes\Route;
 
-#[Mapper(prefix: 'verify/2fa', middleware: ['guest', VerifyTwoFactorUser::class])]
+#[Mapper(prefix: 'verify/2fa', middleware: ['guest', 'verify.2fa'])]
 class TwoFactorAuthController extends Controller
 {
     #[Route(uri: '/', name: 'verify.2fa')]
