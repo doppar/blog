@@ -1,0 +1,176 @@
+/* =========================================================================
+   Public blog — design system
+   Loaded by app.css. Used by layouts/public.odo.php and its children.
+   ========================================================================= */
+
+:root {
+    --c-bg:        #fefefe;
+    --c-ink:       #1a1a1a;
+    --c-ink-soft:  #5c5b5e;
+    --c-muted:     #babcbd;
+    --c-primary:   #6d6cf3;
+    --c-cyan:      #1cb0ee;
+    --c-amber:     #f3b11a;
+    --c-green:     #36ca84;
+    --c-gold:      #946b01;
+    --c-pink:      #d66887;
+}
+
+/* The public layout opts-in via <body class="public"> so the admin
+   layout keeps its own background and typography untouched. */
+body.public {
+    background: var(--c-bg);
+    color: var(--c-ink);
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Typography helpers ---------- */
+.font-display { font-family: 'Fraunces', Georgia, serif; font-optical-sizing: auto; }
+.font-mono    { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+/* ---------- Palette utilities ---------- */
+.text-ink      { color: var(--c-ink); }
+.text-ink-soft { color: var(--c-ink-soft); }
+.text-muted    { color: var(--c-muted); }
+.text-primary  { color: var(--c-primary); }
+.text-cyan-a   { color: var(--c-cyan); }
+.text-amber-a  { color: var(--c-amber); }
+.text-green-a  { color: var(--c-green); }
+.text-pink-a   { color: var(--c-pink); }
+.text-gold-a   { color: var(--c-gold); }
+
+.bg-ink        { background-color: var(--c-ink); }
+.bg-primary    { background-color: var(--c-primary); }
+.bg-cyan-a     { background-color: var(--c-cyan); }
+.bg-amber-a    { background-color: var(--c-amber); }
+.bg-green-a    { background-color: var(--c-green); }
+.bg-pink-a     { background-color: var(--c-pink); }
+.bg-gold-a     { background-color: var(--c-gold); }
+
+.border-soft   { border-color: rgba(186, 188, 189, .45); }
+.border-strong { border-color: var(--c-ink); }
+
+/* ---------- Hero / accents ---------- */
+.hero-grad {
+    background:
+        radial-gradient(1200px 400px at 85% -10%, rgba(109, 108, 243, .18), transparent 60%),
+        radial-gradient(800px 300px at 0% 0%, rgba(28, 176, 238, .14), transparent 60%),
+        var(--c-bg);
+}
+
+.accent-bar {
+    background: linear-gradient(90deg, var(--c-primary) 0%, var(--c-cyan) 50%, var(--c-green) 100%);
+}
+
+/* ---------- Chip ---------- */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .375rem;
+    padding: .25rem .6rem;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+}
+
+/* ---------- Article body (prose) ---------- */
+.prose-article {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 19px;
+    line-height: 1.75;
+    color: var(--c-ink);
+}
+.prose-article p { margin-bottom: 1.4em; }
+.prose-article h2 { font-size: 30px; font-weight: 700; margin: 2em 0 .6em; line-height: 1.25; letter-spacing: -.01em; }
+.prose-article h3 { font-size: 23px; font-weight: 600; margin: 1.75em 0 .5em; line-height: 1.3; }
+.prose-article h4 { font-size: 19px; font-weight: 600; margin: 1.5em 0 .5em; }
+.prose-article ul,
+.prose-article ol { margin: 1em 0 1.5em 1.5em; }
+.prose-article li { margin-bottom: .35em; }
+.prose-article blockquote {
+    border-left: 3px solid var(--c-primary);
+    padding: .25em 0 .25em 1.25em;
+    margin: 1.75em 0;
+    color: var(--c-ink-soft);
+    font-style: italic;
+}
+.prose-article a {
+    color: var(--c-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+}
+.prose-article a:hover { color: var(--c-ink); }
+.prose-article img { max-width: 100%; border-radius: 10px; margin: 1.75em 0; }
+.prose-article pre {
+    background: var(--c-ink);
+    color: #f4f4f5;
+    padding: 1.1em 1.25em;
+    border-radius: 10px;
+    overflow-x: auto;
+    font-size: 14px;
+    line-height: 1.6;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    margin: 1.75em 0;
+}
+.prose-article code {
+    background: rgba(109, 108, 243, .10);
+    color: var(--c-ink);
+    padding: .15em .4em;
+    border-radius: 5px;
+    font-size: .85em;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+.prose-article pre code { background: none; padding: 0; color: inherit; }
+.prose-article strong { font-weight: 700; color: var(--c-ink); }
+.prose-article em { font-style: italic; }
+.prose-article hr { border: none; border-top: 1px solid var(--c-muted); margin: 2.5em 0; }
+
+/* ---------- Cards & interactions ---------- */
+.post-card { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+.post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px -18px rgba(26, 26, 26, .25);
+}
+
+.link-anim {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size .3s ease;
+}
+.link-anim:hover { background-size: 100% 1px; }
+
+/* ---------- Article page specifics ---------- */
+.reading-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    width: 0%;
+    z-index: 50;
+    background: linear-gradient(90deg, var(--c-primary), var(--c-cyan));
+    transition: width .1s linear;
+}
+
+.tag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    background: #fff;
+    color: var(--c-ink-soft);
+    border: 1px solid rgba(186, 188, 189, .45);
+    transition: all .2s ease;
+}
+.tag-pill:hover {
+    color: var(--c-primary);
+    border-color: var(--c-primary);
+}
