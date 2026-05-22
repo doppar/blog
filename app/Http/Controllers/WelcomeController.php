@@ -10,6 +10,19 @@ use Phaseolies\Utilities\Attributes\Model as RouteModel;
 
 class WelcomeController extends Controller
 {
+    /**
+     * Palette accents cycled per post for the list view.
+     * Each entry is [solid CSS colour, soft tinted background].
+     */
+    private const ACCENT_PALETTE = [
+        ['var(--c-primary)', 'rgba(109,108,243,.12)'],
+        ['var(--c-cyan)',    'rgba(28,176,238,.12)'],
+        ['var(--c-green)',   'rgba(54,202,132,.14)'],
+        ['var(--c-amber)',   'rgba(243,177,26,.16)'],
+        ['var(--c-pink)',    'rgba(214,104,135,.14)'],
+        ['var(--c-gold)',    'rgba(148,107,1,.14)'],
+    ];
+
     #[Route(uri: '/', name: 'home')]
     public function welcome(Request $request)
     {
@@ -28,6 +41,8 @@ class WelcomeController extends Controller
             direction: $direction,
             cursor: $request->query('cursor')
         );
+
+        $posts['data'] = $this->decoratePostsWithAccent($posts['data'] ?? []);
 
         $loadMore = $this->resolveLoadMoreState(
             query: $query,
@@ -50,6 +65,32 @@ class WelcomeController extends Controller
         $showEmptyState = empty($posts['data']) && !$loadMore['has_more'];
 
         return view('welcome', compact('posts', 'tab', 'loadMore', 'showEmptyState'));
+    }
+
+    /**
+     * Attach view-friendly presentation attributes to each post:
+     *  - accent_solid : CSS colour for emphasis
+     *  - accent_soft  : tinted background colour
+     *  - author_initial : single uppercase letter for the avatar
+     *
+     * The accent is derived from the post id so it stays stable
+     * across pagination and AJAX loads.
+     */
+    private function decoratePostsWithAccent(array $posts): array
+    {
+        $palette = self::ACCENT_PALETTE;
+        $size = count($palette);
+
+        foreach ($posts as $post) {
+            $bucket = ((int) ($post->id ?? 0)) % $size;
+            [$solid, $soft] = $palette[$bucket];
+
+            $post->accent_solid = $solid;
+            $post->accent_soft  = $soft;
+            $post->author_initial = strtoupper(substr((string) ($post->author_name ?? 'A'), 0, 1));
+        }
+
+        return $posts;
     }
 
     #[Route(uri: '/posts/{post}', name: 'post.show')]
