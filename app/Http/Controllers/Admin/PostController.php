@@ -79,12 +79,12 @@ class PostController extends Controller
     }
 
     #[Route(uri: '/{post}/edit', name: 'admin.posts.edit')]
-    public function edit(#[RouteModel(exception: true)] Post $post): Response
+    public function edit(#[RouteModel(exception: true)] Post $post)
     {
         return view('admin.posts.form', [
             'post' => $post,
             'formMode' => 'edit',
-            'categories' => Category::query()->active()->orderBy('name')->get(),
+            'categories' => Category::active()->orderBy('name')->get(),
             'authorOptions' => $this->authorOptions((string) ($post->author_name ?? '')),
             'tagOptions' => $this->tagOptions(),
             'selectedTagIds' => [],
@@ -112,40 +112,6 @@ class PostController extends Controller
         $post->delete();
 
         return redirect()->route('admin.posts.index')->withSuccess('Post deleted successfully.');
-    }
-
-    protected function buildPayload(array $payload, ?int $ignoreId = null, int $currentViewCount = 0): array
-    {
-        $title = trim((string) ($payload['title'] ?? ''));
-        $slugInput = trim((string) ($payload['slug'] ?? ''));
-        $status = (string) ($payload['status'] ?? 'draft');
-        $publishedAt = trim((string) ($payload['published_at'] ?? ''));
-
-        if ($status === 'published' && $publishedAt === '') {
-            $publishedAt = date('Y-m-d H:i:s');
-        }
-
-        if ($status !== 'published') {
-            $publishedAt = '';
-        }
-
-        return [
-            'category_id' => (int) ($payload['category_id'] ?? 0),
-            'title' => $title,
-            'slug' => CmsSlugger::unique(Post::class, $slugInput !== '' ? $slugInput : $title, $ignoreId),
-            'excerpt' => trim((string) ($payload['excerpt'] ?? '')),
-            'body' => trim((string) ($payload['body'] ?? '')),
-            'cover_image' => trim((string) ($payload['cover_image'] ?? '')),
-            'author_name' => trim((string) ($payload['author_name'] ?? 'Editorial Team')),
-            'status' => $status,
-            'is_featured' => (string) ($payload['is_featured'] ?? '0') === '1',
-            'published_at' => $publishedAt !== '' ? $publishedAt : null,
-            'view_count' => array_key_exists('view_count', $payload)
-                ? max((int) ($payload['view_count'] ?? 0), 0)
-                : max($currentViewCount, 0),
-            'seo_title' => trim((string) ($payload['seo_title'] ?? '')),
-            'seo_description' => trim((string) ($payload['seo_description'] ?? '')),
-        ];
     }
 
     protected function authorOptions(?string $currentValue = null): array
