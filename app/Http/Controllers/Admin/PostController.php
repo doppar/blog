@@ -25,53 +25,28 @@ class PostController extends Controller
     #[Route(uri: '/', name: 'admin.posts.index')]
     public function index(Request $request): Response
     {
-        $request
-            ->mergeIfMissing([
-                'search' => '',
-                'status' => '',
-                'category_id' => '',
-            ])
-            ->pipeInputs([
-                'search' => fn($value) => is_string($value) ? trim($value) : '',
-                'status' => fn($value) => is_string($value) ? trim($value) : '',
-                'category_id' => fn($value) => is_scalar($value) ? trim((string) $value) : '',
-            ]);
-
-        $filters = [
-            'search' => (string) $request->input('search', ''),
-            'status' => (string) $request->input('status', ''),
-            'category_id' => (string) $request->input('category_id', ''),
-        ];
-
-        $query = Post::query()
-            ->embed(['category'])
+        $posts = Post::embed(['category:name', 'user:name', 'tags:name'])
             ->embedCount('tags')
-            ->if($filters['search'], function ($builder) use ($filters) {
-                $builder->search([
-                    'title',
-                    'slug',
-                    'author_name',
-                    'category.name',
-                    'tags.name',
-                ], $filters['search']);
+            ->if($request->search, function ($q) use ($request) {
+                $q->search(['title', 'user.name', 'category.name',   'tags.name',], $request->search);
             })
-            ->if($filters['status'], fn($builder) => $builder->where('status', $filters['status']))
-            ->if(
-                $filters['category_id'],
-                fn($builder) => $builder->where('category_id', (int) $filters['category_id'])
-            );
+            ->if($request->status, fn($q) => $q->whereStatus($request->status))
+            ->if($request->category_id,     fn($q) => $q->where('category_id', (int) $request->category_id))
+            ->orderBy('id', 'DESC')
+            ->paginate(10);
 
-        $totalPosts = Post::query()->count();
-        $publishedPosts = Post::published()->count();
+        $totalPosts = cache()->stashForever('post.total', fn() => Post::count());
+        $publishedPosts = cache()->stashForever('post.published', fn() => Post::published()->count());
+        $featuredPosts = cache()->stashForever('post.featured', fn() => Post::featured()->count());
+        $draftPosts = cache()->stashForever('post.draft', fn() => Post::draft()->count());
 
         return view('admin.posts.index', [
-            'posts' => $query->orderBy('updated_at', 'DESC')->paginate(10),
-            'filters' => $filters,
+            'posts' => $posts,
             'categories' => Category::query()->active()->orderBy('name')->get(),
             'totalPosts' => $totalPosts,
             'publishedPosts' => $publishedPosts,
-            'featuredPosts' => Post::featured()->count(),
-            'draftPosts' => Post::draft()->count(),
+            'featuredPosts' => $featuredPosts,
+            'draftPosts' => $draftPosts,
             'publishedRatio' => $totalPosts > 0 ? (int) round(($publishedPosts / $totalPosts) * 100) : 0,
         ]);
     }
@@ -97,68 +72,23 @@ class PostController extends Controller
     #[Route(uri: '/', methods: ['POST'], name: 'admin.posts.store')]
     public function store(StorePostRequest $request): Response
     {
-        $request
-            ->mergeIfMissing([
-                'author_name' => 'Editorial Team',
-                'is_featured' => '0',
-            ])
-            ->pipeInputs([
-                'title' => fn($value) => is_string($value) ? trim($value) : $value,
-                'slug' => fn($value) => is_string($value) ? trim($value) : $value,
-                'excerpt' => fn($value) => is_string($value) ? trim($value) : $value,
-                'body' => fn($value) => is_string($value) ? trim($value) : $value,
-                'cover_image' => fn($value) => is_string($value) ? trim($value) : $value,
-                'author_name' => fn($value) => is_string($value) ? trim($value) : $value,
-                'published_at' => fn($value) => is_string($value) ? trim($value) : $value,
-                'seo_title' => fn($value) => is_string($value) ? trim($value) : $value,
-                'seo_description' => fn($value) => is_string($value) ? trim($value) : $value,
-            ])
-            ->nullifyBlanks();
-
-        $payload = $this->buildPayload($request->passed());
-
-        if ($this->hasDuplicateTitle($payload['title'])) {
-            return back()->withErrors([
-                'title' => 'The post title has already been taken.',
-            ])->withInput();
-        }
-
-        $post = Post::create($payload);
+        $post = Post::create($request->passed());
         $post->tags()->relate($this->sanitizeTagIds($request));
 
-        return redirect()
-            ->route('admin.posts.index')
-            ->withSuccess('Post created successfully.');
+        return redirect()->route('admin.posts.index')->withSuccess('Post created successfully.');
     }
 
     #[Route(uri: '/{post}/edit', name: 'admin.posts.edit')]
-    public function edit(#[RouteModel(exception: true)] Post $post): Response
+    public function edit(#[RouteModel(exception: true)] Post $post)
     {
-        $selectedTagIds = [];
-        $selectedTagNames = [];
-
-        foreach ($post->tags as $tag) {
-            $tagId = $this->extractTagValue($tag, 'id');
-            $tagName = $this->extractTagValue($tag, 'name');
-
-            if ($tagId !== null) {
-                $selectedTagIds[] = (int) $tagId;
-            }
-
-            if ($tagName !== null && trim((string) $tagName) !== '') {
-                $selectedTagNames[] = (string) $tagName;
-            }
-        }
-
         return view('admin.posts.form', [
             'post' => $post,
             'formMode' => 'edit',
-            'categories' => Category::query()->active()->orderBy('name')->get(),
+            'categories' => Category::active()->orderBy('name')->get(),
             'authorOptions' => $this->authorOptions((string) ($post->author_name ?? '')),
             'tagOptions' => $this->tagOptions(),
-            'selectedTagIds' => $selectedTagIds,
-            'selectedTagNames' => $selectedTagNames,
-            'tagFieldValue' => implode(', ', $selectedTagNames),
+            'selectedTagIds' => [],
+            'tagFieldValue' => implode(', ', $this->extractTagNames($post)),
             'coverMediaItems' => $this->coverMediaItems(),
             'formInput' => session('input') ?? [],
         ]);
@@ -166,42 +96,12 @@ class PostController extends Controller
 
     #[Transaction]
     #[Route(uri: '/{post}', methods: ['PUT'], name: 'admin.posts.update')]
-    public function update(
-        UpdatePostRequest $request,
-        #[RouteModel(exception: true)] Post $post
-    ): Response {
-        $request
-            ->mergeIfMissing([
-                'author_name' => 'Editorial Team',
-                'is_featured' => '0',
-            ])
-            ->pipeInputs([
-                'title' => fn($value) => is_string($value) ? trim($value) : $value,
-                'excerpt' => fn($value) => is_string($value) ? trim($value) : $value,
-                'body' => fn($value) => is_string($value) ? trim($value) : $value,
-                'cover_image' => fn($value) => is_string($value) ? trim($value) : $value,
-                'author_name' => fn($value) => is_string($value) ? trim($value) : $value,
-                'published_at' => fn($value) => is_string($value) ? trim($value) : $value,
-                'seo_title' => fn($value) => is_string($value) ? trim($value) : $value,
-                'seo_description' => fn($value) => is_string($value) ? trim($value) : $value,
-            ])
-            ->nullifyBlanks();
-
-        $payload = $this->buildPayload($request->passed(), (int) $post->id, (int) ($post->view_count ?? 0));
-
-        if ($this->hasDuplicateTitle($payload['title'], (int) $post->id)) {
-            return back()->withErrors([
-                'title' => 'The post title has already been taken.',
-            ])->withInput();
-        }
-
-        $post->update($payload);
-        $post->tags()->unlink();
+    public function update(UpdatePostRequest $request, #[RouteModel(exception: true)] Post $post): Response
+    {
+        $post->update($request->passed());
         $post->tags()->relate($this->sanitizeTagIds($request));
 
-        return redirect()
-            ->route('admin.posts.index')
-            ->withSuccess('Post updated successfully.');
+        return redirect()->route('admin.posts.index')->withSuccess('Post updated successfully.');
     }
 
     #[Transaction]
@@ -211,43 +111,7 @@ class PostController extends Controller
         $post->tags()->unlink();
         $post->delete();
 
-        return redirect()
-            ->route('admin.posts.index')
-            ->withSuccess('Post deleted successfully.');
-    }
-
-    protected function buildPayload(array $payload, ?int $ignoreId = null, int $currentViewCount = 0): array
-    {
-        $title = trim((string) ($payload['title'] ?? ''));
-        $slugInput = trim((string) ($payload['slug'] ?? ''));
-        $status = (string) ($payload['status'] ?? 'draft');
-        $publishedAt = trim((string) ($payload['published_at'] ?? ''));
-
-        if ($status === 'published' && $publishedAt === '') {
-            $publishedAt = date('Y-m-d H:i:s');
-        }
-
-        if ($status !== 'published') {
-            $publishedAt = '';
-        }
-
-        return [
-            'category_id' => (int) ($payload['category_id'] ?? 0),
-            'title' => $title,
-            'slug' => CmsSlugger::unique(Post::class, $slugInput !== '' ? $slugInput : $title, $ignoreId),
-            'excerpt' => trim((string) ($payload['excerpt'] ?? '')),
-            'body' => trim((string) ($payload['body'] ?? '')),
-            'cover_image' => trim((string) ($payload['cover_image'] ?? '')),
-            'author_name' => trim((string) ($payload['author_name'] ?? 'Editorial Team')),
-            'status' => $status,
-            'is_featured' => (string) ($payload['is_featured'] ?? '0') === '1',
-            'published_at' => $publishedAt !== '' ? $publishedAt : null,
-            'view_count' => array_key_exists('view_count', $payload)
-                ? max((int) ($payload['view_count'] ?? 0), 0)
-                : max($currentViewCount, 0),
-            'seo_title' => trim((string) ($payload['seo_title'] ?? '')),
-            'seo_description' => trim((string) ($payload['seo_description'] ?? '')),
-        ];
+        return redirect()->route('admin.posts.index')->withSuccess('Post deleted successfully.');
     }
 
     protected function authorOptions(?string $currentValue = null): array
@@ -400,16 +264,5 @@ class PostController extends Controller
         ];
 
         return $palette[abs(crc32($seed)) % count($palette)];
-    }
-
-    protected function hasDuplicateTitle(string $title, ?int $ignoreId = null): bool
-    {
-        $query = Post::query()->where('title', $title);
-
-        if ($ignoreId !== null) {
-            $query->where('id', '!=', $ignoreId);
-        }
-
-        return $query->first() !== null;
     }
 }
