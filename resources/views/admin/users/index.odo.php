@@ -118,6 +118,7 @@
                         <th>User</th>
                         <th>Role</th>
                         <th>Status</th>
+                        <th>Posts</th>
                         <th>Created</th>
                         <th>Updated</th>
                         <th></th>
@@ -160,6 +161,7 @@
                                     #endif
                                 </span>
                             </td>
+                            <td>[[ $user->posts_count ?? 0 ]]</td>
                             <td>[[ date('M d, Y', strtotime($user->created_at ?? 'now')) ]]</td>
                             <td>[[ date('M d, Y', strtotime($user->updated_at ?? 'now')) ]]</td>
                             <td class="admin-table__actions">

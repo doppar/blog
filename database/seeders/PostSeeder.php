@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\User;
 use App\Support\CmsSlugger;
 use Phaseolies\Database\Migration\Seeder;
 
@@ -14,6 +15,7 @@ class PostSeeder extends Seeder
     {
         $categories = Category::query()->orderBy('id')->get();
         $tags = Tag::query()->orderBy('id')->get();
+        $users = User::query()->orderBy('id')->get();
 
         if ($categories->count() === 0 || $tags->count() === 0) {
             return;
@@ -29,6 +31,7 @@ class PostSeeder extends Seeder
 
             $post = Post::create([
                 'category_id' => $category->id,
+                'user_id' => $users[($index - 1) % $users->count()]->id,
                 'title' => $title,
                 'slug' => CmsSlugger::unique(Post::class, $title),
                 'excerpt' => fake()->paragraph(2),

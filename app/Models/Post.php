@@ -25,6 +25,7 @@ class Post extends Model
         'view_count',
         'seo_title',
         'seo_description',
+        'user_id',
     ];
 
     public function category()

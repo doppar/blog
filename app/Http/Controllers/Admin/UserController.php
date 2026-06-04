@@ -20,32 +20,46 @@ use Phaseolies\Utilities\Attributes\Route;
 #[Middleware(['auth'])]
 class UserController extends Controller
 {
+    /**
+     * Display a paginated list of users with optional search and role filters.
+     *
+     * @param Request $request
+     * @return Response
+     */
     #[Route(uri: '/', name: 'admin.users.index')]
-    public function index(Request $request): Response
+    public function index(Request $request)
     {
-        $users = User::query()
-            ->if(
-                $search = trim((string) $request->input('search', '')),
-                fn($builder) => $builder->search(['name', 'email', 'role'], $search)
-            )
-            ->if(
-                $role = strtolower(trim((string) $request->input('role', ''))),
-                fn($builder) => $builder->where('role', $role)
-            )
-            ->orderBy('updated_at', 'DESC')
+        $search = trim((string) $request->input('search', ''));
+        $role = strtolower(trim((string) $request->input('role', '')));
+
+        $users = User::embedCount('posts')
+            ->if($search, fn($builder) => $builder->search(['name', 'email', 'role'], $search))
+            ->if($role, fn($builder) => $builder->where('role', $role))
+            ->orderBy('id', 'DESC')
             ->paginate(10);
+
+        $totalUsers = cache()->stashForever('user.total', fn() => User::count());
+        $activeUsers = cache()->stashForever('user.active', fn() => User::whereStatus(true)->count());
+        $adminUsers = cache()->stashForever('user.admin', fn() => User::whereRole(User::ROLE_ADMIN)->count());
+        $editorUsers = cache()->stashForever('user.editor', fn() => User::whereRole(User::ROLE_EDITOR)->count());
+        $authorUsers = cache()->stashForever('user.author', fn() => User::whereRole(User::ROLE_AUTHOR)->count());
 
         return view('admin.users.index', [
             'users' => $users,
             'roleOptions' => User::roleOptions(),
-            'totalUsers' => User::count(),
-            'activeUsers' => User::where('status', true)->count(),
-            'adminUsers' => User::where('role', User::ROLE_ADMIN)->count(),
-            'editorUsers' => User::where('role', User::ROLE_EDITOR)->count(),
-            'authorUsers' => User::where('role', User::ROLE_AUTHOR)->count(),
+            'totalUsers' => $totalUsers,
+            'activeUsers' => $activeUsers,
+            'adminUsers' => $adminUsers,
+            'editorUsers' => $editorUsers,
+            'authorUsers' => $authorUsers,
         ]);
     }
 
+    /**
+     * Show the user creation form.
+     *
+     * @return Response
+     */
     #[Route(uri: '/create', name: 'admin.users.create')]
     public function create(): Response
     {
@@ -57,6 +71,12 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Store a new user record.
+     *
+     * @param StoreUserRequest $request
+     * @return Response
+     */
     #[Route(uri: '/', methods: ['POST'], name: 'admin.users.store')]
     public function store(StoreUserRequest $request): Response
     {
@@ -68,6 +88,12 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->withSuccess('User created successfully.');
     }
 
+    /**
+     * Show the user edit form for the selected record.
+     *
+     * @param User $user
+     * @return Response
+     */
     #[Route(uri: '/{user}/edit', name: 'admin.users.edit')]
     public function edit(#[RouteModel(exception: true)] User $user): Response
     {
@@ -79,6 +105,13 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Update an existing user record.
+     *
+     * @param UpdateUserRequest $request
+     * @param User $user
+     * @return Response
+     */
     #[Route(uri: '/{user}', methods: ['POST'], name: 'admin.users.update')]
     public function update(UpdateUserRequest $request, #[RouteModel(exception: true)] User $user): Response
     {
@@ -104,6 +137,12 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->withSuccess('User updated successfully.');
     }
 
+    /**
+     * Delete a user record and remove the stored profile image when present.
+     *
+     * @param User $user User
+     * @return Response
+     */
     #[Route(uri: '/{user}', methods: ['DELETE'], name: 'admin.users.destroy')]
     public function destroy(#[RouteModel(exception: true)] User $user): Response
     {
@@ -113,6 +152,12 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->withSuccess('User deleted successfully.');
     }
 
+    /**
+     * Store an uploaded profile image and return its public URL.
+     *
+     * @param mixed $file
+     * @return string|null
+     */
     protected function storeProfileImage(mixed $file): ?string
     {
         if (!$file instanceof File || !$file->isValid()) {
@@ -145,6 +190,12 @@ class UserController extends Controller
         return Media::publicUrl($relativePath);
     }
 
+    /**
+     * Delete a previously stored profile image when its storage path can be resolved.
+     *
+     * @param string $url
+     * @return void
+     */
     protected function deleteStoredProfileImage(string $url): void
     {
         $relativePath = $this->resolveStoredProfileImagePath($url);
@@ -156,6 +207,12 @@ class UserController extends Controller
         Storage::disk('public')->delete($relativePath);
     }
 
+    /**
+     * Convert a public image URL into a storage-relative profile path.
+     *
+     * @param string $value
+     * @return string|null
+     */
     protected function resolveStoredProfileImagePath(string $value): ?string
     {
         $value = trim($value);
