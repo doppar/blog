@@ -99,7 +99,6 @@ class PostController extends Controller
     public function update(UpdatePostRequest $request, #[RouteModel(exception: true)] Post $post): Response
     {
         $post->update($request->passed());
-        $post->tags()->unlink();
         $post->tags()->relate($this->sanitizeTagIds($request));
 
         return redirect()->route('admin.posts.index')->withSuccess('Post updated successfully.');
