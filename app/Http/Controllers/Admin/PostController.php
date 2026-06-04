@@ -23,9 +23,9 @@ use Phaseolies\Utilities\Attributes\Transaction;
 class PostController extends Controller
 {
     #[Route(uri: '/', name: 'admin.posts.index')]
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
-        $posts = Post::embed(['category:name', 'user:name'])
+        $posts = Post::embed(['category:name', 'user:name', 'tags:name'])
             ->embedCount('tags')
             ->if($request->search, function ($q) use ($request) {
                 $q->search(['title', 'user.name', 'category.name',   'tags.name',], $request->search);
@@ -88,6 +88,7 @@ class PostController extends Controller
             'authorOptions' => $this->authorOptions((string) ($post->author_name ?? '')),
             'tagOptions' => $this->tagOptions(),
             'selectedTagIds' => [],
+            'tagFieldValue' => implode(', ', $this->extractTagNames($post)),
             'coverMediaItems' => $this->coverMediaItems(),
             'formInput' => session('input') ?? [],
         ]);
