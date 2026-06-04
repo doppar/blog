@@ -27,7 +27,7 @@ class UserController extends Controller
      * @return Response
      */
     #[Route(uri: '/', name: 'admin.users.index')]
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $search = trim((string) $request->input('search', ''));
         $role = strtolower(trim((string) $request->input('role', '')));
