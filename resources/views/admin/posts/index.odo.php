@@ -59,22 +59,22 @@
                 <circle cx="11" cy="11" r="6.5"></circle>
                 <path d="M16 16l4.5 4.5"></path>
             </svg>
-            <input id="search" name="search" type="search" value="[[ $filters['search'] ]]" placeholder="Search posts by title or author" aria-label="Search posts">
+            <input id="search" name="search" type="search" value="[[ request()->search ]]" placeholder="Search posts by title or author" aria-label="Search posts">
         </div>
 
         <div class="admin-users-toolbar__actions">
             <div class="admin-users-toolbar__filters">
                 <select id="status" name="status" aria-label="Filter by status">
                     <option value="">All statuses</option>
-                    <option value="draft" [[ $filters['status'] === 'draft' ? 'selected' : '' ]]>Draft</option>
-                    <option value="published" [[ $filters['status'] === 'published' ? 'selected' : '' ]]>Published</option>
-                    <option value="archived" [[ $filters['status'] === 'archived' ? 'selected' : '' ]]>Archived</option>
+                    <option value="draft" [[ request()->status === 'draft' ? 'selected' : '' ]]>Draft</option>
+                    <option value="published" [[ request()->status === 'published' ? 'selected' : '' ]]>Published</option>
+                    <option value="archived" [[ request()->status === 'archived' ? 'selected' : '' ]]>Archived</option>
                 </select>
                 <span class="admin-users-toolbar__sep"></span>
                 <select id="category_id" name="category_id" aria-label="Filter by category">
                     <option value="">All categories</option>
                     #foreach ($categories as $category)
-                        <option value="[[ $category->id ]]" [[ $filters['category_id'] === (string) $category->id ? 'selected' : '' ]]>[[ $category->name ]]</option>
+                        <option value="[[ $category->id ]]" [[ request()->category_id === (string) $category->id ? 'selected' : '' ]]>[[ $category->name ]]</option>
                     #endforeach
                 </select>
             </div>
@@ -95,6 +95,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Title</th>
+                        <th>Author</th>
                         <th>Category</th>
                         <th>Status</th>
                         <th>Featured</th>
@@ -111,6 +112,7 @@
                                 <a class="admin-table__title" href="[[ route('admin.posts.edit', ['post' => $post->slug]) ]]">[[ $post->title ]]</a>
                                 <p class="admin-table__meta">[[ $post->author_name ]] • [[ $post->tags_count ?? 0 ]] tags</p>
                             </td>
+                            <td>[[ $post->user?->name ?? 'N/A' ]]</td>
                             <td>[[ $post->category?->name ?? 'Uncategorized' ]]</td>
                             <td>
                                 <span class="admin-badge admin-badge--[[ $post->status ]]">[[ ucfirst($post->status) ]]</span>

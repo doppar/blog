@@ -19,6 +19,12 @@ class Category extends Model
         'status',
     ];
 
+    #[Hook('before_created')]
+    protected function createSlugFromName(): void
+    {
+        $this->slug = str()->slug($this->name);
+    }
+
     public function posts()
     {
         return $this->linkMany(Post::class, 'category_id', 'id');

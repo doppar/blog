@@ -28,6 +28,11 @@ class Post extends Model
         'user_id',
     ];
 
+    public function user()
+    {
+        return $this->bindTo(User::class, 'id', 'user_id');
+    }
+
     public function category()
     {
         return $this->bindTo(Category::class, 'id', 'category_id');
@@ -56,6 +61,7 @@ class Post extends Model
     #[Hook('before_created')]
     protected function createSlugFromTitle(): void
     {
+        $this->user_id = auth()->id();
         $this->slug = str()->slug($this->title);
     }
 
@@ -70,5 +76,21 @@ class Post extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    /**
+     * Clear cached user counters after the record changes.
+     *
+     * @return void
+     */
+    #[Hook('after_created')]
+    #[Hook('after_updated')]
+    #[Hook('after_deleted')]
+    protected function removeCache(): void
+    {
+        cache()->forget('post.total');
+        cache()->forget('post.published');
+        cache()->forget('post.featured');
+        cache()->forget('post.draft');
     }
 }
