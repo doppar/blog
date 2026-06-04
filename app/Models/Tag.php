@@ -22,6 +22,12 @@ class Tag extends Model
         return $this->bindToMany(Post::class, 'tag_id', 'post_id', 'post_tag');
     }
 
+    #[Hook('before_created')]
+    protected function createSlugFromName(): void
+    {
+        $this->slug = str()->slug($this->name);
+    }
+
     #[Hook('after_created')]
     #[Hook('after_deleted')]
     protected function clearDashboardCountCache(): void
