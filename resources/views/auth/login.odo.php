@@ -17,7 +17,7 @@
                     </svg>
                 </span>
                 <div>
-                    <p class="auth-card__eyebrow">Doppar CMS</p>
+                    <p class="auth-card__eyebrow">Doppar Blog</p>
                     <h1>Welcome back</h1>
                     <p>Sign in to continue to the editorial admin panel.</p>
                 </div>

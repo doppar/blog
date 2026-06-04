@@ -1,9 +1,10 @@
 <?php
 
 use App\Models\Category;
-use Phaseolies\Support\Facades\Schema;
+use App\Models\User;
 use Phaseolies\Database\Migration\Blueprint;
 use Phaseolies\Database\Migration\Migration;
+use Phaseolies\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -12,6 +13,7 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Category::class, true, true);
+            $table->foreignIdFor(User::class);
             $table->string('title')->unique();
             $table->string('slug')->unique();
             $table->text('excerpt')->nullable();

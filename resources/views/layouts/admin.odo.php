@@ -29,7 +29,7 @@
                                 <path d="M27 19c0 3.5-2.6 6-6.5 6-2.2 0-4.4-.8-6.3-2.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="3"></path>
                             </svg>
                         </span>
-                        <span class="admin-brand__name">Doppar CMS</span>
+                        <span class="admin-brand__name">CMS</span>
                     </a>
                 </div>
 
