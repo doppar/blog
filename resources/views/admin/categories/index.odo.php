@@ -18,15 +18,15 @@
                 <circle cx="11" cy="11" r="6.5"></circle>
                 <path d="M16 16l4.5 4.5"></path>
             </svg>
-            <input id="search" name="search" type="search" value="[[ $filters['search'] ]]" placeholder="Search name or slug" aria-label="Search categories">
+            <input id="search" name="q" type="search" value="[[ request()->q ]]" placeholder="Search name or slug" aria-label="Search categories">
         </div>
 
         <div class="admin-users-toolbar__actions">
             <div class="admin-users-toolbar__filters">
                 <select id="status" name="status" aria-label="Filter by status">
                     <option value="">All statuses</option>
-                    <option value="1" [[ $filters['status'] === '1' ? 'selected' : '' ]]>Active</option>
-                    <option value="0" [[ $filters['status'] === '0' ? 'selected' : '' ]]>Inactive</option>
+                    <option value="active" [[ request()->status === 'active' ? 'selected' : '' ]]>Active</option>
+                    <option value="inactive" [[ request()->status === 'inactive' ? 'selected' : '' ]]>Inactive</option>
                 </select>
             </div>
             <button class="admin-button admin-button--ghost admin-button--with-icon" type="submit">
