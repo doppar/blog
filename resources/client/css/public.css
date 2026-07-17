@@ -59,10 +59,6 @@ body.public {
         var(--c-bg);
 }
 
-.accent-bar {
-    background: linear-gradient(90deg, var(--c-primary) 0%, var(--c-cyan) 50%, var(--c-green) 100%);
-}
-
 /* ---------- Chip ---------- */
 .chip {
     display: inline-flex;
@@ -147,16 +143,6 @@ body.public {
 .link-anim:hover { background-size: 100% 1px; }
 
 /* ---------- Article page specifics ---------- */
-.reading-progress {
-    position: fixed;
-    top: 0; left: 0;
-    height: 3px;
-    width: 0%;
-    z-index: 50;
-    background: linear-gradient(90deg, var(--c-primary), var(--c-cyan));
-    transition: width .1s linear;
-}
-
 .tag-pill {
     display: inline-flex;
     align-items: center;
