@@ -46,7 +46,6 @@
         <!-- Mobile menu -->
         <div id="mobile-menu" class="md:hidden hidden px-6 pb-4">
             <nav class="flex flex-col gap-1 text-sm font-medium text-ink-soft">
-                <a href="/" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Latest</a>
                 <a href="/?tab=featured" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Featured</a>
                 <a href="https://doppar.com" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Documentation</a>
                 <a href="/" class="sm:hidden px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">All stories</a>
@@ -80,13 +79,17 @@
 
                 <div class="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
                     <div class="flex items-center gap-3">
+                        #if (($post->user->image ?? '') !== '')
+                        <img src="[[ $post->user->image ]]" alt="[[ $post->user->name ]]" class="w-11 h-11 rounded-full object-cover">
+                        #else
                         <div class="w-11 h-11 rounded-full bg-primary grid place-items-center text-sm font-bold text-[#fefefe]">
-                            [[ strtoupper(substr($post->author_name ?? 'A', 0, 1)) ]]
+                            [[ strtoupper(substr($post->user->name ?? 'A', 0, 1)) ]]
                         </div>
+                        #endif
                         <div>
-                            <p class="text-sm font-semibold text-ink">[[ $post->author_name ?? 'Unknown' ]]</p>
+                            <p class="text-sm font-semibold text-ink">[[ $post->user->name ?? 'Admin' ]]</p>
                             <p class="text-[12px] text-ink-soft">
-                                [[ $post->published_at ? date('F j, Y', strtotime($post->published_at)) : 'Draft' ]]
+                                [[ $post->published_at ? date('F j, Y', strtotime($post->published_at)) : '' ]]
                             </p>
                         </div>
                     </div>
@@ -181,9 +184,13 @@
 
             <!-- Author card -->
             <div class="mt-14 p-6 sm:p-8 rounded-2xl border border-soft bg-white flex flex-col sm:flex-row items-start gap-5">
+                #if (($post->user->image ?? '') !== '')
+                <img src="[[ $post->user->image ]]" alt="[[ $post->user->name ]]" class="w-14 h-14 rounded-full object-cover flex-shrink-0">
+                #else
                 <div class="w-14 h-14 rounded-full bg-primary grid place-items-center text-lg font-bold text-[#fefefe] flex-shrink-0">
                     [[ strtoupper(substr($post->user->name ?? 'A', 0, 1)) ]]
                 </div>
+                #endif
                 <div class="flex-1 min-w-0">
                     <p class="font-mono text-[10px] tracking-widest uppercase text-cyan-a mb-1">Written by</p>
                     <p class="font-display text-xl font-bold text-ink">[[ $post->user->name ?? 'Unknown' ]]</p>
