@@ -7,14 +7,12 @@
 <div class="min-h-screen flex flex-col">
 
     <header class="sticky top-0 z-30 backdrop-blur-md bg-[rgba(254,254,254,0.85)] border-b border-soft">
-        <div class="h-1 accent-bar"></div>
         <div class="max-w-7xl mx-auto px-6 flex items-center h-16 gap-8">
             <a href="/" class="flex items-center gap-2 group">
                 <span class="w-8 h-8 rounded-lg bg-ink text-[#fefefe] grid place-items-center font-display font-bold text-lg group-hover:bg-primary transition-colors">D</span>
                 <span class="font-display text-xl font-bold tracking-tight text-ink">Doppar <span class="text-primary">Blog</span></span>
             </a>
             <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-ink-soft ml-4">
-                <a href="/" class="hover:text-ink transition-colors">Latest</a>
                 <a href="/?tab=featured" class="hover:text-ink transition-colors">Featured</a>
                 <a href="https://doppar.com" class="hover:text-ink transition-colors">Documentation</a>
                 <a href="https://github.com/doppar/framework" class="hover:text-ink transition-colors">GitHub</a>
@@ -48,9 +46,6 @@
                 <div class="mt-8 flex flex-wrap items-center gap-3">
                     <a href="/?tab=for-you" class="chip border-soft text-ink hover:bg-primary hover:text-[#fefefe] hover:border-transparent transition-colors">All stories</a>
                     <a href="/?tab=featured" class="chip border-soft text-ink hover:bg-amber-a hover:text-ink hover:border-transparent transition-colors">★ Featured</a>
-                    <a href="/?tab=for-you" class="chip border-soft text-ink hover:bg-cyan-a hover:text-[#fefefe] hover:border-transparent transition-colors">Tutorials</a>
-                    <a href="/?tab=for-you" class="chip border-soft text-ink hover:bg-green-a hover:text-[#fefefe] hover:border-transparent transition-colors">Releases</a>
-                    <a href="/?tab=for-you" class="chip border-soft text-ink hover:bg-pink-a hover:text-[#fefefe] hover:border-transparent transition-colors">Community</a>
                 </div>
             </div>
         </div>
@@ -117,29 +112,6 @@
 
             <!-- RIGHT: sidebar -->
             <aside class="space-y-8 lg:sticky lg:top-24 lg:self-start">
-                <div class="rounded-2xl border border-soft bg-white p-6">
-                    <h3 class="font-display text-lg font-bold text-ink mb-2">Subscribe</h3>
-                    <p class="text-sm text-ink-soft mb-4">Get the latest Doppar stories delivered to your inbox. No spam.</p>
-                    <form class="space-y-2">
-                        <input type="email" placeholder="you@domain.com" class="w-full px-3 py-2 rounded-lg border border-soft text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-[rgba(109,108,243,.15)]">
-                        <button type="button" class="w-full px-3 py-2 rounded-lg bg-primary text-[#fefefe] text-sm font-medium hover:opacity-90 transition-opacity">
-                            Subscribe
-                        </button>
-                    </form>
-                </div>
-
-                <div>
-                    <h3 class="font-display text-sm font-bold tracking-wide uppercase text-ink-soft mb-3">Topics</h3>
-                    <div class="flex flex-wrap gap-2">
-                        <a href="/" class="chip bg-white border-soft text-ink hover:border-primary"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span>Framework</a>
-                        <a href="/" class="chip bg-white border-soft text-ink hover:border-cyan-a"><span class="w-1.5 h-1.5 rounded-full bg-cyan-a"></span>Performance</a>
-                        <a href="/" class="chip bg-white border-soft text-ink hover:border-green-a"><span class="w-1.5 h-1.5 rounded-full bg-green-a"></span>Releases</a>
-                        <a href="/" class="chip bg-white border-soft text-ink hover:border-amber-a"><span class="w-1.5 h-1.5 rounded-full bg-amber-a"></span>Tutorials</a>
-                        <a href="/" class="chip bg-white border-soft text-ink hover:border-pink-a"><span class="w-1.5 h-1.5 rounded-full bg-pink-a"></span>Community</a>
-                        <a href="/" class="chip bg-white border-soft text-ink"><span class="w-1.5 h-1.5 rounded-full bg-gold-a"></span>Best practices</a>
-                    </div>
-                </div>
-
                 <div class="rounded-2xl p-6 text-[#fefefe] relative overflow-hidden" style="background: linear-gradient(135deg, var(--c-ink) 0%, #2a2a2a 100%);">
                     <div class="absolute -top-8 -right-8 w-32 h-32 rounded-full" style="background: radial-gradient(circle, rgba(109,108,243,.5), transparent 70%);"></div>
                     <div class="relative">
@@ -157,39 +129,69 @@
     </main>
 
     <!-- ================= FOOTER ================= -->
-    <footer class="border-t border-soft mt-12">
-        <div class="max-w-7xl mx-auto px-6 py-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
-            <div class="lg:col-span-2">
-                <a href="/" class="flex items-center gap-2">
-                    <span class="w-7 h-7 rounded-lg bg-ink text-[#fefefe] grid place-items-center font-display font-bold text-sm">D</span>
-                    <span class="font-display text-lg font-bold tracking-tight text-ink">Doppar Blog</span>
-                </a>
-                <p class="text-sm text-ink-soft mt-3 max-w-sm">
-                    The official journal of the Doppar framework — a modern PHP stack designed
-                    to feel beautiful and run fast.
-                </p>
+    <footer class="relative overflow-hidden border-t border-soft mt-12">
+        <div class="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full blur-[100px] pointer-events-none" style="background:rgba(109,108,243,.10)"></div>
+        <div class="absolute top-1/2 right-1/4 translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full blur-[100px] pointer-events-none" style="background:rgba(28,176,238,.10)"></div>
+
+        <div class="relative max-w-2xl mx-auto px-6 py-14">
+            <!-- Brand -->
+            <div class="text-center mb-8">
+                <img src="/logo.png" alt="Doppar" class="h-8 mx-auto mb-3">
+                <p class="text-xs text-ink-soft">© [[ date('Y') ]] Doppar. All Rights Reserved.</p>
             </div>
-            <div>
-                <h4 class="font-display text-sm font-bold text-ink mb-3">Doppar</h4>
-                <ul class="space-y-2 text-sm text-ink-soft">
-                    <li><a href="https://doppar.com" class="hover:text-ink transition-colors">Documentation</a></li>
-                    <li><a href="https://github.com/doppar/framework" class="hover:text-ink transition-colors">GitHub</a></li>
-                    <li><a href="/" class="hover:text-ink transition-colors">Releases</a></li>
-                </ul>
+
+            <!-- Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-4 text-sm">
+                <div>
+                    <h4 class="text-primary font-semibold mb-2">Links</h4>
+                    <ul class="space-y-1.5 text-ink-soft">
+                        <li><a href="https://doppar.com/versions/3.x/credits" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Credits</a></li>
+                        <li><a href="https://doppar.com/versions/3.x/getting-started" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Getting started</a></li>
+                        <li><a href="https://doppar.com/versions/3.x/releases" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Release notes</a></li>
+                        <li><a href="https://doppar.com/versions/3.x/contributions" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Contributions</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-primary font-semibold mb-2">Get Involved</h4>
+                    <ul class="space-y-1.5 text-ink-soft">
+                        <li><a href="https://join.slack.com/t/zuno-global/shared_invite/zt-3xg3sl8vq-giLmT9rxCdDzQ7yEK53NvA" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Join community</a></li>
+                        <li><a href="https://github.com/doppar/framework/issues" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Request features</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-primary font-semibold mb-2">Ecosystem</h4>
+                    <ul class="space-y-1.5 text-ink-soft">
+                        <li><a href="https://doppar.com/versions/3.x/doppar-ai" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">AI</a></li>
+                        <li><a href="https://doppar.com/versions/3.x/doppar-queue" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Queue</a></li>
+                        <li><a href="https://doppar.com/versions/3.x/doppar-airbend" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Airbend</a></li>
+                        <li><a href="https://doppar.com/versions/3.x/doppar-flarion" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Flarion</a></li>
+                        <li><a href="https://doppar.com/versions/3.x/doppar-notifier" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Notifier</a></li>
+                        <li><a href="https://doppar.com/versions/3.x/doppar-orion" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Orion</a></li>
+                        <li><a href="https://doppar.com/versions/3.x/doppar-guard" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Guard</a></li>
+                        <li><a href="https://doppar.com/versions/3.x/doppar-axios" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Axios</a></li>
+                        <li><a href="https://doppar.com/versions/3.x/doppar-oauthic" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">OAuthic</a></li>
+                        <li><a href="https://doppar.com/versions/3.x/doppar-bloom" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Bloom</a></li>
+                        <li><a href="https://doppar.com/versions/3.x/doppar-insight" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Insight</a></li>
+                        <li><a href="https://doppar.com/versions/3.x/doppar-twig-bridge" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Twig Bridge</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-primary font-semibold mb-2">Connect</h4>
+                    <div class="flex flex-col items-start gap-1.5 text-ink-soft">
+                        <a href="https://x.com/dopparframework" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">X (Twitter)</a>
+                        <a href="https://www.linkedin.com/company/doppar/posts/?feedView=all" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">LinkedIn</a>
+                        <a href="https://www.buymeacoffee.com/mahedisulaa" target="_blank" rel="noopener noreferrer" class="mt-1.5 inline-flex items-center gap-1.5 bg-amber-a hover:brightness-95 text-ink text-xs px-3 py-1.5 rounded-md font-semibold transition-all w-fit">
+                            ☕ Buy me a coffee
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div>
-                <h4 class="font-display text-sm font-bold text-ink mb-3">Blog</h4>
-                <ul class="space-y-2 text-sm text-ink-soft">
-                    <li><a href="/" class="hover:text-ink transition-colors">Latest</a></li>
-                    <li><a href="/?tab=featured" class="hover:text-ink transition-colors">Featured</a></li>
-                    <li><a href="/login" class="hover:text-ink transition-colors">Authors</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="border-t border-soft">
-            <div class="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-soft">
-                <p>© [[ date('Y') ]] Doppar. Crafted with care.</p>
-                <p class="font-mono">v3.x • PHP ^8.3</p>
+
+            <div class="mt-10 flex justify-center">
+                <p class="text-sm font-medium text-ink-soft">Made with Doppar</p>
             </div>
         </div>
     </footer>

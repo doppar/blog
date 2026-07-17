@@ -96,6 +96,8 @@ class WelcomeController extends Controller
     #[Route(uri: '/posts/{post}', name: 'post.show')]
     public function show(#[RouteModel(exception: true)] Post $post)
     {
+        $post->increment('view_count');
+
         return view('post', compact('post'));
     }
 
