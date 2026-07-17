@@ -510,7 +510,6 @@ svg {
     border-radius: 16px;
     margin-bottom: 16px;
     background: var(--admin-surface);
-    box-shadow: var(--admin-shadow);
 }
 
 .admin-alert p {
@@ -529,7 +528,7 @@ svg {
 }
 
 .admin-alert--success {
-    border-color: rgba(40, 198, 94, 0.24);
+    border-color: #ddd;
 }
 
 .admin-alert--danger {
