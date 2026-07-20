@@ -1,6 +1,8 @@
 #extends('layouts.public')
 
-#section('title', 'Doppar Blog — Stories from a faster PHP')
+#section('title')
+[[ 'Doppar Blog — Stories from a faster PHP' ]]
+#endsection
 
 #section('content')
 
