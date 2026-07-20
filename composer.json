@@ -10,6 +10,7 @@
     ],
     "require": {
         "php": "^8.3",
+        "doppar/ai": "^1.4",
         "doppar/framework": "3.*"
     },
     "require-dev": {
@@ -63,7 +64,8 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "codewithkyrian/platform-package-installer": true
         }
     },
     "minimum-stability": "stable",
