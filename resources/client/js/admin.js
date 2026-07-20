@@ -2236,7 +2236,241 @@ function bootTagify() {
                 menu.classList.remove('is-open');
             }
         });
+
+        root.__adminTagifyApi = {
+            add(value) {
+                input.value = String(value || '');
+                addInputValue();
+            },
+        };
     });
+}
+
+function bootAIAssistant() {
+    const root = document.querySelector('[data-ai-drawer]');
+    const openButton = document.querySelector('[data-ai-drawer-open]');
+
+    if (!root) {
+        return;
+    }
+
+    const targetSelect = root.querySelector('[data-ai-target]');
+    const providerSelect = root.querySelector('[data-ai-provider]');
+    const modelInput = root.querySelector('[data-ai-model]');
+    const instructionsInput = root.querySelector('[data-ai-instructions]');
+    const temperatureInput = root.querySelector('[data-ai-temperature]');
+    const temperatureLabel = root.querySelector('[data-ai-temperature-label]');
+    const maxTokensInput = root.querySelector('[data-ai-max-tokens]');
+    const generateButton = root.querySelector('[data-ai-generate]');
+    const applyButton = root.querySelector('[data-ai-apply]');
+    const outputField = root.querySelector('[data-ai-output-field]');
+    const outputTextarea = root.querySelector('[data-ai-output]');
+    const generateUrlInput = root.querySelector('[data-ai-generate-url]');
+    const buttonLabel = root.querySelector('[data-ai-button-label]');
+    const closeButtons = root.querySelectorAll('[data-ai-drawer-close]');
+
+    const modelDefaults = {
+        openai: 'gpt-3.5-turbo',
+        gemini: 'gemini-2.0-flash',
+        claude: 'claude-sonnet-4-5-20250929',
+        openrouter: 'openrouter/free',
+        selfhost: 'local-model-name',
+    };
+
+    function openDrawer() {
+        root.classList.add('is-open');
+        root.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('admin-modal-open');
+    }
+
+    function closeDrawer() {
+        root.classList.remove('is-open');
+        root.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('admin-modal-open');
+    }
+
+    openButton?.addEventListener('click', openDrawer);
+    closeButtons.forEach((button) => button.addEventListener('click', closeDrawer));
+
+    root?.addEventListener('click', (event) => {
+        if (event.target === root) {
+            closeDrawer();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && root.classList.contains('is-open')) {
+            closeDrawer();
+        }
+    });
+
+    function updateModelDefault() {
+        if (!modelInput) {
+            return;
+        }
+
+        const provider = providerSelect?.value || 'openai';
+
+        if (modelDefaults[provider] && (!modelInput.dataset.touched || modelInput.value === '')) {
+            modelInput.value = modelDefaults[provider];
+        }
+    }
+
+    function getCsrfToken() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    }
+
+    function getRichEditor() {
+        return document.querySelector('[data-rich-editor]')?.__adminEditor || null;
+    }
+
+    function getTargetElement(target) {
+        const field = document.querySelector(`#${target}`);
+
+        if (target === 'body') {
+            return getRichEditor();
+        }
+
+        return field;
+    }
+
+    function getContext() {
+        const context = {};
+        const title = document.querySelector('#title')?.value || '';
+        const excerpt = document.querySelector('#excerpt')?.value || '';
+        const body = getRichEditor()?.getHTML() || document.querySelector('#body')?.value || '';
+        const category = document.querySelector('#category_id option:checked')?.textContent || '';
+        const tags = document.querySelector('[data-tagify-hidden]')?.value || '';
+        const seoTitle = document.querySelector('#seo_title')?.value || '';
+        const seoDescription = document.querySelector('#seo_description')?.value || '';
+
+        context.title = title;
+        context.excerpt = excerpt;
+        context.body = body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+        context.category = category;
+        context.tags = tags;
+        context.seo_title = seoTitle;
+        context.seo_description = seoDescription;
+
+        return context;
+    }
+
+    function setGenerating(isGenerating) {
+        if (!generateButton || !buttonLabel) {
+            return;
+        }
+
+        generateButton.disabled = isGenerating;
+        buttonLabel.textContent = isGenerating ? 'Generating…' : 'Generate';
+    }
+
+    async function generate() {
+        const target = targetSelect?.value || 'body';
+        const result = outputTextarea?.value?.trim() || '';
+
+        if (target === 'body' && getRichEditor()) {
+            getRichEditor().chain().focus().setContent(result).run();
+            pushAdminAlert('success', 'The generated content has been applied to the body.');
+            return;
+        }
+
+        if (target === 'tags') {
+            const tagify = document.querySelector('[data-tagify]')?.__adminTagifyApi;
+
+            if (tagify) {
+                tagify.add(result);
+                pushAdminAlert('success', 'The generated tags have been added.');
+                return;
+            }
+        }
+
+        const targetField = document.querySelector(`#${target}`);
+
+        if (targetField) {
+            targetField.value = result;
+            targetField.dispatchEvent(new Event('input', { bubbles: true }));
+            pushAdminAlert('success', 'The generated content has been applied.');
+        }
+    }
+
+    async function performGeneration() {
+        if (!generateUrlInput) {
+            return;
+        }
+
+        const url = generateUrlInput.value;
+        const target = targetSelect?.value || 'body';
+
+        setGenerating(true);
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                },
+                body: JSON.stringify({
+                    target,
+                    provider: providerSelect?.value || 'openai',
+                    model: modelInput?.value || '',
+                    temperature: Number(temperatureInput?.value || 7) / 10,
+                    max_tokens: Number(maxTokensInput?.value || 1200),
+                    instructions: instructionsInput?.value || '',
+                    context: getContext(),
+                }),
+            });
+
+            const payload = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(payload.error || payload.message || 'AI generation failed.');
+            }
+
+            const generated = String(payload.content ?? '').trim();
+
+            if (outputTextarea) {
+                outputTextarea.value = generated;
+            }
+
+            if (outputField) {
+                outputField.classList.remove('is-hidden');
+            }
+
+            if (applyButton) {
+                applyButton.classList.remove('is-hidden');
+            }
+
+            if (generated === '') {
+                const debugInfo = payload.debug ? JSON.stringify(payload.debug, null, 2) : 'No debug data.';
+                console.error('[AI Assistant] Empty response', payload);
+                pushAdminAlert('danger', 'The AI returned an empty response. Debug data has been logged to the console.');
+            }
+        } catch (error) {
+            pushAdminAlert('danger', error instanceof Error ? error.message : 'AI generation failed.');
+        } finally {
+            setGenerating(false);
+        }
+    }
+
+    providerSelect?.addEventListener('change', updateModelDefault);
+
+    modelInput?.addEventListener('input', () => {
+        modelInput.dataset.touched = '1';
+    });
+
+    temperatureInput?.addEventListener('input', () => {
+        if (temperatureLabel) {
+            temperatureLabel.textContent = (Number(temperatureInput.value) / 10).toFixed(1);
+        }
+    });
+
+    generateButton?.addEventListener('click', performGeneration);
+
+    applyButton?.addEventListener('click', generate);
+
+    updateModelDefault();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -2254,4 +2488,5 @@ document.addEventListener('DOMContentLoaded', () => {
     bootSidebarGroups();
     bootDropdowns();
     bootSearchShortcut();
+    bootAIAssistant();
 });

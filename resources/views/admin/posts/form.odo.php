@@ -9,6 +9,13 @@
     Manage the article body, publishing state, category, and tags.
 #endsection
 #section('page_actions')
+    <button class="admin-button admin-button--secondary admin-button--with-icon" type="button" data-ai-drawer-open>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M9 21h6" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        AI assistant
+    </button>
     <a class="admin-button admin-button--ghost" href="[[ route('admin.posts.index') ]]">Back to posts</a>
 #endsection
 #section('content')
@@ -404,6 +411,80 @@
             </aside>
         </form>
     </section>
+
+    <aside class="admin-ai-drawer" data-ai-drawer aria-hidden="true">
+        <div class="admin-ai-drawer__backdrop" data-ai-drawer-close></div>
+        <div class="admin-ai-drawer__dialog">
+            <div class="admin-ai-drawer__head">
+                <div>
+                    <p class="admin-section__eyebrow">AI assistant</p>
+                    <h3 class="admin-ai-drawer__title">Writing assistant</h3>
+                </div>
+                <button class="admin-ai-drawer__close" type="button" data-ai-drawer-close aria-label="Close AI assistant">×</button>
+            </div>
+
+            <div class="admin-ai-drawer__body">
+                <div class="admin-field">
+                    <label for="ai_target">Generate for</label>
+                    <select id="ai_target" data-ai-target>
+                        <option value="title">Title</option>
+                        <option value="excerpt">Excerpt</option>
+                        <option value="body">Body</option>
+                        <option value="seo_title">SEO title</option>
+                        <option value="seo_description">SEO description</option>
+                        <option value="tags">Tags</option>
+                    </select>
+                </div>
+
+                <div class="admin-field">
+                    <label for="ai_provider">Provider</label>
+                    <select id="ai_provider" data-ai-provider>
+                        <option value="openai">OpenAI</option>
+                        <option value="gemini">Google Gemini</option>
+                        <option value="claude">Anthropic Claude</option>
+                        <option value="openrouter" selected>OpenRouter</option>
+                        <option value="selfhost">Self-hosted</option>
+                    </select>
+                    <p class="admin-field__hint">Set the matching API key in your .env file.</p>
+                </div>
+
+                <div class="admin-field">
+                    <label for="ai_model">Model</label>
+                    <input id="ai_model" type="text" value="openrouter/free" data-ai-model>
+                </div>
+
+                <div class="admin-field admin-field--full">
+                    <label for="ai_instructions">Instructions</label>
+                    <textarea id="ai_instructions" rows="4" placeholder="Tone, audience, key points, keywords…" data-ai-instructions></textarea>
+                </div>
+
+                <div class="admin-field">
+                    <label for="ai_temperature">Creativity</label>
+                    <input id="ai_temperature" type="range" min="0" max="20" value="7" data-ai-temperature>
+                    <p class="admin-field__hint" data-ai-temperature-label>0.7</p>
+                </div>
+
+                <div class="admin-field">
+                    <label for="ai_max_tokens">Max tokens</label>
+                    <input id="ai_max_tokens" type="number" min="50" max="8000" value="1200" data-ai-max-tokens>
+                </div>
+
+                <div class="admin-field admin-field--full is-hidden" data-ai-output-field>
+                    <label for="ai_output">Result</label>
+                    <textarea id="ai_output" rows="8" data-ai-output></textarea>
+                </div>
+
+                <div class="admin-ai-actions" data-ai-actions>
+                    <button class="admin-button admin-button--secondary" type="button" data-ai-generate>
+                        <span data-ai-button-label>Generate</span>
+                    </button>
+                    <button class="admin-button is-hidden" type="button" data-ai-apply>Apply to field</button>
+                </div>
+
+                <input type="hidden" data-ai-generate-url value="[[ route('admin.ai.generate') ]]">
+            </div>
+        </div>
+    </aside>
 
     <aside
         class="admin-cover-modal"

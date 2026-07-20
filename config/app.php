@@ -123,6 +123,7 @@ return [
     */
     "providers" => [
         App\Providers\AppServiceProvider::class,
+        \Doppar\AI\AIServiceProvider::class,
     ],
 
     /*
