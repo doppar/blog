@@ -1,6 +1,8 @@
 #extends('layouts.public')
 
-#section('title', '[[ $post->seo_title ?? $post->title ]]')
+#section('title')
+[[ $post->seo_title ?? $post->title ]]
+#endsection
 
 #section('head')
     #if ($post->seo_description)
