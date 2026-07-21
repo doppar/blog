@@ -136,6 +136,9 @@
                             <td>[[ $post->view_count ]]</td>
                             <td>[[ date('M d, Y', strtotime($post->updated_at ?? 'now')) ]]</td>
                             <td class="admin-table__actions">
+                                #if ($post->status === 'published')
+                                    <a class="admin-inline-link" href="[[ route('post.show', ['post' => $post->slug]) ]]" target="_blank" rel="noopener noreferrer">View</a>
+                                #endif
                                 <a class="admin-inline-link" href="[[ route('admin.posts.edit', ['post' => $post->slug]) ]]">Edit</a>
                                 <form method="POST" action="[[ route('admin.posts.destroy', ['post' => $post->slug]) ]]">
                                     #csrf
