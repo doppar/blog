@@ -1,19 +1,16 @@
 #extends('layouts.public')
 
-#section('title')
-[[ $post->seo_title ?? $post->title ]]
-#endsection
+#section('title')[[ $post->seo_title ?? $post->title ]]#endsection
 
-#section('head')
-    #if ($post->seo_description)
-    <meta name="description" content="[[ $post->seo_description ]]">
-    #elseif ($post->excerpt)
-    <meta name="description" content="[[ $post->excerpt ]]">
-    #endif
-    #if ($post->cover_image)
-    <meta property="og:image" content="[[! $post->cover_image !]]">
-    #endif
-#endsection
+#section('og_title')[[ $post->seo_title ?? $post->title ]]#endsection
+
+#section('meta_description')[[ $post->seo_description ?? $post->excerpt ?? 'Read the latest on the Doppar PHP framework.' ]]#endsection
+
+#section('og_type')[[ 'article' ]]#endsection
+
+#if ($post->cover_image)
+#section('og_image')[[! $post->cover_image !]]#endsection
+#endif
 
 #section('content')
 
@@ -23,16 +20,11 @@
     <header id="site-header" class="sticky top-0 z-40 backdrop-blur-md bg-[rgba(254,254,254,0.85)] border-b border-soft">
         <div class="max-w-7xl mx-auto px-6 flex items-center h-16 gap-6">
             <a href="/" class="flex items-center gap-2 group shrink-0">
-                <span class="w-8 h-8 rounded-lg bg-ink text-[#fefefe] grid place-items-center font-display font-bold text-lg group-hover:bg-primary transition-colors">D</span>
-                <span class="font-display text-xl font-bold tracking-tight text-ink">Doppar <span class="text-primary">Blog</span></span>
+                <img src="/logo-icon.png" alt="Doppar" class="h-8 w-auto">
+                <span class="font-display text-xl font-bold tracking-tight text-ink"> <span class="text-primary">Blog</span></span>
             </a>
 
-            <nav class="hidden md:flex items-center gap-1 text-sm font-medium text-ink-soft ml-2">
-                <a href="/?tab=featured" class="px-3 py-2 rounded-full hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Featured</a>
-                <a href="https://doppar.com" class="px-3 py-2 rounded-full hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Documentation</a>
-            </nav>
-
-            <div class="ml-auto flex items-center gap-2">
+            <div class="ml-auto flex items-center gap-4">
                 <a href="/" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-ink-soft hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
                     All stories
@@ -72,12 +64,6 @@
                 <h1 class="font-display text-4xl sm:text-5xl lg:text-[56px] font-bold leading-[1.08] tracking-tight text-ink">
                     [[ $post->title ]]
                 </h1>
-
-                #if ($post->excerpt)
-                <p class="mt-6 text-xl text-ink-soft leading-relaxed font-display font-normal">
-                    [[ $post->excerpt ]]
-                </p>
-                #endif
 
                 <div class="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
                     <div class="flex items-center gap-3">

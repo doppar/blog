@@ -1,8 +1,10 @@
 #extends('layouts.public')
 
-#section('title')
-[[ 'Doppar Blog — Stories from a faster PHP' ]]
-#endsection
+#section('title')[[ 'Doppar News — Releases, Tutorials & Community Updates' ]]#endsection
+
+#section('og_title')[[ 'Doppar News — Releases, Tutorials & Community Updates' ]]#endsection
+
+#section('meta_description')[[ 'Release notes, RFCs, tutorials and package announcements from the Doppar core team and community, curated in one place.' ]]#endsection
 
 #section('content')
 
@@ -11,20 +13,21 @@
     <header class="sticky top-0 z-30 backdrop-blur-md bg-[rgba(254,254,254,0.85)] border-b border-soft">
         <div class="max-w-7xl mx-auto px-6 flex items-center h-16 gap-8">
             <a href="/" class="flex items-center gap-2 group">
-                <span class="w-8 h-8 rounded-lg bg-ink text-[#fefefe] grid place-items-center font-display font-bold text-lg group-hover:bg-primary transition-colors">D</span>
-                <span class="font-display text-xl font-bold tracking-tight text-ink">Doppar <span class="text-primary">Blog</span></span>
+                <img src="/logo-icon.png" alt="Doppar" class="h-8 w-auto">
+                <span class="font-display text-xl font-bold tracking-tight text-ink"> <span class="text-primary">Blog</span></span>
             </a>
-            <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-ink-soft ml-4">
-                <a href="/?tab=featured" class="hover:text-ink transition-colors">Featured</a>
-                <a href="https://doppar.com" class="hover:text-ink transition-colors">Documentation</a>
-                <a href="https://github.com/doppar/framework" class="hover:text-ink transition-colors">GitHub</a>
-            </nav>
-            <div class="ml-auto flex items-center gap-3">
-                <a href="/login" class="hidden sm:inline-flex text-sm font-medium text-ink-soft hover:text-ink transition-colors">Sign in</a>
-                <a href="https://doppar.com" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-ink text-[#fefefe] text-sm font-medium hover:bg-primary transition-colors">
-                    Get started
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                </a>
+            <div class="ml-auto flex items-center gap-6">
+                <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-ink-soft">
+                    <a href="https://doppar.com" class="hover:text-ink transition-colors">Docs</a>
+                    <a href="https://github.com/doppar/framework" class="hover:text-ink transition-colors">GitHub</a>
+                </nav>
+                <div class="flex items-center gap-3">
+                    <a href="/login" class="hidden sm:inline-flex text-sm font-medium text-ink-soft hover:text-ink transition-colors">Sign in</a>
+                    <a href="https://doppar.com" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-ink text-[#fefefe] text-sm font-medium hover:bg-primary transition-colors">
+                        Get started
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                    </a>
+                </div>
             </div>
         </div>
     </header>
@@ -34,16 +37,16 @@
             <div class="max-w-3xl">
                 <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-soft text-xs font-medium text-ink-soft mb-6">
                     <span class="w-1.5 h-1.5 rounded-full bg-green-a animate-pulse"></span>
-                    The official Doppar journal
+                    The official Doppar news hub
                 </span>
                 <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tight text-ink">
-                    Stories that read like <span class="text-primary italic">prose</span>,
+                    Everything Doppar,
                     <br class="hidden sm:block">
-                    engineered to <span class="text-cyan-a italic">scale</span>.
+                    <span class="text-primary italic">as it ships</span>.
                 </h1>
                 <p class="mt-6 text-lg text-ink-soft max-w-2xl leading-relaxed">
-                    Deep dives, release notes and craftsmanship from the people building Doppar — a PHP framework
-                    obsessed with both expressiveness and throughput.
+                    Release notes, RFCs, tutorials and package announcements from the Doppar core team and community —
+                    curated in one place, for the PHP framework that reads like prose and runs like a machine.
                 </p>
                 <div class="mt-8 flex flex-wrap items-center gap-3">
                     <a href="/?tab=for-you" class="chip border-soft text-ink hover:bg-primary hover:text-[#fefefe] hover:border-transparent transition-colors">All stories</a>
