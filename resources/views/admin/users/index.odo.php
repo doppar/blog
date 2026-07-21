@@ -118,6 +118,7 @@
                         <th>User</th>
                         <th>Role</th>
                         <th>Status</th>
+                        <th>2FA</th>
                         <th>Posts</th>
                         <th>Created</th>
                         <th>Updated</th>
@@ -148,6 +149,22 @@
                             <td>
                                 <span class="admin-status-indicator [[ ($user->status ?? false) ? 'is-active' : 'is-inactive' ]]">
                                     #if ($user->status ?? false)
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <circle cx="12" cy="12" r="8.5"></circle>
+                                            <path d="m8.8 12.2 2.2 2.2 4.4-4.6"></path>
+                                        </svg>
+                                    #else
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <circle cx="12" cy="12" r="8.5"></circle>
+                                            <path d="m9.2 9.2 5.6 5.6"></path>
+                                            <path d="m14.8 9.2-5.6 5.6"></path>
+                                        </svg>
+                                    #endif
+                                </span>
+                            </td>
+                            <td>
+                                <span class="admin-status-indicator [[ Auth::hasTwoFactorEnabled($user) ? 'is-active' : 'is-inactive' ]]">
+                                    #if (Auth::hasTwoFactorEnabled($user))
                                         <svg viewBox="0 0 24 24" aria-hidden="true">
                                             <circle cx="12" cy="12" r="8.5"></circle>
                                             <path d="m8.8 12.2 2.2 2.2 4.4-4.6"></path>
