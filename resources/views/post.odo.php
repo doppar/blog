@@ -26,13 +26,19 @@
 
             <div class="ml-auto flex items-center gap-4">
                 <a href="/" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-ink-soft hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    </svg>
                     All stories
                 </a>
 
                 <button type="button" id="mobile-menu-btn" class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-full text-ink-soft hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
-                    <svg id="menu-icon-open" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
-                    <svg id="menu-icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <svg id="menu-icon-open" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+                    </svg>
+                    <svg id="menu-icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                 </button>
             </div>
         </div>
@@ -77,7 +83,7 @@
                         <div>
                             <p class="text-sm font-semibold text-ink">[[ $post->user->name ?? 'Admin' ]]</p>
                             <p class="text-[12px] text-ink-soft">
-                                [[ $post->published_at ? date('F j, Y', strtotime($post->published_at)) : '' ]]
+                                [[ $post->published_at ? date('F j, Y', strtotime($post->published_at)) : date('F j, Y', strtotime($post->created_at)) ]]
                             </p>
                         </div>
                     </div>
@@ -85,15 +91,15 @@
                     <div class="flex items-center gap-4 ml-auto text-[13px] text-ink-soft">
                         <span class="flex items-center gap-1.5">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75v5.25l3.5 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75v5.25l3.5 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             [[ max(1, (int) ceil(str_word_count(strip_tags($post->body ?? '')) / 200)) ]] min read
                         </span>
                         #if ($post->view_count)
                         <span class="flex items-center gap-1.5">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                             [[ number_format($post->view_count) ]] reads
                         </span>
@@ -102,7 +108,7 @@
                         <div class="relative">
                             <button type="button" id="share-btn" class="flex items-center gap-1.5 hover:text-ink transition-colors" aria-label="Share this post" aria-haspopup="true" aria-expanded="false">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
                                 </svg>
                                 Share
                             </button>
@@ -131,7 +137,9 @@
                                 <div class="my-1.5 h-px bg-[rgba(26,26,26,0.08)]"></div>
                                 <button type="button" id="share-copy" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
                                     <span class="w-6 h-6 rounded-full grid place-items-center bg-[rgba(26,26,26,0.06)] text-ink-soft shrink-0">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+                                        </svg>
                                     </span>
                                     Copy link
                                 </button>
@@ -148,8 +156,7 @@
             <img
                 src="[[ $post->cover_image ]]"
                 alt="[[ $post->title ]]"
-                class="w-full max-h-[520px] object-cover rounded-2xl shadow-[0_20px_60px_-30px_rgba(26,26,26,0.4)] bg-white"
-            >
+                class="w-full max-h-[520px] object-cover rounded-2xl shadow-[0_20px_60px_-30px_rgba(26,26,26,0.4)] bg-white">
         </figure>
         #endif
 
@@ -192,15 +199,15 @@
             <div class="mt-12 flex items-center justify-between">
                 <a href="/" class="inline-flex items-center gap-2 text-sm text-ink-soft hover:text-ink transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                     </svg>
                     Back to all stories
                 </a>
                 <button type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})"
-                        class="inline-flex items-center gap-2 text-sm text-ink-soft hover:text-ink transition-colors">
+                    class="inline-flex items-center gap-2 text-sm text-ink-soft hover:text-ink transition-colors">
                     Top
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" />
                     </svg>
                 </button>
             </div>
@@ -344,11 +351,85 @@
                     await navigator.clipboard.writeText(url);
                     const original = copyBtn.innerHTML;
                     copyBtn.innerHTML = '<span class="px-1">Link copied ✓</span>';
-                    setTimeout(() => { copyBtn.innerHTML = original; closeMenu(); }, 1200);
-                } catch (_) { /* clipboard unavailable */ }
+                    setTimeout(() => {
+                        copyBtn.innerHTML = original;
+                        closeMenu();
+                    }, 1200);
+                } catch (_) {
+                    /* clipboard unavailable */
+                }
             });
         }
     })();
+
+    // Code block copy buttons
+    document.addEventListener('DOMContentLoaded', () => {
+        const prose = document.querySelector('.prose-article');
+        if (!prose) {
+            console.log('Prose article not found, searching entire document');
+            const codeBlocks = document.querySelectorAll('pre');
+            addCopyButtons(codeBlocks);
+            return;
+        }
+
+        const codeBlocks = prose.querySelectorAll('pre');
+        addCopyButtons(codeBlocks);
+    });
+
+    function addCopyButtons(codeBlocks) {
+        console.log('Found code blocks:', codeBlocks.length);
+        codeBlocks.forEach((pre, index) => {
+            console.log('Processing code block', index, pre);
+
+            // Skip if already wrapped
+            if (pre.parentElement.classList.contains('code-block-wrapper')) {
+                console.log('Code block already wrapped, skipping');
+                return;
+            }
+
+            // Create wrapper
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+
+            // Insert wrapper before pre and move pre inside
+            pre.parentNode.insertBefore(wrapper, pre);
+            wrapper.appendChild(pre);
+
+            // Create copy button
+            const copyBtn = document.createElement('button');
+            copyBtn.type = 'button';
+            copyBtn.className = 'code-copy-btn';
+            copyBtn.innerHTML = `
+                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <svg class="copied-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            `;
+            copyBtn.setAttribute('aria-label', 'Copy code to clipboard');
+            wrapper.appendChild(copyBtn);
+
+            copyBtn.addEventListener('click', async () => {
+                const code = pre.querySelector('code');
+                const text = code ? code.textContent : pre.textContent;
+                try {
+                    await navigator.clipboard.writeText(text);
+                    copyBtn.querySelector('.copy-icon').style.display = 'none';
+                    copyBtn.querySelector('.copied-icon').style.display = 'block';
+                    copyBtn.classList.add('copied');
+                    setTimeout(() => {
+                        copyBtn.querySelector('.copy-icon').style.display = 'block';
+                        copyBtn.querySelector('.copied-icon').style.display = 'none';
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Copy failed:', err);
+                }
+            });
+        });
+    }
 </script>
 
 #endsection
