@@ -5,10 +5,13 @@ import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import Underline from '@tiptap/extension-underline';
 import { common, createLowlight } from 'lowlight';
+import hljs from 'highlight.js/lib/core';
 
 const SIDEBAR_STORAGE_KEY = 'editorial-desk-sidebar-groups';
 const MEDIA_VIEW_STORAGE_KEY = 'editorial-desk-media-view';
 const lowlight = createLowlight(common);
+
+Object.entries(common).forEach(([name, grammar]) => hljs.registerLanguage(name, grammar));
 let activeAjaxRequests = 0;
 
 const EditorImage = Node.create({
@@ -2473,6 +2476,12 @@ function bootAIAssistant() {
     updateModelDefault();
 }
 
+function bootArticleCodeHighlighting() {
+    document.querySelectorAll('.prose-article pre code').forEach((block) => {
+        hljs.highlightElement(block);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     bootAjaxLoader();
     bootDismissibleAlerts();
@@ -2489,4 +2498,5 @@ document.addEventListener('DOMContentLoaded', () => {
     bootDropdowns();
     bootSearchShortcut();
     bootAIAssistant();
+    bootArticleCodeHighlighting();
 });
