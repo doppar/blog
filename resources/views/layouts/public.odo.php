@@ -31,4 +31,7 @@
     <body class="public antialiased">
         #yield('content')
     </body>
+    <!-- Cloudflare Web Analytics -->
+    <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c79e2cf32a374e6488657d0b281e7496"}'></script>
+    <!-- End Cloudflare Web Analytics -->
 </html>
