@@ -299,11 +299,130 @@
     background: #fef4f4;
 }
 
+.admin-dropdown__head--profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 8px 14px;
+}
+
+.admin-dropdown__head-avatar {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    border-radius: 999px;
+    background: #6d6cf3;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.admin-dropdown__head-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    object-fit: cover;
+}
+
+.admin-dropdown__head-text {
+    min-width: 0;
+}
+
+.admin-dropdown__head-text strong {
+    display: block;
+    color: var(--admin-text-dark);
+    font-size: 0.94rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.admin-dropdown__head-text span {
+    display: block;
+    margin-top: 2px;
+    color: #93a3ba;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.admin-dropdown__divider {
+    height: 1px;
+    margin: 6px 4px;
+    background: var(--admin-border-soft);
+}
+
+.admin-dropdown__row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 10px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--admin-text-dark);
+    font-size: 0.88rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+}
+
+.admin-dropdown__row svg {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 17px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    color: var(--admin-text-muted);
+}
+
+.admin-dropdown__row span {
+    flex: 1;
+}
+
+.admin-dropdown__row:hover {
+    background: #f5f9ff;
+}
+
+.admin-dropdown__row:disabled {
+    color: var(--admin-text-muted);
+    cursor: default;
+}
+
+.admin-dropdown__row:disabled:hover {
+    background: transparent;
+}
+
+.admin-dropdown__row-badge {
+    flex: 0 0 auto;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--admin-surface-soft);
+    color: var(--admin-text-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.admin-dropdown__row--danger:hover {
+    background: #fef4f4;
+    color: #e5484d;
+}
+
+.admin-dropdown__row--danger:hover svg {
+    color: #e5484d;
+}
+
 .admin-profile__avatar {
     width: 40px;
     height: 40px;
     border-radius: 999px;
-    background: linear-gradient(135deg, #ffd28d, #f6b670);
+    background: #6d6cf3;
     color: #ffffff;
     display: inline-flex;
     align-items: center;
