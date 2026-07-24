@@ -118,6 +118,37 @@ body.public {
     font-family: 'JetBrains Mono', ui-monospace, monospace;
     margin: 1.75em 0;
 }
+.prose-article pre code { background: none; padding: 0; color: inherit; }
+
+/* Code block copy button wrapper */
+.prose-article .code-block-wrapper {
+    position: relative;
+    margin: 1.75em 0;
+}
+.prose-article .code-block-wrapper pre {
+    margin: 0;
+}
+.prose-article .code-copy-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+    color: #ddd;
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.prose-article .code-copy-btn:hover {
+    transform: translateY(-1px);
+}
+.prose-article .code-copy-btn.copied {
+    color: #fff;
+}
 .prose-article code {
     background: rgba(109, 108, 243, .10);
     color: var(--c-ink);
@@ -126,7 +157,6 @@ body.public {
     font-size: .85em;
     font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
-.prose-article pre code { background: none; padding: 0; color: inherit; }
 .prose-article .hljs-comment,
 .prose-article .hljs-quote {
     color: #8da0bc;
