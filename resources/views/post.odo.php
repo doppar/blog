@@ -77,7 +77,7 @@
                         <div>
                             <p class="text-sm font-semibold text-ink">[[ $post->user->name ?? 'Admin' ]]</p>
                             <p class="text-[12px] text-ink-soft">
-                                [[ $post->published_at ? date('F j, Y', strtotime($post->published_at)) : '' ]]
+                                [[ $post->published_at ? date('F j, Y', strtotime($post->published_at)) : date('F j, Y', strtotime($post->created_at)) ]]
                             </p>
                         </div>
                     </div>

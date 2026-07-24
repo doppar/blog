@@ -38,7 +38,7 @@
             </span>
             #endif
             <span class="text-muted">·</span>
-            <span class="text-ink-soft">[[ $post->published_at ? date('M j, Y', strtotime($post->published_at)) : 'Draft' ]]</span>
+            <span class="text-ink-soft">[[ $post->published_at ? date('M j, Y', strtotime($post->published_at)) : date('M j, Y', strtotime($post->created_at)) ]]</span>
         </div>
 
         <a href="/posts/[[ $post->slug ]]" class="block">
@@ -57,9 +57,9 @@
             <div class="flex items-center gap-2 min-w-0">
                 <span class="w-7 h-7 rounded-full grid place-items-center text-[11px] font-bold text-[#fefefe] flex-shrink-0"
                       style="background: [[ $post->accent_solid ]];">
-                    [[ $post->author_initial ]]
+                    [[ $post?->user?->name ]]
                 </span>
-                <span class="text-[13px] font-medium text-ink truncate">[[ $post->author_name ?? 'Unknown' ]]</span>
+                <span class="text-[13px] font-medium text-ink truncate">[[ $post?->user?->name ?? 'Admin' ]]</span>
             </div>
             <div class="flex items-center gap-3 text-[12px] text-ink-soft">
                 <span class="flex items-center gap-1">
