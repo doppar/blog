@@ -127,6 +127,27 @@ body.public {
     font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 .prose-article pre code { background: none; padding: 0; color: inherit; }
+.prose-article .hljs-comment,
+.prose-article .hljs-quote {
+    color: #8da0bc;
+}
+.prose-article .hljs-keyword,
+.prose-article .hljs-selector-tag,
+.prose-article .hljs-subst {
+    color: #8dc8ff;
+}
+.prose-article .hljs-string,
+.prose-article .hljs-attr,
+.prose-article .hljs-template-tag,
+.prose-article .hljs-template-variable {
+    color: #f6cf7a;
+}
+.prose-article .hljs-number,
+.prose-article .hljs-literal,
+.prose-article .hljs-variable,
+.prose-article .hljs-tag .hljs-attr {
+    color: #8fe5bc;
+}
 .prose-article strong { font-weight: 700; color: var(--c-ink); }
 .prose-article em { font-style: italic; }
 .prose-article hr { border: none; border-top: 1px solid var(--c-muted); margin: 2.5em 0; }
