@@ -94,18 +94,48 @@
                         </button>
 
                         <div class="admin-dropdown__menu admin-dropdown__menu--profile" data-dropdown-menu>
-                            <div class="admin-dropdown__head">
-                                <strong>[[ auth()->user()->name ]]</strong>
-                                <span>[[ auth()->user()->email ]]</span>
+                            <div class="admin-dropdown__head admin-dropdown__head--profile">
+                                <span class="admin-dropdown__head-avatar">
+                                    #if ((auth()->user()->image ?? '') !== '')
+                                        <img src="[[ auth()->user()->image ]]" alt="[[ auth()->user()->name ]]">
+                                    #else
+                                        [[ strtoupper(substr((string) auth()->user()->name, 0, 2)) ]]
+                                    #endif
+                                </span>
+                                <span class="admin-dropdown__head-text">
+                                    <strong>[[ auth()->user()->name ]]</strong>
+                                    <span>[[ auth()->user()->email ]]</span>
+                                </span>
                             </div>
 
-                            <a class="admin-dropdown__item" href="[[ route('admin.profile.index') ]]">
-                                <strong>Profile</strong>
-                                <span>Manage your account, password, and two-factor authentication.</span>
+                            <div class="admin-dropdown__divider"></div>
+
+                            <a class="admin-dropdown__row" href="[[ route('admin.profile.index') ]]">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                </svg>
+                                <span>Account settings</span>
                             </a>
-                            <button class="admin-dropdown__button" type="submit" form="admin-logout-form">
-                                <strong>Logout</strong>
-                                <span>Close this admin session securely.</span>
+
+                            <button class="admin-dropdown__row" type="button" disabled aria-disabled="true">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="4"></circle>
+                                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                                </svg>
+                                <span>Theme</span>
+                                <span class="admin-dropdown__row-badge">Soon</span>
+                            </button>
+
+                            <div class="admin-dropdown__divider"></div>
+
+                            <button class="admin-dropdown__row admin-dropdown__row--danger" type="submit" form="admin-logout-form">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <path d="M16 17l5-5-5-5"></path>
+                                    <path d="M21 12H9"></path>
+                                </svg>
+                                <span>Log out</span>
                             </button>
                         </div>
                     </div>
