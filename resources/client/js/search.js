@@ -37,7 +37,9 @@ document.addEventListener("DOMContentLoaded", function () {
     searchResults.classList.remove("hidden");
 
     debounceTimer = setTimeout(() => {
-      fetch(`/api/search/posts?q=${encodeURIComponent(query)}`)
+      fetch(`/api/search/posts?q=${encodeURIComponent(query)}`, {
+        __skipAdminLoader: true,
+      })
         .then((response) => response.json())
         .then((posts) => {
           if (posts.length === 0) {
