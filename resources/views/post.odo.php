@@ -16,42 +16,7 @@
 
 <div class="min-h-screen flex flex-col">
 
-    <!-- Header -->
-    <header id="site-header" class="sticky top-0 z-40 backdrop-blur-md bg-[rgba(254,254,254,0.85)] border-b border-soft">
-        <div class="max-w-7xl mx-auto px-6 flex items-center h-16 gap-6">
-            <a href="/" class="flex items-center gap-2 group shrink-0">
-                <img src="/logo-icon.png" alt="Doppar" class="h-8 w-auto">
-                <span class="font-display text-xl font-bold tracking-tight text-ink"> <span class="text-primary">Blog</span></span>
-            </a>
-
-            <div class="ml-auto flex items-center gap-4">
-                <a href="/" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-ink-soft hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                    </svg>
-                    All stories
-                </a>
-
-                <button type="button" id="mobile-menu-btn" class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-full text-ink-soft hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
-                    <svg id="menu-icon-open" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
-                    </svg>
-                    <svg id="menu-icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- Mobile menu -->
-        <div id="mobile-menu" class="md:hidden hidden px-6 pb-4">
-            <nav class="flex flex-col gap-1 text-sm font-medium text-ink-soft">
-                <a href="/?tab=featured" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Featured</a>
-                <a href="https://doppar.com" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Documentation</a>
-                <a href="/" class="sm:hidden px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">All stories</a>
-            </nav>
-        </div>
-    </header>
+    #include('partials.header')
 
     <!-- Article -->
     <article class="flex-1">
@@ -162,6 +127,17 @@
 
         <!-- Body -->
         <div class="max-w-3xl mx-auto px-6 py-14">
+            <!-- Table of Contents -->
+            <div id="toc-container" class="hidden mb-8 p-6 rounded-xl border border-soft bg-white">
+                <button type="button" id="toc-toggle" class="flex items-center justify-between w-full text-left">
+                    <h3 class="font-display text-sm font-bold tracking-wide uppercase text-ink-soft">Table of Contents</h3>
+                    <svg id="toc-icon" class="w-5 h-5 text-ink-soft transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </button>
+                <nav id="toc" class="space-y-2 text-sm mt-4 hidden"></nav>
+            </div>
+
             <div class="prose-article">
                 [[! $post->body !]]
             </div>
@@ -176,132 +152,140 @@
                 </div>
             </div>
             #endif
+        </div>
 
-            <!-- Author card -->
-            <div class="mt-14 p-6 sm:p-8 rounded-2xl border border-soft bg-white flex flex-col sm:flex-row items-start gap-5">
-                #if (($post->user->image ?? '') !== '')
-                <img src="[[ $post->user->image ]]" alt="[[ $post->user->name ]]" class="w-14 h-14 rounded-full object-cover flex-shrink-0">
-                #else
-                <div class="w-14 h-14 rounded-full bg-primary grid place-items-center text-lg font-bold text-[#fefefe] flex-shrink-0">
-                    [[ strtoupper(substr($post->user->name ?? 'A', 0, 1)) ]]
-                </div>
-                #endif
-                <div class="flex-1 min-w-0">
-                    <p class="font-mono text-[10px] tracking-widest uppercase text-cyan-a mb-1">Written by</p>
-                    <p class="font-display text-xl font-bold text-ink">[[ $post->user->name ?? 'Unknown' ]]</p>
-                    <p class="text-sm text-ink-soft mt-1">Building things with Doppar — sharing notes, tips and deep dives along the way.</p>
+        <!-- Share -->
+        <div class="max-w-3xl mx-auto px-6 py-8">
+            <div class="flex items-center justify-between">
+                <button type="button" id="share-btn" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-soft text-sm font-medium text-ink hover:border-ink transition-colors" aria-label="Share this post">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+                    </svg>
+                    Share
+                </button>
+                <div id="share-menu" class="hidden absolute right-6 top-1/2 -translate-y-1/2 bg-white rounded-xl shadow-[0_20px_50px_-20px_rgba(26,26,26,0.4)] border border-soft overflow-hidden z-50" role="menu">
+                    <a id="share-facebook" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-3 text-sm text-ink-soft hover:bg-[rgba(26,26,26,0.03)] transition-colors">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                        </svg>
+                        Facebook
+                    </a>
+                    <a id="share-x" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-3 text-sm text-ink-soft hover:bg-[rgba(26,26,26,0.03)] transition-colors">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                        X (Twitter)
+                    </a>
+                    <a id="share-linkedin" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-3 text-sm text-ink-soft hover:bg-[rgba(26,26,26,0.03)] transition-colors">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                        </svg>
+                        LinkedIn
+                    </a>
+                    <button id="share-copy" type="button" class="flex items-center gap-3 px-4 py-3 text-sm text-ink-soft hover:bg-[rgba(26,26,26,0.03)] transition-colors w-full text-left">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+                        </svg>
+                        Copy link
+                    </button>
                 </div>
                 <a href="/" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-soft text-sm font-medium text-ink hover:border-ink transition-colors">
                     More stories
                 </a>
             </div>
+        </div>
 
-            <div class="mt-12 flex items-center justify-between">
-                <a href="/" class="inline-flex items-center gap-2 text-sm text-ink-soft hover:text-ink transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                    </svg>
-                    Back to all stories
-                </a>
-                <button type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})"
-                    class="inline-flex items-center gap-2 text-sm text-ink-soft hover:text-ink transition-colors">
-                    Top
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" />
-                    </svg>
-                </button>
+        <div class="max-w-3xl mx-auto px-6 py-8 flex items-center justify-between">
+            <a href="/" class="inline-flex items-center gap-2 text-sm text-ink-soft hover:text-ink transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                Back to all stories
+            </a>
+            <button type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})"
+                class="inline-flex items-center gap-2 text-sm text-ink-soft hover:text-ink transition-colors">
+                Top
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" />
+                </svg>
+            </button>
+        </div>
+</div>
+
+</article>
+
+<!-- Footer -->
+<footer class="relative overflow-hidden border-t border-soft mt-12">
+    <div class="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full blur-[100px] pointer-events-none" style="background:rgba(109,108,243,.10)"></div>
+    <div class="absolute top-1/2 right-1/4 translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full blur-[100px] pointer-events-none" style="background:rgba(28,176,238,.10)"></div>
+
+    <div class="relative max-w-2xl mx-auto px-6 py-14">
+        <!-- Brand -->
+        <div class="text-center mb-8">
+            <img src="/logo.png" alt="Doppar" class="h-8 mx-auto mb-3">
+            <p class="text-xs text-ink-soft">© [[ date('Y') ]] Doppar. All Rights Reserved.</p>
+        </div>
+
+        <!-- Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-4 text-sm">
+            <div>
+                <h4 class="text-primary font-semibold mb-2">Links</h4>
+                <ul class="space-y-1.5 text-ink-soft">
+                    <li><a href="https://doppar.com/versions/3.x/credits" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Credits</a></li>
+                    <li><a href="https://doppar.com/versions/3.x/getting-started" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Getting started</a></li>
+                    <li><a href="https://doppar.com/versions/3.x/releases" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Release notes</a></li>
+                    <li><a href="https://doppar.com/versions/3.x/contributions" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Contributions</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-primary font-semibold mb-2">Get Involved</h4>
+                <ul class="space-y-1.5 text-ink-soft">
+                    <li><a href="https://join.slack.com/t/zuno-global/shared_invite/zt-3xg3sl8vq-giLmT9rxCdDzQ7yEK53NvA" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Join community</a></li>
+                    <li><a href="https://github.com/doppar/framework/issues" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Request features</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-primary font-semibold mb-2">Ecosystem</h4>
+                <ul class="space-y-1.5 text-ink-soft">
+                    <li><a href="https://doppar.com/versions/3.x/doppar-ai" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">AI</a></li>
+                    <li><a href="https://doppar.com/versions/3.x/doppar-queue" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Queue</a></li>
+                    <li><a href="https://doppar.com/versions/3.x/doppar-airbend" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Airbend</a></li>
+                    <li><a href="https://doppar.com/versions/3.x/doppar-flarion" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Flarion</a></li>
+                    <li><a href="https://doppar.com/versions/3.x/doppar-notifier" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Notifier</a></li>
+                    <li><a href="https://doppar.com/versions/3.x/doppar-orion" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Orion</a></li>
+                    <li><a href="https://doppar.com/versions/3.x/doppar-guard" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Guard</a></li>
+                    <li><a href="https://doppar.com/versions/3.x/doppar-axios" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Axios</a></li>
+                    <li><a href="https://doppar.com/versions/3.x/doppar-oauthic" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">OAuthic</a></li>
+                    <li><a href="https://doppar.com/versions/3.x/doppar-bloom" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Bloom</a></li>
+                    <li><a href="https://doppar.com/versions/3.x/doppar-insight" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Insight</a></li>
+                    <li><a href="https://doppar.com/versions/3.x/doppar-twig-bridge" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Twig Bridge</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-primary font-semibold mb-2">Connect</h4>
+                <div class="flex flex-col items-start gap-1.5 text-ink-soft">
+                    <a href="https://x.com/dopparframework" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">X (Twitter)</a>
+                    <a href="https://www.linkedin.com/company/doppar/posts/?feedView=all" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">LinkedIn</a>
+                    <a href="https://www.buymeacoffee.com/mahedisulaa" target="_blank" rel="noopener noreferrer" class="mt-1.5 inline-flex items-center gap-1.5 bg-amber-a hover:brightness-95 text-ink text-xs px-3 py-1.5 rounded-md font-semibold transition-all w-fit">
+                        ☕ Buy me a coffee
+                    </a>
+                </div>
             </div>
         </div>
 
-    </article>
-
-    <!-- Footer -->
-    <footer class="relative overflow-hidden border-t border-soft mt-12">
-        <div class="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full blur-[100px] pointer-events-none" style="background:rgba(109,108,243,.10)"></div>
-        <div class="absolute top-1/2 right-1/4 translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full blur-[100px] pointer-events-none" style="background:rgba(28,176,238,.10)"></div>
-
-        <div class="relative max-w-2xl mx-auto px-6 py-14">
-            <!-- Brand -->
-            <div class="text-center mb-8">
-                <img src="/logo.png" alt="Doppar" class="h-8 mx-auto mb-3">
-                <p class="text-xs text-ink-soft">© [[ date('Y') ]] Doppar. All Rights Reserved.</p>
-            </div>
-
-            <!-- Grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-4 text-sm">
-                <div>
-                    <h4 class="text-primary font-semibold mb-2">Links</h4>
-                    <ul class="space-y-1.5 text-ink-soft">
-                        <li><a href="https://doppar.com/versions/3.x/credits" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Credits</a></li>
-                        <li><a href="https://doppar.com/versions/3.x/getting-started" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Getting started</a></li>
-                        <li><a href="https://doppar.com/versions/3.x/releases" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Release notes</a></li>
-                        <li><a href="https://doppar.com/versions/3.x/contributions" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Contributions</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-primary font-semibold mb-2">Get Involved</h4>
-                    <ul class="space-y-1.5 text-ink-soft">
-                        <li><a href="https://join.slack.com/t/zuno-global/shared_invite/zt-3xg3sl8vq-giLmT9rxCdDzQ7yEK53NvA" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Join community</a></li>
-                        <li><a href="https://github.com/doppar/framework/issues" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Request features</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-primary font-semibold mb-2">Ecosystem</h4>
-                    <ul class="space-y-1.5 text-ink-soft">
-                        <li><a href="https://doppar.com/versions/3.x/doppar-ai" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">AI</a></li>
-                        <li><a href="https://doppar.com/versions/3.x/doppar-queue" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Queue</a></li>
-                        <li><a href="https://doppar.com/versions/3.x/doppar-airbend" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Airbend</a></li>
-                        <li><a href="https://doppar.com/versions/3.x/doppar-flarion" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Flarion</a></li>
-                        <li><a href="https://doppar.com/versions/3.x/doppar-notifier" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Notifier</a></li>
-                        <li><a href="https://doppar.com/versions/3.x/doppar-orion" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Orion</a></li>
-                        <li><a href="https://doppar.com/versions/3.x/doppar-guard" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Guard</a></li>
-                        <li><a href="https://doppar.com/versions/3.x/doppar-axios" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Axios</a></li>
-                        <li><a href="https://doppar.com/versions/3.x/doppar-oauthic" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">OAuthic</a></li>
-                        <li><a href="https://doppar.com/versions/3.x/doppar-bloom" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Bloom</a></li>
-                        <li><a href="https://doppar.com/versions/3.x/doppar-insight" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Insight</a></li>
-                        <li><a href="https://doppar.com/versions/3.x/doppar-twig-bridge" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">Twig Bridge</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-primary font-semibold mb-2">Connect</h4>
-                    <div class="flex flex-col items-start gap-1.5 text-ink-soft">
-                        <a href="https://x.com/dopparframework" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">X (Twitter)</a>
-                        <a href="https://www.linkedin.com/company/doppar/posts/?feedView=all" target="_blank" rel="noopener noreferrer" class="hover:text-ink transition-colors">LinkedIn</a>
-                        <a href="https://www.buymeacoffee.com/mahedisulaa" target="_blank" rel="noopener noreferrer" class="mt-1.5 inline-flex items-center gap-1.5 bg-amber-a hover:brightness-95 text-ink text-xs px-3 py-1.5 rounded-md font-semibold transition-all w-fit">
-                            ☕ Buy me a coffee
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-10 flex justify-center">
-                <p class="text-sm font-medium text-ink-soft">Made with Doppar</p>
-            </div>
+        <div class="mt-10 flex justify-center">
+            <p class="text-sm font-medium text-ink-soft">Made with Doppar</p>
         </div>
-    </footer>
+    </div>
+    <div id="cover_image_for_js">[[! $post->cover_image ?? '' !]]</div>
+</footer>
 
 </div>
 
 <script>
-    // Mobile nav menu
-    (() => {
-        const btn = document.getElementById('mobile-menu-btn');
-        const menu = document.getElementById('mobile-menu');
-        const iconOpen = document.getElementById('menu-icon-open');
-        const iconClose = document.getElementById('menu-icon-close');
-        if (!btn || !menu) return;
-        btn.addEventListener('click', () => {
-            const willOpen = menu.classList.contains('hidden');
-            menu.classList.toggle('hidden', !willOpen);
-            iconOpen.classList.toggle('hidden', willOpen);
-            iconClose.classList.toggle('hidden', !willOpen);
-            btn.setAttribute('aria-expanded', String(willOpen));
-        });
-    })();
-
     // Share dropdown
     (() => {
         const btn = document.getElementById('share-btn');
@@ -311,7 +295,7 @@
 
         const url = window.location.href;
         const title = document.title;
-        const image = [[! json_encode($post->cover_image ?? '') !]];
+        const image = document.getElementById('cover_image_for_js').textContent;
 
         const targets = {
             'share-facebook': `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
@@ -377,13 +361,9 @@
     });
 
     function addCopyButtons(codeBlocks) {
-        console.log('Found code blocks:', codeBlocks.length);
         codeBlocks.forEach((pre, index) => {
-            console.log('Processing code block', index, pre);
-
             // Skip if already wrapped
             if (pre.parentElement.classList.contains('code-block-wrapper')) {
-                console.log('Code block already wrapped, skipping');
                 return;
             }
 
@@ -400,14 +380,14 @@
             copyBtn.type = 'button';
             copyBtn.className = 'code-copy-btn';
             copyBtn.innerHTML = `
-                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                <svg class="copied-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-            `;
+<svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+</svg>
+<svg class="copied-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+    <polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+`;
             copyBtn.setAttribute('aria-label', 'Copy code to clipboard');
             wrapper.appendChild(copyBtn);
 
@@ -430,6 +410,81 @@
             });
         });
     }
+
+    // Table of Contents
+    (() => {
+        const prose = document.querySelector('.prose-article');
+        const tocContainer = document.getElementById('toc-container');
+        const toc = document.getElementById('toc');
+        const tocToggle = document.getElementById('toc-toggle');
+        const tocIcon = document.getElementById('toc-icon');
+
+        if (!prose || !tocContainer || !toc || !tocToggle || !tocIcon) return;
+
+        const headings = prose.querySelectorAll('h2, h3');
+
+        if (headings.length < 3) {
+            return; // Only show TOC if there are 3+ headings
+        }
+
+        tocContainer.classList.remove('hidden');
+
+        headings.forEach((heading, index) => {
+            const id = `heading-${index}`;
+            heading.id = id;
+
+            const link = document.createElement('a');
+            link.href = `#${id}`;
+            link.textContent = heading.textContent;
+            link.className = 'block text-ink-soft hover:text-primary transition-colors py-1';
+
+            if (heading.tagName === 'H3') {
+                link.classList.add('pl-4', 'text-xs');
+            } else {
+                link.classList.add('font-medium');
+            }
+
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                heading.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+
+            toc.appendChild(link);
+        });
+
+        // Toggle functionality
+        let isCollapsed = true;
+        tocToggle.addEventListener('click', () => {
+            isCollapsed = !isCollapsed;
+            toc.classList.toggle('hidden', isCollapsed);
+            // Rotate icon: 0deg when collapsed, 90deg when expanded
+            tocIcon.style.transform = isCollapsed ? 'rotate(0deg)' : 'rotate(90deg)';
+        });
+    })();
+
+    // Reading Progress Indicator
+    (() => {
+        const progressBar = document.createElement('div');
+        progressBar.className = 'reading-progress-bar';
+        progressBar.style.cssText = 'position: fixed; top: 0; left: 0; height: 3px; background: var(--c-primary); width: 0%; z-index: 1000; transition: width 0.1s ease;';
+        document.body.appendChild(progressBar);
+
+        const article = document.querySelector('article');
+        if (!article) return;
+
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = article.offsetHeight;
+            const winHeight = window.innerHeight;
+            const scrollPercent = (scrollTop / (docHeight - winHeight)) * 100;
+
+            const clampedPercent = Math.min(100, Math.max(0, scrollPercent));
+            progressBar.style.width = `${clampedPercent}%`;
+        });
+    })();
 </script>
 
 #endsection
