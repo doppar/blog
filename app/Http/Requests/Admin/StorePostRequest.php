@@ -14,7 +14,7 @@ class StorePostRequest extends FormRequest
             'title' => 'required|string|max:255',
             'slug' => 'string|max:255',
             'excerpt' => 'string|max:320',
-            'body' => 'required|string|max:20000',
+            'body' => 'required|string',
             'cover_image' => 'string|max:255',
             'author_name' => 'string|max:120',
             'status' => 'required|in:draft,published,archived',
