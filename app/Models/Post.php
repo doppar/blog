@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\AdminDashboardCache;
+use Phaseolies\Database\Entity\Attributes\Computed;
 use Phaseolies\Database\Entity\Attributes\Hook;
 use Phaseolies\Database\Entity\Builder;
 use Phaseolies\Database\Entity\Model;
@@ -41,6 +42,28 @@ class Post extends Model
     public function tags()
     {
         return $this->bindToMany(Tag::class, 'post_id', 'tag_id', 'post_tag');
+    }
+
+    public function comments()
+    {
+        return $this->linkMany(Comment::class, 'post_id', 'id');
+    }
+
+    public function likes()
+    {
+        return $this->linkMany(Like::class, 'post_id', 'id');
+    }
+
+    #[Computed]
+    public function likesCount(): int
+    {
+        return $this->likes()->count();
+    }
+
+    #[Computed]
+    public function commentsCount(): int
+    {
+        return $this->comments()->where('status', true)->count();
     }
 
     public function __published(Builder $query): Builder

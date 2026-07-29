@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
-use App\Support\CmsSlugger;
 use Phaseolies\Database\Migration\Seeder;
 
 class CategorySeeder extends Seeder
@@ -19,13 +18,17 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            Category::create([
-                'name' => $category['name'],
-                'slug' => CmsSlugger::unique(Category::class, $category['name']),
-                'description' => $category['description'],
-                'accent_color' => $category['accent_color'],
-                'status' => true,
-            ]);
+            // Category's before_created hook always regenerates the slug from
+            // name, so re-running this seeder would otherwise try to insert the
+            // same slug twice. firstOrCreate keeps this idempotent.
+            Category::firstOrCreate(
+                ['name' => $category['name']],
+                [
+                    'description' => $category['description'],
+                    'accent_color' => $category['accent_color'],
+                    'status' => true,
+                ]
+            );
         }
     }
 }

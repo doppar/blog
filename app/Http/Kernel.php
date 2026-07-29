@@ -41,6 +41,7 @@ class Kernel extends Middleware
             'auth' => \App\Http\Middleware\Authenticate::class,
             'guest' => \App\Http\Middleware\GuestMiddleware::class,
             'verify.2fa' => \App\Http\Middleware\VerifyTwoFactorUser::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
             // 'throttle' => \Phaseolies\Middleware\ThrottleRequests::class,
             // 'http.cache.headers' => \Phaseolies\Middleware\CacheHeaders::class
         ],

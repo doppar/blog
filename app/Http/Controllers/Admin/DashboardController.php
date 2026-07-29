@@ -10,7 +10,7 @@ use Phaseolies\Utilities\Attributes\Middleware;
 use Phaseolies\Utilities\Attributes\Route;
 
 #[Mapper(prefix: 'admin')]
-#[Middleware(['auth'])]
+#[Middleware(['auth', 'admin'])]
 class DashboardController extends Controller
 {
     #[Route(uri: '/', name: 'admin.dashboard')]

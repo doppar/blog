@@ -17,7 +17,7 @@ use Phaseolies\Utilities\Attributes\Model as RouteModel;
 use Phaseolies\Utilities\Attributes\Route;
 
 #[Mapper(prefix: 'admin/users')]
-#[Middleware(['auth'])]
+#[Middleware(['auth', 'admin'])]
 class UserController extends Controller
 {
     /**

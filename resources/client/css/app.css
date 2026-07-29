@@ -837,6 +837,53 @@
     box-shadow: 0 16px 32px rgba(28, 169, 233, 0.18);
 }
 
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0;
+    color: #9aa9c0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(205, 219, 236, 0.95);
+}
+
+.auth-social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 50px;
+    border: 1px solid rgba(204, 216, 234, 0.95);
+    border-radius: 14px;
+    background: #ffffff;
+    color: var(--admin-text-dark);
+    font-size: 0.96rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-social-btn:hover {
+    border-color: rgba(22, 169, 235, 0.55);
+    box-shadow: 0 0 0 4px rgba(22, 169, 235, 0.12);
+}
+
+.auth-social-btn svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
 .auth-card__foot {
     margin: 22px 0 0;
     color: #7e8da6;

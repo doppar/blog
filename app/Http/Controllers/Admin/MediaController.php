@@ -15,7 +15,7 @@ use Phaseolies\Utilities\Attributes\Route;
 use Phaseolies\Utilities\Attributes\Transaction;
 
 #[Mapper(prefix: 'admin/media')]
-#[Middleware(['auth'])]
+#[Middleware(['auth', 'admin'])]
 class MediaController extends Controller
 {
     #[Route(uri: '/', name: 'admin.media.index')]

@@ -13,6 +13,10 @@ class PostSeeder extends Seeder
 {
     public function run(): void
     {
+        if (Post::count() > 0) {
+            return;
+        }
+
         $categories = Category::query()->orderBy('id')->get();
         $tags = Tag::query()->orderBy('id')->get();
         $users = User::query()->orderBy('id')->get();
@@ -29,7 +33,10 @@ class PostSeeder extends Seeder
                 ? date('Y-m-d H:i:s', strtotime("-{$index} days"))
                 : null;
 
-            $post = Post::create([
+            // The Post model's before_created hook always overwrites user_id
+            // with auth()->id(), which is null in a console/seeder context.
+            // Bypass hooks here so the explicitly assigned author sticks.
+            $post = new Post([
                 'category_id' => $category->id,
                 'user_id' => $users[($index - 1) % $users->count()]->id,
                 'title' => $title,
@@ -45,6 +52,8 @@ class PostSeeder extends Seeder
                 'seo_title' => substr($title . ' | Editorial Desk', 0, 255),
                 'seo_description' => substr(fake()->sentence(12), 0, 255),
             ]);
+            $post->withoutHook();
+            $post->save();
 
             $postTagIds = [];
 

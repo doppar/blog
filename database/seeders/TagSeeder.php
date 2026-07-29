@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Tag;
-use App\Support\CmsSlugger;
 use Phaseolies\Database\Migration\Seeder;
 
 class TagSeeder extends Seeder
@@ -22,12 +21,16 @@ class TagSeeder extends Seeder
         ];
 
         foreach ($tags as $tag) {
-            Tag::create([
-                'name' => $tag['name'],
-                'slug' => CmsSlugger::unique(Tag::class, $tag['name']),
-                'description' => $tag['description'],
-                'color' => $tag['color'],
-            ]);
+            // Tag's before_created hook always regenerates the slug from name,
+            // so re-running this seeder would otherwise try to insert the same
+            // slug twice. firstOrCreate keeps this idempotent.
+            Tag::firstOrCreate(
+                ['name' => $tag['name']],
+                [
+                    'description' => $tag['description'],
+                    'color' => $tag['color'],
+                ]
+            );
         }
     }
 }
