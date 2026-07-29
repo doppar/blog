@@ -19,7 +19,7 @@ use Phaseolies\Utilities\Attributes\Route;
 use Phaseolies\Utilities\Attributes\Transaction;
 
 #[Mapper(prefix: 'admin/posts')]
-#[Middleware(['auth'])]
+#[Middleware(['auth', 'admin'])]
 class PostController extends Controller
 {
     #[Route(uri: '/', name: 'admin.posts.index')]

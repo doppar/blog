@@ -22,7 +22,7 @@ use Phaseolies\Utilities\Attributes\Route;
 use Symfony\Component\Clock\NativeClock;
 
 #[Mapper(prefix: 'admin/profile')]
-#[Middleware(['auth'])]
+#[Middleware(['auth', 'admin'])]
 class ProfileController extends Controller
 {
     private const PENDING_SETUP_SESSION_KEY = 'admin.profile.two_factor_setup';

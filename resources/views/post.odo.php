@@ -142,6 +142,70 @@
                 [[! $post->body !]]
             </div>
 
+            <!-- Like Button -->
+            <div class="mt-8 pt-8 border-t border-soft">
+                #php
+                $viewerHasLiked = auth()->check() && $post->likes()->where('user_id', auth()->id())->exists();
+                #endphp
+                #if (auth()->check())
+                <button type="button" id="like-btn" data-slug="[[ $post->slug ]]" data-liked="[[ $viewerHasLiked ? '1' : '0' ]]" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-soft text-sm font-medium text-ink hover:border-primary hover:text-primary transition-colors [[ $viewerHasLiked ? 'text-primary' : '' ]]">
+                    <svg id="like-icon" class="w-5 h-5" fill="[[ $viewerHasLiked ? 'currentColor' : 'none' ]]" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    </svg>
+                    <span id="like-count">[[ $post->likes_count ?? 0 ]]</span>
+                    <span id="like-text">[[ $viewerHasLiked ? 'Liked' : 'Like' ]]</span>
+                </button>
+                #else
+                <a href="[[ route('login') ]]" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-soft text-sm font-medium text-ink hover:border-primary hover:text-primary transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    </svg>
+                    <span>[[ $post->likes_count ?? 0 ]]</span>
+                    <span>Log in to like</span>
+                </a>
+                #endif
+            </div>
+
+            <!-- Comments Section -->
+            <div class="mt-12 pt-8 border-t border-soft">
+                <h3 id="comments-heading" class="font-display text-xl font-bold text-ink mb-6">Comments (<span id="comments-count">[[ $post->comments_count ?? 0 ]]</span>)</h3>
+
+                #if (auth()->check())
+                <!-- Comment Form -->
+                <form id="comment-form" class="mb-8">
+                    <div class="mb-4">
+                        <textarea
+                            name="body"
+                            id="comment-body"
+                            rows="4"
+                            placeholder="Write a comment..."
+                            class="w-full px-4 py-3 rounded-xl border border-soft bg-white text-ink placeholder-ink-soft focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none"
+                            required></textarea>
+                        <p id="comment-form-error" class="mt-2 text-sm text-red-500 hidden"></p>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-white font-medium hover:brightness-110 transition-all">
+                            Post Comment
+                        </button>
+                    </div>
+                </form>
+                #else
+                <p class="text-ink-soft mb-6">
+                    <a href="[[ route('login') ]]" class="text-primary hover:underline">Log in</a> to leave a comment.
+                </p>
+                #endif
+
+                <!-- Comments List -->
+                <div id="comments-container" class="space-y-6">
+                    #php
+                    $comments = $post->comments()->where('status', true)->whereNull('parent_id')->embed(['user', 'replies.user'])->newest()->get();
+                    #endphp
+                    #foreach ($comments as $comment)
+                    #include('partials.comment', ['comment' => $comment])
+                    #endforeach
+                </div>
+            </div>
+
             #if ($post->tags && count($post->tags) > 0)
             <div class="mt-14 pt-8">
                 <h3 class="font-display text-sm font-bold tracking-wide uppercase text-ink-soft mb-3">Tagged with</h3>

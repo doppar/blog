@@ -16,7 +16,7 @@ use Phaseolies\Utilities\Attributes\Middleware;
 use Phaseolies\Utilities\Attributes\Route;
 
 #[Mapper(prefix: 'admin/ai')]
-#[Middleware(['auth'])]
+#[Middleware(['auth', 'admin'])]
 class AIAssistantController extends Controller
 {
     private const PROVIDER_CLASSES = [

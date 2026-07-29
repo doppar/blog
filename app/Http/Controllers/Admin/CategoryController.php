@@ -13,7 +13,7 @@ use Phaseolies\Utilities\Attributes\Middleware;
 use Phaseolies\Utilities\Attributes\Model as RouteModel;
 use Phaseolies\Utilities\Attributes\Route;
 
-#[Middleware(['auth'])]
+#[Middleware(['auth', 'admin'])]
 #[Mapper(prefix: 'admin/categories')]
 class CategoryController extends Controller
 {
