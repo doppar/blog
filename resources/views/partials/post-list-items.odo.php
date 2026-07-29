@@ -55,10 +55,14 @@
         <!-- Footer -->
         <div class="mt-auto pt-5 flex items-center justify-between">
             <div class="flex items-center gap-2 min-w-0">
-                <span class="w-7 h-7 rounded-full grid place-items-center text-[11px] font-bold text-[#fefefe] flex-shrink-0"
-                      style="background: [[ $post->accent_solid ]];">
-                    [[ $post?->user?->name ]]
-                </span>
+                #if (($post?->user?->image ?? '') !== '')
+                    <img src="[[ $post?->user?->image ]]" alt="[[ $post?->user?->name ]]" class="w-7 h-7 rounded-full object-cover flex-shrink-0">
+                #else
+                    <span class="w-7 h-7 rounded-full grid place-items-center text-[11px] font-bold text-[#fefefe] flex-shrink-0"
+                          style="background: [[ $post->accent_solid ]];">
+                        [[ strtoupper(substr($post?->user?->name ?? 'A', 0, 1)) ]]
+                    </span>
+                #endif
                 <span class="text-[13px] font-medium text-ink truncate">[[ $post?->user?->name ?? 'Admin' ]]</span>
             </div>
             <div class="flex items-center gap-3 text-[12px] text-ink-soft">
