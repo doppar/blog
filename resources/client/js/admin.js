@@ -1352,6 +1352,51 @@ function bootTwoFactorProfileModal() {
     }
 }
 
+function bootCommentReplyModal() {
+    const modal = document.querySelector('[data-comment-reply-modal]');
+
+    if (!modal) {
+        return;
+    }
+
+    const form = modal.querySelector('[data-comment-reply-form]');
+    const preview = modal.querySelector('[data-comment-reply-preview]');
+    const textarea = modal.querySelector('textarea[name="body"]');
+    const closeButtons = modal.querySelectorAll('[data-comment-reply-modal-close]');
+
+    const openModal = (url, previewText) => {
+        form.setAttribute('action', url);
+        preview.textContent = previewText || '';
+        textarea.value = '';
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('admin-modal-open');
+        window.setTimeout(() => textarea?.focus(), 30);
+    };
+
+    const closeModal = () => {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('admin-modal-open');
+    };
+
+    document.querySelectorAll('[data-comment-reply-open]').forEach((button) => {
+        button.addEventListener('click', () => {
+            openModal(button.dataset.replyUrl, button.dataset.replyPreview);
+        });
+    });
+
+    closeButtons.forEach((button) => {
+        button.addEventListener('click', closeModal);
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+            closeModal();
+        }
+    });
+}
+
 function bootRichEditors() {
     document.querySelectorAll('[data-rich-editor]').forEach((root) => {
         const canvas = root.querySelector('[data-rich-editor-canvas]');
@@ -2492,6 +2537,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bootMediaLibrary();
     bootCoverMediaModal();
     bootTwoFactorProfileModal();
+    bootCommentReplyModal();
     bootUserImagePreview();
     bootSidebarToggle();
     bootSidebarGroups();

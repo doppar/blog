@@ -110,7 +110,7 @@
                             <td>[[ $post->id ]]</td>
                             <td>
                                 <a class="admin-table__title" href="[[ route('admin.posts.edit', ['post' => $post->slug]) ]]">[[ $post->title ]]</a>
-                                <p class="admin-table__meta">[[ $post->author_name ]] • [[ $post->tags_count ?? 0 ]] tags</p>
+                                <p class="admin-table__meta">[[ $post->author_name ]] • [[ $post->tags_count ?? 0 ]] tags • [[ $post->comments_count ?? 0 ]] comments</p>
                             </td>
                             <td>[[ $post->user?->name ?? 'N/A' ]]</td>
                             <td>[[ $post->category?->name ?? 'Uncategorized' ]]</td>

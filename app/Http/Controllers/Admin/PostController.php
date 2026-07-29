@@ -27,6 +27,7 @@ class PostController extends Controller
     {
         $posts = Post::embed(['category:name', 'user:name', 'tags:name'])
             ->embedCount('tags')
+            ->embedCount(['comments' => fn($q) => $q->where('status', true)])
             ->if($request->search, function ($q) use ($request) {
                 $q->search(['title', 'user.name', 'category.name',   'tags.name',], $request->search);
             })
