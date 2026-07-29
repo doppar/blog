@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Phaseolies\Database\Entity\Attributes\Computed;
 use Phaseolies\Database\Entity\Casts\Attributes\ToDateTime;
 use Phaseolies\Database\Entity\Model;
 
 class Comment extends Model
 {
+    public const PER_PAGE = 2;
+
     protected $table = 'comments';
 
     protected $creatable = [
@@ -55,5 +58,25 @@ class Comment extends Model
     public function replies()
     {
         return $this->linkMany(Comment::class, 'parent_id', 'id');
+    }
+
+    /**
+     * Get the likes for the comment.
+     */
+    public function likes()
+    {
+        return $this->linkMany(CommentLike::class, 'comment_id', 'id');
+    }
+
+    #[Computed]
+    public function likesCount(): int
+    {
+        return $this->likes()->count();
+    }
+
+    #[Computed]
+    public function likedByViewer(): bool
+    {
+        return auth()->check() && $this->likes()->where('user_id', auth()->id())->exists();
     }
 }

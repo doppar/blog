@@ -5,6 +5,9 @@ function csrfToken() {
 }
 
 function jsonFetch(url, options = {}) {
+    const method = (options.method || 'GET').toUpperCase();
+    const canHaveBody = method !== 'GET' && method !== 'HEAD';
+
     return fetch(url, {
         ...options,
         __skipAdminLoader: true,
@@ -13,7 +16,7 @@ function jsonFetch(url, options = {}) {
             'X-CSRF-TOKEN': csrfToken(),
             ...(options.headers || {}),
         },
-        body: options.body ?? '{}',
+        ...(canHaveBody ? { body: options.body ?? '{}' } : {}),
     });
 }
 
@@ -58,16 +61,31 @@ function buildCommentHtml(comment) {
                 <div class="flex-1 min-w-0">
                     <div class="bg-white rounded-xl border border-soft p-4">
                         <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 flex-wrap">
                                 <span class="font-medium text-ink">${comment.user.name}</span>
+                                ${comment.is_post_author
+                                    ? '<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-semibold">Author</span>'
+                                    : ''
+                                }
                                 <span class="text-xs text-ink-soft">${comment.created_at}</span>
                             </div>
                         </div>
                         <p class="comment-body text-ink leading-relaxed">${comment.body.replace(/\n/g, '<br>')}</p>
                     </div>
-                    <button type="button" class="reply-btn mt-2 text-sm text-ink-soft hover:text-primary transition-colors" data-comment-id="${comment.id}">
-                        Reply
-                    </button>
+                    <div class="flex items-center gap-4 mt-2 text-sm">
+                        <button type="button" class="comment-like-btn font-medium text-ink-soft hover:text-primary transition-colors" data-comment-id="${comment.id}" data-liked="0">
+                            Like
+                        </button>
+                        <button type="button" class="reply-btn font-medium text-ink-soft hover:text-primary transition-colors" data-comment-id="${comment.id}">
+                            Reply
+                        </button>
+                        <span class="comment-like-count hidden inline-flex items-center gap-1 text-ink-soft">
+                            <svg class="w-3.5 h-3.5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M2 21h2a1 1 0 001-1v-9a1 1 0 00-1-1H2v11zM22.67 12.06c.11-.24.17-.5.17-.76a2.3 2.3 0 00-2.3-2.3h-5.05l.76-3.65.02-.24c0-.34-.14-.66-.36-.89L14.83 3 8.41 9.41C8.05 9.78 7.83 10.28 7.83 10.83v8.29a2 2 0 002 2h9c.82 0 1.54-.5 1.84-1.22l3-6.99a1.8 1.8 0 00.14-.69v-.14z" />
+                            </svg>
+                            <span class="comment-like-count-value">0</span>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -131,13 +149,15 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    const postSlug = likeBtn?.dataset.slug;
-
     // Top-level comment functionality
     const commentForm = document.getElementById('comment-form');
     const commentsContainer = document.getElementById('comments-container');
     const commentBody = document.getElementById('comment-body');
     const commentFormError = document.getElementById('comment-form-error');
+    // #comments-container renders for guests and logged-in users alike,
+    // unlike the like button, so it's a reliable place to read the slug from.
+    const postSlug = commentsContainer?.dataset.slug;
+    let currentSort = 'newest';
 
     function showCommentFormError(message) {
         if (!commentFormError) return;
@@ -184,6 +204,107 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // Load more comments
+    function attachLoadMoreHandler(button) {
+        button.addEventListener('click', async function () {
+            const nextPage = this.dataset.nextPage;
+
+            setButtonLoading(this, true, 'Loading…');
+
+            try {
+                const response = await jsonFetch(`/posts/${postSlug}/comments?sort=${currentSort}&page=${nextPage}`, { method: 'GET' });
+                const data = await parseJsonResponse(response);
+
+                commentsContainer.insertAdjacentHTML('beforeend', data.html);
+                updateLoadMoreButton(data.has_more, data.next_page);
+            } catch (error) {
+                console.error('Load more comments error:', error);
+                setButtonLoading(this, false);
+            }
+        });
+    }
+
+    function updateLoadMoreButton(hasMore, nextPage) {
+        let wrapper = document.getElementById('load-more-wrapper');
+
+        if (!hasMore) {
+            wrapper?.remove();
+            return;
+        }
+
+        if (!wrapper) {
+            commentsContainer.insertAdjacentHTML('afterend', `
+                <div id="load-more-wrapper" class="mt-6 flex justify-center">
+                    <button type="button" id="load-more-comments" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-soft text-sm font-medium text-ink hover:border-primary hover:text-primary transition-colors">
+                        Load more comments
+                    </button>
+                </div>
+            `);
+            attachLoadMoreHandler(document.getElementById('load-more-comments'));
+        }
+
+        const button = document.getElementById('load-more-comments');
+        setButtonLoading(button, false);
+        button.dataset.nextPage = nextPage;
+    }
+
+    const loadMoreBtn = document.getElementById('load-more-comments');
+    if (loadMoreBtn) {
+        attachLoadMoreHandler(loadMoreBtn);
+    }
+
+    // Sort comments (newest / oldest)
+    const commentSortSelect = document.getElementById('comment-sort');
+    if (commentSortSelect) {
+        commentSortSelect.addEventListener('change', async function () {
+            currentSort = this.value;
+            this.disabled = true;
+
+            try {
+                const response = await jsonFetch(`/posts/${postSlug}/comments?sort=${currentSort}&page=1`, { method: 'GET' });
+                const data = await parseJsonResponse(response);
+
+                commentsContainer.innerHTML = data.html;
+                updateLoadMoreButton(data.has_more, data.next_page);
+            } catch (error) {
+                console.error('Sort comments error:', error);
+            } finally {
+                this.disabled = false;
+            }
+        });
+    }
+
+    // Comment like functionality
+    document.addEventListener('click', async function (e) {
+        if (!e.target.classList.contains('comment-like-btn')) return;
+
+        const button = e.target;
+        if (button.disabled) return;
+
+        const commentId = button.dataset.commentId;
+        button.disabled = true;
+
+        try {
+            const response = await jsonFetch(`/comments/${commentId}/like`, { method: 'POST' });
+            const data = await parseJsonResponse(response);
+
+            const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
+            const countEl = commentItem.querySelector(':scope > .flex.gap-4 > .flex-1.min-w-0 > .flex.items-center.gap-4 .comment-like-count');
+            const countValueEl = countEl.querySelector('.comment-like-count-value');
+
+            button.textContent = data.liked ? 'Liked' : 'Like';
+            button.classList.toggle('text-primary', data.liked);
+            button.dataset.liked = data.liked ? '1' : '0';
+
+            countValueEl.textContent = data.like_count;
+            countEl.classList.toggle('hidden', data.like_count === 0);
+        } catch (error) {
+            console.error('Comment like error:', error);
+        } finally {
+            button.disabled = false;
+        }
+    });
+
     // Inline reply form functionality — clicking "Reply" opens a small reply
     // box directly under that comment, instead of jumping up to the main
     // comment form at the top of the thread.
@@ -207,9 +328,14 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
         `;
 
-        replyBtn.insertAdjacentHTML('afterend', wrapperHtml);
+        // Insert after the whole actions row (Like/Reply/count), not just
+        // after the Reply button itself — that row is a flex container, and
+        // inserting inside it would squeeze the reply box in as a flex item
+        // instead of a full-width block underneath.
+        const actionsRow = replyBtn.parentElement;
+        actionsRow.insertAdjacentHTML('afterend', wrapperHtml);
 
-        const wrapper = replyBtn.nextElementSibling;
+        const wrapper = actionsRow.nextElementSibling;
         const textarea = wrapper.querySelector('.reply-form-textarea');
         const errorEl = wrapper.querySelector('.reply-form-error');
         const cancelBtn = wrapper.querySelector('.cancel-reply-btn');

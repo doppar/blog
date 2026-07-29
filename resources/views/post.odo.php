@@ -56,6 +56,12 @@
                     <div class="flex items-center gap-4 ml-auto text-[13px] text-ink-soft">
                         <span class="flex items-center gap-1.5">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+                            </svg>
+                            [[ $post->comments_count ?? 0 ]] comments
+                        </span>
+                        <span class="flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75v5.25l3.5 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             [[ max(1, (int) ceil(str_word_count(strip_tags($post->body ?? '')) / 200)) ]] min read
@@ -156,7 +162,7 @@
                     <span id="like-text">[[ $viewerHasLiked ? 'Liked' : 'Like' ]]</span>
                 </button>
                 #else
-                <a href="[[ route('login') ]]" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-soft text-sm font-medium text-ink hover:border-primary hover:text-primary transition-colors">
+                <a href="[[ route('login') . '?redirect_to=' . urlencode(request()->getPath()) ]]" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-soft text-sm font-medium text-ink hover:border-primary hover:text-primary transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                     </svg>
@@ -168,7 +174,13 @@
 
             <!-- Comments Section -->
             <div class="mt-12 pt-8 border-t border-soft">
-                <h3 id="comments-heading" class="font-display text-xl font-bold text-ink mb-6">Comments (<span id="comments-count">[[ $post->comments_count ?? 0 ]]</span>)</h3>
+                <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+                    <h3 id="comments-heading" class="font-display text-xl font-bold text-ink">Comments (<span id="comments-count">[[ $post->comments_count ?? 0 ]]</span>)</h3>
+                    <select id="comment-sort" class="text-sm border border-soft rounded-full pl-3 pr-8 py-1.5 bg-white text-ink focus:outline-none focus:border-primary">
+                        <option value="newest">Newest</option>
+                        <option value="oldest">Oldest</option>
+                    </select>
+                </div>
 
                 #if (auth()->check())
                 <!-- Comment Form -->
@@ -191,19 +203,27 @@
                 </form>
                 #else
                 <p class="text-ink-soft mb-6">
-                    <a href="[[ route('login') ]]" class="text-primary hover:underline">Log in</a> to leave a comment.
+                    <a href="[[ route('login') . '?redirect_to=' . urlencode(request()->getPath()) ]]" class="text-primary hover:underline">Log in</a> to leave a comment.
                 </p>
                 #endif
 
                 <!-- Comments List -->
-                <div id="comments-container" class="space-y-6">
+                <div id="comments-container" class="space-y-6" data-slug="[[ $post->slug ]]">
                     #php
-                    $comments = $post->comments()->where('status', true)->whereNull('parent_id')->embed(['user', 'replies.user'])->newest()->get();
+                    $commentsPage = $post->comments()->where('status', true)->whereNull('parent_id')->embed(['user', 'replies.user'])->newest()->paginate(\App\Models\Comment::PER_PAGE);
                     #endphp
-                    #foreach ($comments as $comment)
-                    #include('partials.comment', ['comment' => $comment])
+                    #foreach ($commentsPage['data'] as $comment)
+                    #include('partials.comment', ['comment' => $comment, 'postAuthorId' => $post->user_id])
                     #endforeach
                 </div>
+
+                #if ($commentsPage['next_page_url'])
+                <div id="load-more-wrapper" class="mt-6 flex justify-center">
+                    <button type="button" id="load-more-comments" data-next-page="2" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-soft text-sm font-medium text-ink hover:border-primary hover:text-primary transition-colors">
+                        Load more comments
+                    </button>
+                </div>
+                #endif
             </div>
 
             #if ($post->tags && count($post->tags) > 0)
@@ -344,7 +364,7 @@
             <p class="text-sm font-medium text-ink-soft">Made with Doppar</p>
         </div>
     </div>
-    <div id="cover_image_for_js">[[! $post->cover_image ?? '' !]]</div>
+    <div id="cover_image_for_js" hidden>[[! $post->cover_image ?? '' !]]</div>
 </footer>
 
 </div>

@@ -9,10 +9,37 @@ use App\Http\Requests\Comment\UpdateCommentRequest;
 use App\Models\Comment;
 use App\Models\Post;
 use Phaseolies\Support\Facades\Auth;
+use Phaseolies\Http\Request;
 use Phaseolies\Http\Response;
 
 class CommentController extends Controller
 {
+    #[Route(uri: 'posts/{post}/comments', name: 'comments.index', methods: ['GET'])]
+    public function index(Request $request, #[RouteModel(exception: true)] Post $post): Response
+    {
+        $query = $post->comments()
+            ->where('status', true)
+            ->whereNull('parent_id')
+            ->embed(['user', 'replies.user']);
+
+        $query = $request->input('sort') === 'oldest' ? $query->oldest() : $query->newest();
+
+        $paginated = $query->paginate(Comment::PER_PAGE);
+
+        $html = '';
+
+        foreach ($paginated['data'] as $comment) {
+            $html .= view('partials.comment', ['comment' => $comment, 'postAuthorId' => $post->user_id])->render();
+        }
+
+        return response()->json([
+            'success' => true,
+            'html' => $html,
+            'has_more' => $paginated['next_page_url'] !== null,
+            'next_page' => $paginated['current_page'] + 1,
+        ]);
+    }
+
     #[Route(uri: 'posts/{post}/comments', name: 'comments.store', methods: ['POST'], middleware: ['auth'])]
     public function store(StoreCommentRequest $request, #[RouteModel(exception: true)] Post $post): Response
     {
@@ -51,6 +78,7 @@ class CommentController extends Controller
                     'avatar' => $comment->user->image ?? null,
                 ],
                 'parent_id' => $comment->parent_id,
+                'is_post_author' => (int) $comment->user_id === (int) $post->user_id,
             ],
         ]);
     }

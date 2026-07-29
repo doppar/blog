@@ -22,8 +22,66 @@
             </nav>
 
             <!-- Auth buttons -->
+            #if (auth()->check())
+            <div class="hidden sm:flex items-center">
+                <div class="admin-dropdown" data-dropdown>
+                    <button class="admin-profile" type="button" data-dropdown-trigger aria-expanded="false">
+                        <span class="admin-profile__avatar">
+                            #if ((auth()->user()->image ?? '') !== '')
+                                <img src="[[ auth()->user()->image ]]" alt="[[ auth()->user()->name ]]">
+                            #else
+                                [[ strtoupper(substr((string) auth()->user()->name, 0, 2)) ]]
+                            #endif
+                        </span>
+                        <span class="admin-profile__name">[[ auth()->user()->name ]]</span>
+                        <svg class="admin-profile__chevron" viewBox="0 0 20 20" aria-hidden="true">
+                            <path d="M5 7.5 10 12.5l5-5"></path>
+                        </svg>
+                    </button>
+
+                    <div class="admin-dropdown__menu admin-dropdown__menu--profile" data-dropdown-menu>
+                        <div class="admin-dropdown__head admin-dropdown__head--profile">
+                            <span class="admin-dropdown__head-avatar">
+                                #if ((auth()->user()->image ?? '') !== '')
+                                    <img src="[[ auth()->user()->image ]]" alt="[[ auth()->user()->name ]]">
+                                #else
+                                    [[ strtoupper(substr((string) auth()->user()->name, 0, 2)) ]]
+                                #endif
+                            </span>
+                            <span class="admin-dropdown__head-text">
+                                <strong>[[ auth()->user()->name ]]</strong>
+                                <span>[[ auth()->user()->email ]]</span>
+                            </span>
+                        </div>
+
+                        <div class="admin-dropdown__divider"></div>
+
+                        #if (auth()->user()->role === \App\Models\User::ROLE_ADMIN)
+                        <a class="admin-dropdown__row" href="[[ route('admin.profile.index') ]]">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            <span>Account settings</span>
+                        </a>
+
+                        <div class="admin-dropdown__divider"></div>
+                        #endif
+
+                        <button class="admin-dropdown__row admin-dropdown__row--danger" type="submit" form="site-logout-form">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <path d="M16 17l5-5-5-5"></path>
+                                <path d="M21 12H9"></path>
+                            </svg>
+                            <span>Log out</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            #else
             <div class="hidden sm:flex items-center gap-3">
-                <a href="/login" class="text-sm font-medium text-ink-soft hover:text-ink transition-colors">Sign in</a>
+                <a href="[[ route('login') . '?redirect_to=' . urlencode(request()->getPath()) ]]" class="text-sm font-medium text-ink-soft hover:text-ink transition-colors">Sign in</a>
                 <a href="https://doppar.com" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-ink text-[#fefefe] text-sm font-medium hover:bg-primary transition-colors">
                     Get started
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -31,6 +89,7 @@
                     </svg>
                 </a>
             </div>
+            #endif
 
             <!-- Mobile menu button -->
             <button type="button" id="mobile-menu-btn" class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-full text-ink-soft hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
@@ -51,9 +110,19 @@
             <a href="https://github.com/doppar/framework" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">GitHub</a>
             <a href="/?tab=featured" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Featured</a>
             <a href="/" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">All stories</a>
-            <a href="/login" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Sign in</a>
+            #if (auth()->check())
+            <button type="submit" form="site-logout-form" class="text-left px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Log out</button>
+            #else
+            <a href="[[ route('login') . '?redirect_to=' . urlencode(request()->getPath()) ]]" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Sign in</a>
+            #endif
         </nav>
     </div>
+
+    #if (auth()->check())
+    <form id="site-logout-form" method="POST" action="[[ route('logout') ]]" class="hidden">
+        #csrf
+    </form>
+    #endif
 </header>
 
 <script>

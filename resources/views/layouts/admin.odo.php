@@ -199,6 +199,7 @@
                         <nav class="admin-sidebar__links" data-sidebar-group-panel>
                             <a class="admin-sidebar__link [[ str_contains((string) Route::currentRouteName(), 'admin.categories.') ? 'is-active' : '' ]]" href="[[ route('admin.categories.index') ]]">Categories</a>
                             <a class="admin-sidebar__link [[ str_contains((string) Route::currentRouteName(), 'admin.posts.') ? 'is-active' : '' ]]" href="[[ route('admin.posts.index') ]]">Posts</a>
+                            <a class="admin-sidebar__link [[ str_contains((string) Route::currentRouteName(), 'admin.comments.') ? 'is-active' : '' ]]" href="[[ route('admin.comments.index') ]]">Comments</a>
                             <a class="admin-sidebar__link [[ str_contains((string) Route::currentRouteName(), 'admin.tags.') ? 'is-active' : '' ]]" href="[[ route('admin.tags.index') ]]">Tags</a>
                             <a class="admin-sidebar__link [[ str_contains((string) Route::currentRouteName(), 'admin.users.') ? 'is-active' : '' ]]" href="[[ route('admin.users.index') ]]">Users</a>
                         </nav>

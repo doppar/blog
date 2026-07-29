@@ -192,6 +192,7 @@
         }
 
         let isLoading = false;
+        const spinnerSvg = '<svg class="animate-spin" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>';
 
         button.addEventListener('click', async () => {
             const nextUrl = button.dataset.nextUrl;
@@ -202,11 +203,12 @@
 
             isLoading = true;
             const originalHTML = button.innerHTML;
-            button.innerHTML = 'Loading…';
+            button.innerHTML = `${spinnerSvg}<span>Loading…</span>`;
             button.disabled = true;
 
             try {
                 const response = await fetch(nextUrl, {
+                    __skipAdminLoader: true,
                     headers: {
                         'Accept': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',
