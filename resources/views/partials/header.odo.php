@@ -81,7 +81,7 @@
             </div>
             #else
             <div class="hidden sm:flex items-center gap-3">
-                <a href="/login" class="text-sm font-medium text-ink-soft hover:text-ink transition-colors">Sign in</a>
+                <a href="[[ route('login') . '?redirect_to=' . urlencode(request()->getPath()) ]]" class="text-sm font-medium text-ink-soft hover:text-ink transition-colors">Sign in</a>
                 <a href="https://doppar.com" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-ink text-[#fefefe] text-sm font-medium hover:bg-primary transition-colors">
                     Get started
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -113,7 +113,7 @@
             #if (auth()->check())
             <button type="submit" form="site-logout-form" class="text-left px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Log out</button>
             #else
-            <a href="/login" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Sign in</a>
+            <a href="[[ route('login') . '?redirect_to=' . urlencode(request()->getPath()) ]]" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Sign in</a>
             #endif
         </nav>
     </div>
