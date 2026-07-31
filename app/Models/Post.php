@@ -54,6 +54,11 @@ class Post extends Model
         return $this->linkMany(Like::class, 'post_id', 'id');
     }
 
+    public function savedPosts()
+    {
+        return $this->linkMany(SavedPost::class, 'post_id', 'id');
+    }
+
     #[Computed]
     public function likesCount(): int
     {
