@@ -17,8 +17,19 @@
 
             <!-- Navigation -->
             <nav class="hidden md:flex items-center gap-4 text-sm font-medium text-ink-soft">
-                <a href="https://doppar.com" class="hover:text-ink transition-colors">Docs</a>
-                <a href="https://github.com/doppar/framework" class="hover:text-ink transition-colors">GitHub</a>
+                <a href="https://doppar.com" target="_blank" rel="noopener" class="inline-flex items-center gap-1 hover:text-ink transition-colors">
+                    Docs
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5M6 6h4.5M6 6v12h12v-4.5" />
+                    </svg>
+                </a>
+                <a href="https://marketplace.visualstudio.com/items?itemName=Doppar.doppar-snippets" target="_blank" rel="noopener" class="inline-flex items-center gap-1 hover:text-ink transition-colors">
+                    Extentions
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5M6 6h4.5M6 6v12h12v-4.5" />
+                    </svg>
+                </a>
+                <a href="https://github.com/doppar/framework" class="hover:text-ink transition-colors">Github</a>
             </nav>
 
             <!-- Auth buttons -->

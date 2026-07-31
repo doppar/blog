@@ -76,37 +76,37 @@
                         </span>
                         #endif
 
-                        <div class="relative">
-                            <button type="button" id="share-btn" class="flex items-center gap-1.5 hover:text-ink transition-colors" aria-label="Share this post" aria-haspopup="true" aria-expanded="false">
+                        <div class="relative share-widget">
+                            <button type="button" class="share-trigger flex items-center gap-1.5 hover:text-ink transition-colors" aria-label="Share this post" aria-haspopup="true" aria-expanded="false">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
                                 </svg>
                                 Share
                             </button>
 
-                            <div id="share-menu" class="hidden absolute right-0 top-full mt-2 w-56 rounded-2xl bg-white shadow-[0_20px_50px_-20px_rgba(26,26,26,0.4)] py-2 text-left z-50">
-                                <a id="share-facebook" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
+                            <div class="share-menu hidden absolute right-0 top-full mt-2 w-56 rounded-2xl bg-white shadow-[0_20px_50px_-20px_rgba(26,26,26,0.4)] py-2 text-left z-50">
+                                <a data-share="facebook" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
                                     <span class="w-6 h-6 rounded-full grid place-items-center text-[11px] font-bold text-white shrink-0" style="background:#1877F2">f</span>
                                     Facebook
                                 </a>
-                                <a id="share-x" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
+                                <a data-share="x" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
                                     <span class="w-6 h-6 rounded-full grid place-items-center text-[11px] font-bold text-white shrink-0" style="background:#000000">X</span>
                                     X
                                 </a>
-                                <a id="share-linkedin" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
+                                <a data-share="linkedin" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
                                     <span class="w-6 h-6 rounded-full grid place-items-center text-[11px] font-bold text-white shrink-0" style="background:#0A66C2">in</span>
                                     LinkedIn
                                 </a>
-                                <a id="share-pinterest" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
+                                <a data-share="pinterest" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
                                     <span class="w-6 h-6 rounded-full grid place-items-center text-[11px] font-bold text-white shrink-0" style="background:#E60023">P</span>
                                     Pinterest
                                 </a>
-                                <a id="share-tumblr" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
+                                <a data-share="tumblr" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
                                     <span class="w-6 h-6 rounded-full grid place-items-center text-[11px] font-bold text-white shrink-0" style="background:#34526f">t</span>
                                     Tumblr
                                 </a>
                                 <div class="my-1.5 h-px bg-[rgba(26,26,26,0.08)]"></div>
-                                <button type="button" id="share-copy" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
+                                <button type="button" class="share-copy w-full flex items-center gap-3 px-4 py-2.5 text-sm text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">
                                     <span class="w-6 h-6 rounded-full grid place-items-center bg-[rgba(26,26,26,0.06)] text-ink-soft shrink-0">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
@@ -241,37 +241,51 @@
         <!-- Share -->
         <div class="max-w-3xl mx-auto px-6 py-8">
             <div class="flex items-center justify-between">
-                <button type="button" id="share-btn" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-soft text-sm font-medium text-ink hover:border-ink transition-colors" aria-label="Share this post">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
-                    </svg>
-                    Share
-                </button>
-                <div id="share-menu" class="hidden absolute right-6 top-1/2 -translate-y-1/2 bg-white rounded-xl shadow-[0_20px_50px_-20px_rgba(26,26,26,0.4)] border border-soft overflow-hidden z-50" role="menu">
-                    <a id="share-facebook" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-3 text-sm text-ink-soft hover:bg-[rgba(26,26,26,0.03)] transition-colors">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                        </svg>
-                        Facebook
-                    </a>
-                    <a id="share-x" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-3 text-sm text-ink-soft hover:bg-[rgba(26,26,26,0.03)] transition-colors">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                        </svg>
-                        X (Twitter)
-                    </a>
-                    <a id="share-linkedin" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-3 text-sm text-ink-soft hover:bg-[rgba(26,26,26,0.03)] transition-colors">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                        </svg>
-                        LinkedIn
-                    </a>
-                    <button id="share-copy" type="button" class="flex items-center gap-3 px-4 py-3 text-sm text-ink-soft hover:bg-[rgba(26,26,26,0.03)] transition-colors w-full text-left">
+                <div class="relative share-widget">
+                    <button type="button" class="share-trigger inline-flex items-center gap-2 px-4 py-2 rounded-full border border-soft text-sm font-medium text-ink hover:border-ink transition-colors" aria-label="Share this post" aria-haspopup="true" aria-expanded="false">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
                         </svg>
-                        Copy link
+                        Share
                     </button>
+                    <div class="share-menu hidden absolute left-0 top-full mt-2 w-56 bg-white rounded-xl shadow-[0_20px_50px_-20px_rgba(26,26,26,0.4)] border border-soft overflow-hidden z-50" role="menu">
+                        <a data-share="facebook" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-3 text-sm text-ink-soft hover:bg-[rgba(26,26,26,0.03)] transition-colors">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                            </svg>
+                            Facebook
+                        </a>
+                        <a data-share="x" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-3 text-sm text-ink-soft hover:bg-[rgba(26,26,26,0.03)] transition-colors">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
+                            X (Twitter)
+                        </a>
+                        <a data-share="linkedin" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-3 text-sm text-ink-soft hover:bg-[rgba(26,26,26,0.03)] transition-colors">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                            </svg>
+                            LinkedIn
+                        </a>
+                        <a data-share="pinterest" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-3 text-sm text-ink-soft hover:bg-[rgba(26,26,26,0.03)] transition-colors">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.171-2.911 1.023 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.995-.283 1.194.6 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.222-.174.269-.402.163-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146 1.124.347 2.317.535 3.554.535 6.624 0 11.985-5.367 11.985-11.987C23.97 5.367 18.617 0 11.985 0z" />
+                            </svg>
+                            Pinterest
+                        </a>
+                        <a data-share="tumblr" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-3 text-sm text-ink-soft hover:bg-[rgba(26,26,26,0.03)] transition-colors">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M14.563 24c-5.093 0-8.85-2.868-8.85-8.554v-7.727h-3.163v-4.31c4.243-1.028 6.033-4.611 6.207-8.409h4.242v7.71h4.925v5.009h-4.925v6.883c0 2.043.983 2.785 2.686 2.785h2.4v5.596c0 .02-3.522.017-3.522.017z" />
+                            </svg>
+                            Tumblr
+                        </a>
+                        <button type="button" class="share-copy flex items-center gap-3 px-4 py-3 text-sm text-ink-soft hover:bg-[rgba(26,26,26,0.03)] transition-colors w-full text-left">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+                            </svg>
+                            Copy link
+                        </button>
+                    </div>
                 </div>
                 <a href="/" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-soft text-sm font-medium text-ink hover:border-ink transition-colors">
                     More stories
@@ -370,64 +384,74 @@
 </div>
 
 <script>
-    // Share dropdown
+    // Share dropdowns
     (() => {
-        const btn = document.getElementById('share-btn');
-        const menu = document.getElementById('share-menu');
-        const copyBtn = document.getElementById('share-copy');
-        if (!btn || !menu) return;
+        const widgets = document.querySelectorAll('.share-widget');
+        if (!widgets.length) return;
 
         const url = window.location.href;
         const title = document.title;
         const image = document.getElementById('cover_image_for_js').textContent;
 
         const targets = {
-            'share-facebook': `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-            'share-x': `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
-            'share-linkedin': `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-            'share-pinterest': `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(url)}&media=${encodeURIComponent(image)}&description=${encodeURIComponent(title)}`,
-            'share-tumblr': `https://www.tumblr.com/widgets/share/tool?canonicalUrl=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
-        };
-        Object.entries(targets).forEach(([id, href]) => {
-            const el = document.getElementById(id);
-            if (el) el.href = href;
-        });
-
-        const closeMenu = () => {
-            menu.classList.add('hidden');
-            btn.setAttribute('aria-expanded', 'false');
-        };
-        const openMenu = () => {
-            menu.classList.remove('hidden');
-            btn.setAttribute('aria-expanded', 'true');
+            facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+            x: `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
+            linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+            pinterest: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(url)}&media=${encodeURIComponent(image)}&description=${encodeURIComponent(title)}`,
+            tumblr: `https://www.tumblr.com/widgets/share/tool?canonicalUrl=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
         };
 
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            menu.classList.contains('hidden') ? openMenu() : closeMenu();
-        });
-        document.addEventListener('click', (e) => {
-            if (!menu.contains(e.target) && e.target !== btn) closeMenu();
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeMenu();
-        });
+        const openMenus = [];
 
-        if (copyBtn) {
-            copyBtn.addEventListener('click', async () => {
-                try {
-                    await navigator.clipboard.writeText(url);
-                    const original = copyBtn.innerHTML;
-                    copyBtn.innerHTML = '<span class="px-1">Link copied ✓</span>';
-                    setTimeout(() => {
-                        copyBtn.innerHTML = original;
-                        closeMenu();
-                    }, 1200);
-                } catch (_) {
-                    /* clipboard unavailable */
-                }
+        widgets.forEach((widget) => {
+            const btn = widget.querySelector('.share-trigger');
+            const menu = widget.querySelector('.share-menu');
+            const copyBtn = widget.querySelector('.share-copy');
+            if (!btn || !menu) return;
+
+            widget.querySelectorAll('[data-share]').forEach((el) => {
+                const href = targets[el.dataset.share];
+                if (href) el.href = href;
             });
-        }
+
+            const closeMenu = () => {
+                menu.classList.add('hidden');
+                btn.setAttribute('aria-expanded', 'false');
+            };
+            const openMenu = () => {
+                openMenus.forEach((close) => close());
+                menu.classList.remove('hidden');
+                btn.setAttribute('aria-expanded', 'true');
+            };
+            openMenus.push(closeMenu);
+
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menu.classList.contains('hidden') ? openMenu() : closeMenu();
+            });
+            document.addEventListener('click', (e) => {
+                if (!menu.contains(e.target) && e.target !== btn) closeMenu();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeMenu();
+            });
+
+            if (copyBtn) {
+                copyBtn.addEventListener('click', async () => {
+                    try {
+                        await navigator.clipboard.writeText(url);
+                        const original = copyBtn.innerHTML;
+                        copyBtn.innerHTML = '<span class="px-1">Link copied ✓</span>';
+                        setTimeout(() => {
+                            copyBtn.innerHTML = original;
+                            closeMenu();
+                        }, 1200);
+                    } catch (_) {
+                        /* clipboard unavailable */
+                    }
+                });
+            }
+        });
     })();
 
     // Code block copy buttons
