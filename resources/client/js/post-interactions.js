@@ -149,6 +149,40 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // Save (bookmark) functionality
+    const saveBtn = document.getElementById('save-btn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', async function () {
+            if (this.disabled) return;
+
+            const slug = this.dataset.slug;
+            const saveIcon = document.getElementById('save-icon');
+
+            this.disabled = true;
+            saveIcon.style.display = 'none';
+            saveIcon.insertAdjacentHTML('beforebegin', SPINNER_SVG);
+
+            try {
+                const response = await jsonFetch(`/posts/${slug}/save`, { method: 'POST' });
+                const data = await parseJsonResponse(response);
+
+                const saveText = document.getElementById('save-text');
+
+                saveText.textContent = data.saved ? 'Saved' : 'Save';
+                saveIcon.setAttribute('fill', data.saved ? 'currentColor' : 'none');
+                this.classList.toggle('text-primary', data.saved);
+                this.dataset.saved = data.saved ? '1' : '0';
+                this.setAttribute('aria-pressed', data.saved ? 'true' : 'false');
+            } catch (error) {
+                console.error('Save error:', error);
+            } finally {
+                this.querySelector('.inline-spinner')?.remove();
+                saveIcon.style.display = '';
+                this.disabled = false;
+            }
+        });
+    }
+
     // Top-level comment functionality
     const commentForm = document.getElementById('comment-form');
     const commentsContainer = document.getElementById('comments-container');

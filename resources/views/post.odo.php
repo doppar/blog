@@ -76,6 +76,25 @@
                         </span>
                         #endif
 
+                        #php
+                        $viewerHasSaved = auth()->check() && $post->savedPosts()->where('user_id', auth()->id())->exists();
+                        #endphp
+                        #if (auth()->check())
+                        <button type="button" id="save-btn" data-slug="[[ $post->slug ]]" data-saved="[[ $viewerHasSaved ? '1' : '0' ]]" class="flex items-center gap-1.5 hover:text-ink transition-colors [[ $viewerHasSaved ? 'text-primary' : '' ]]" aria-label="Save this post" aria-pressed="[[ $viewerHasSaved ? 'true' : 'false' ]]">
+                            <svg id="save-icon" class="w-4 h-4" fill="[[ $viewerHasSaved ? 'currentColor' : 'none' ]]" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                            </svg>
+                            <span id="save-text">[[ $viewerHasSaved ? 'Saved' : 'Save' ]]</span>
+                        </button>
+                        #else
+                        <a href="[[ route('login') . '?redirect_to=' . urlencode(request()->getPath()) ]]" class="flex items-center gap-1.5 hover:text-ink transition-colors" aria-label="Log in to save this post">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                            </svg>
+                            Save
+                        </a>
+                        #endif
+
                         <div class="relative share-widget">
                             <button type="button" class="share-trigger flex items-center gap-1.5 hover:text-ink transition-colors" aria-label="Share this post" aria-haspopup="true" aria-expanded="false">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">

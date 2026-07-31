@@ -57,6 +57,16 @@ class User extends Model
     }
 
     /**
+     * Get the posts this user has saved/bookmarked.
+     *
+     * @return mixed
+     */
+    public function savedPosts()
+    {
+        return $this->linkMany(SavedPost::class, 'user_id', 'id');
+    }
+
+    /**
      * Clear cached user counters after the record changes.
      *
      * @return void

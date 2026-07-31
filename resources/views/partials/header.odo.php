@@ -67,6 +67,15 @@
 
                         <div class="admin-dropdown__divider"></div>
 
+                        <a class="admin-dropdown__row" href="[[ route('saved.index') ]]">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"></path>
+                            </svg>
+                            <span>Saved posts</span>
+                        </a>
+
+                        <div class="admin-dropdown__divider"></div>
+
                         #if (auth()->user()->role === \App\Models\User::ROLE_ADMIN)
                         <a class="admin-dropdown__row" href="[[ route('admin.profile.index') ]]">
                             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -122,6 +131,7 @@
             <a href="/?tab=featured" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Featured</a>
             <a href="/" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">All stories</a>
             #if (auth()->check())
+            <a href="[[ route('saved.index') ]]" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Saved posts</a>
             <button type="submit" form="site-logout-form" class="text-left px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Log out</button>
             #else
             <a href="[[ route('login') . '?redirect_to=' . urlencode(request()->getPath()) ]]" class="px-3 py-2.5 rounded-lg hover:text-ink hover:bg-[rgba(26,26,26,0.05)] transition-colors">Sign in</a>
