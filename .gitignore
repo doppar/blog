@@ -14,3 +14,4 @@ phpunit.xml.dist
 .idea
 /node_modules
 database/database.sqlite
+public/build
