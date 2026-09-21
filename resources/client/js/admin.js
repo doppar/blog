@@ -1,15 +1,18 @@
-import { Editor, Node, mergeAttributes } from '@tiptap/core';
+import { Editor, Extension, Node, mergeAttributes } from '@tiptap/core';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import Link from '@tiptap/extension-link';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import Underline from '@tiptap/extension-underline';
+import { Fragment } from '@tiptap/pm/model';
+import { TextSelection } from '@tiptap/pm/state';
 import { common, createLowlight } from 'lowlight';
 import hljs from 'highlight.js/lib/core';
 
 const SIDEBAR_STORAGE_KEY = 'editorial-desk-sidebar-groups';
 const MEDIA_VIEW_STORAGE_KEY = 'editorial-desk-media-view';
 const lowlight = createLowlight(common);
+const EDITOR_HEADING_LEVELS = [2, 3];
 
 Object.entries(common).forEach(([name, grammar]) => hljs.registerLanguage(name, grammar));
 let activeAjaxRequests = 0;
@@ -117,6 +120,140 @@ const EditorImage = Node.create({
                 },
             }),
             updateEditorImage: (attributes) => ({ commands }) => commands.updateAttributes(this.name, attributes),
+        };
+    },
+});
+
+function trimHardBreaks(fragment) {
+    let start = 0;
+    let end = fragment.childCount;
+
+    while (start < end && fragment.child(start).type.name === 'hardBreak') {
+        start += 1;
+    }
+
+    while (end > start && fragment.child(end - 1).type.name === 'hardBreak') {
+        end -= 1;
+    }
+
+    const nodes = [];
+
+    for (let index = start; index < end; index += 1) {
+        nodes.push(fragment.child(index));
+    }
+
+    return Fragment.fromArray(nodes);
+}
+
+// Range of the "line" around an offset: the text between two hard breaks, or the whole block.
+function lineRangeAt(block, offset) {
+    let start = 0;
+    let end = block.content.size;
+
+    block.forEach((child, childOffset) => {
+        if (child.type.name !== 'hardBreak') {
+            return;
+        }
+
+        if (childOffset + child.nodeSize <= offset) {
+            start = childOffset + child.nodeSize;
+        } else if (childOffset >= offset) {
+            end = Math.min(end, childOffset);
+        }
+    });
+
+    return [start, end];
+}
+
+// Turns only the selected text (or the current line when nothing is selected) into a heading or
+// paragraph. The surrounding text stays in its own block, unlike toggleHeading/setParagraph which
+// convert the entire block. Level 0 means paragraph; repeating a level toggles back to paragraph.
+const BlockFormat = Extension.create({
+    name: 'blockFormat',
+    priority: 1000,
+
+    addOptions() {
+        return {
+            levels: EDITOR_HEADING_LEVELS,
+        };
+    },
+
+    addCommands() {
+        return {
+            formatBlock: (level = 0) => ({ state, tr, dispatch, commands }) => {
+                if (level > 0 && !this.options.levels.includes(level)) {
+                    return false;
+                }
+
+                const { selection, schema } = state;
+                const { $from, $to, from, to, empty } = selection;
+                const block = $from.parent;
+
+                if (!$from.sameParent($to) || !['paragraph', 'heading'].includes(block.type.name)) {
+                    return level > 0 ? commands.toggleHeading({ level }) : commands.setParagraph();
+                }
+
+                if (level === 0 && block.type.name === 'paragraph') {
+                    return true;
+                }
+
+                const contentStart = $from.start();
+                const [rangeStart, rangeEnd] = empty
+                    ? lineRangeAt(block, from - contentStart)
+                    : [from - contentStart, to - contentStart];
+
+                const before = trimHardBreaks(block.content.cut(0, rangeStart));
+                const middle = trimHardBreaks(block.content.cut(rangeStart, rangeEnd));
+                const after = trimHardBreaks(block.content.cut(rangeEnd));
+
+                const isSameHeading = block.type.name === 'heading' && block.attrs.level === level;
+                const middleNode = level > 0 && !isSameHeading
+                    ? schema.nodes.heading.create({ level }, middle)
+                    : schema.nodes.paragraph.create(null, middle);
+
+                const nodes = [];
+
+                if (before.size > 0) {
+                    nodes.push(block.type.create(block.attrs, before, block.marks));
+                }
+
+                const middleIndex = nodes.length;
+                nodes.push(middleNode);
+
+                if (after.size > 0) {
+                    nodes.push(block.type.create(block.attrs, after, block.marks));
+                }
+
+                const container = $from.node(-1);
+                const index = $from.index(-1);
+
+                if (!container.canReplace(index, index + 1, Fragment.fromArray(nodes))) {
+                    return false;
+                }
+
+                if (dispatch) {
+                    const blockPos = $from.before();
+                    const middleStart = nodes
+                        .slice(0, middleIndex)
+                        .reduce((position, node) => position + node.nodeSize, blockPos) + 1;
+                    const anchor = empty ? middleStart + (from - contentStart - rangeStart) : middleStart;
+                    const head = empty ? anchor : middleStart + middle.size;
+
+                    tr.replaceWith(blockPos, $from.after(), nodes);
+                    tr.setSelection(TextSelection.create(tr.doc, anchor, head));
+                }
+
+                return true;
+            },
+        };
+    },
+
+    addKeyboardShortcuts() {
+        return {
+            'Mod-Alt-0': () => this.editor.commands.formatBlock(0),
+            ...Object.fromEntries(
+                this.options.levels.map((level) => [`Mod-Alt-${level}`, () => this.editor.commands.formatBlock(level)]),
+            ),
         };
     },
 });
@@ -1427,21 +1564,21 @@ function bootRichEditors() {
                 label: 'Text',
                 description: 'Start a regular paragraph',
                 keywords: ['paragraph', 'text'],
-                run: (instance) => instance.chain().focus().setParagraph().run(),
+                run: (instance) => instance.chain().focus().formatBlock(0).run(),
             },
             {
                 key: 'heading-2',
                 label: 'Heading 2',
                 description: 'Add a strong section heading',
                 keywords: ['heading', 'title', 'h2'],
-                run: (instance) => instance.chain().focus().toggleHeading({ level: 2 }).run(),
+                run: (instance) => instance.chain().focus().formatBlock(2).run(),
             },
             {
                 key: 'heading-3',
                 label: 'Heading 3',
                 description: 'Add a smaller subsection heading',
                 keywords: ['heading', 'subtitle', 'h3'],
-                run: (instance) => instance.chain().focus().toggleHeading({ level: 3 }).run(),
+                run: (instance) => instance.chain().focus().formatBlock(3).run(),
             },
             {
                 key: 'bullets',
@@ -1506,10 +1643,11 @@ function bootRichEditors() {
             extensions: [
                 StarterKit.configure({
                     heading: {
-                        levels: [2, 3],
+                        levels: EDITOR_HEADING_LEVELS,
                     },
                     codeBlock: false,
                 }),
+                BlockFormat,
                 Placeholder.configure({
                     placeholder: ({ node }) => {
                         if (node.type.name === 'heading') {
@@ -1839,11 +1977,11 @@ function bootRichEditors() {
                 switch (action) {
                     case 'paragraph':
                         isActive = editor.isActive('paragraph');
-                        canRun = editor.can().chain().focus().setParagraph().run();
+                        canRun = editor.can().chain().focus().formatBlock(0).run();
                         break;
                     case 'heading':
                         isActive = level > 0 ? editor.isActive('heading', { level }) : false;
-                        canRun = level > 0 ? editor.can().chain().focus().toggleHeading({ level }).run() : false;
+                        canRun = level > 0 ? editor.can().chain().focus().formatBlock(level).run() : false;
                         break;
                     case 'bold':
                         isActive = editor.isActive('bold');
@@ -1918,11 +2056,11 @@ function bootRichEditors() {
 
             switch (action) {
                 case 'paragraph':
-                    chain.setParagraph().run();
+                    chain.formatBlock(0).run();
                     break;
                 case 'heading':
                     if (level > 0) {
-                        chain.toggleHeading({ level }).run();
+                        chain.formatBlock(level).run();
                     }
                     break;
                 case 'bold':
